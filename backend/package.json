@@ -1,0 +1,26 @@
+{
+  "name": "justiceai-backend",
+  "version": "1.0.0",
+  "description": "Backend API Server for JusticeAI — Department of Justice Chatbot",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test test/**/*.test.js"
+  },
+  "keywords": [
+    "justiceai",
+    "department-of-justice",
+    "chatbot",
+    "express",
+    "nodejs"
+  ],
+  "author": "Disha <dishaab03@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  }
+}

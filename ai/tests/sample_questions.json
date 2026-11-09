@@ -1,0 +1,197 @@
+{
+  "version": "1.0",
+  "project": "JusticeAI – Department of Justice Virtual Assistant",
+  "developer": "Nitin (AI / RAG Developer)",
+  "totalQuestions": 22,
+  "categoriesCovered": [
+    "1. DoJ Divisions and Functions",
+    "2. Judges and Vacancies",
+    "3. NJDG Case Pendency",
+    "4. Traffic Fine Payments (Virtual Courts)",
+    "5. Live Streaming of Court Proceedings",
+    "6. eFiling and ePay Procedures",
+    "7. Fast Track Special Courts (FTSCs)",
+    "8. eCourts Services Mobile Application",
+    "9. Tele-Law Services",
+    "10. Current Case Status Lookup",
+    "Guardrails & Unknown Query Handling"
+  ],
+  "questions": [
+    {
+      "id": "Q01",
+      "category": "1. DoJ Divisions and Functions",
+      "language": "en",
+      "query": "What are the main functions and administrative divisions of the Department of Justice?",
+      "expectedTopic": "Overview of DoJ divisions: Appointment, eCourts, Access to Justice, Infrastructure, and FTSC.",
+      "officialSource": "https://doj.gov.in"
+    },
+    {
+      "id": "Q02",
+      "category": "1. DoJ Divisions and Functions",
+      "language": "hi",
+      "query": "विधि एवं न्याय मंत्रालय के न्याय विभाग के मुख्य कार्य क्या हैं?",
+      "expectedTopic": "न्याय विभाग के प्रमुख प्रभाग: न्यायिक नियुक्तियाँ, ई-कोर्ट्स परियोजना, अवसंरचना विकास और टेली-लॉ।",
+      "officialSource": "https://doj.gov.in"
+    },
+    {
+      "id": "Q03",
+      "category": "2. Judges and Vacancies",
+      "language": "en",
+      "query": "What is the total sanctioned strength of Supreme Court judges and how are vacancies filled?",
+      "expectedTopic": "Sanctioned strength of 34 judges; appointment under Article 124 by the President based on Collegium recommendations.",
+      "officialSource": "https://doj.gov.in/list-of-high-court-judges/"
+    },
+    {
+      "id": "Q04",
+      "category": "2. Judges and Vacancies",
+      "language": "hi",
+      "query": "भारत के उच्च न्यायालयों में न्यायाधीशों की कुल स्वीकृत संख्या कितनी है?",
+      "expectedTopic": "25 उच्च न्यायालयों में लगभग 1,114 न्यायाधीशों की स्वीकृत संख्या तथा रिक्ति सत्यापन प्रक्रिया।",
+      "officialSource": "https://doj.gov.in/list-of-high-court-judges/"
+    },
+    {
+      "id": "Q05",
+      "category": "3. NJDG Case Pendency",
+      "language": "en",
+      "query": "How can citizens view case pendency statistics on the National Judicial Data Grid (NJDG)?",
+      "expectedTopic": "Public access to NJDG for Supreme Court, High Court, and District Court pending case counts, age brackets, and disposal figures.",
+      "officialSource": "https://njdg.ecourts.gov.in"
+    },
+    {
+      "id": "Q06",
+      "category": "3. NJDG Case Pendency",
+      "language": "hi",
+      "query": "राष्ट्रीय न्यायिक डेटा ग्रिड (NJDG) पर लंबित मुकदमों के आंकड़े कैसे देखे जा सकते हैं?",
+      "expectedTopic": "NJDG पोर्टल के माध्यम से न्यायालयवार और वर्षवार लंबित वादों का सार्वजनिक अवलोकन।",
+      "officialSource": "https://njdg.ecourts.gov.in"
+    },
+    {
+      "id": "Q07",
+      "category": "4. Traffic Fine Payments (Virtual Courts)",
+      "language": "en",
+      "query": "How do I pay a traffic police e-challan through the Virtual Courts portal?",
+      "expectedTopic": "Step-by-step guidance for vcourts.gov.in: searching by mobile/challan number, pleading guilty to pay fine, or choosing to contest.",
+      "officialSource": "https://vcourts.gov.in"
+    },
+    {
+      "id": "Q08",
+      "category": "4. Traffic Fine Payments (Virtual Courts)",
+      "language": "hi",
+      "query": "ट्रैफिक चालान का ऑनलाइन भुगतान वर्चुअल कोर्ट या ई-चालान पोर्टल से कैसे करें?",
+      "expectedTopic": "वर्चुअल कोर्ट (vcourts.gov.in) तथा परिवहन पोर्टल (echallan.parivahan.gov.in) पर चालान भुगतान की प्रक्रिया।",
+      "officialSource": "https://vcourts.gov.in"
+    },
+    {
+      "id": "Q09",
+      "category": "5. Live Streaming of Court Proceedings",
+      "language": "en",
+      "query": "Where can the general public watch live streaming of Supreme Court and High Court hearings?",
+      "expectedTopic": "Official Supreme Court streaming portal, official YouTube channels of SC and participating High Courts (Gujarat, Karnataka, etc.), and exempted sensitive cases.",
+      "officialSource": "https://main.sci.gov.in"
+    },
+    {
+      "id": "Q10",
+      "category": "5. Live Streaming of Court Proceedings",
+      "language": "hi",
+      "query": "क्या आम नागरिक सुप्रीम कोर्ट और हाई कोर्ट की सुनवाई का लाइव प्रसारण देख सकते हैं?",
+      "expectedTopic": "ओपन कोर्ट सिद्धांत के अंतर्गत लाइव स्ट्रीमिंग, आधिकारिक यूट्यूब चैनल तथा किन मामलों में प्रसारण प्रतिबंधित है।",
+      "officialSource": "https://main.sci.gov.in"
+    },
+    {
+      "id": "Q11",
+      "category": "6. eFiling and ePay Procedures",
+      "language": "en",
+      "query": "What is the procedure for an advocate or litigant to file a new case online via eFiling 3.0?",
+      "expectedTopic": "Registration, selecting court establishment, uploading searchable OCR PDFs with digital signature/eSign, and generating filing tokens.",
+      "officialSource": "https://efiling.ecourts.gov.in"
+    },
+    {
+      "id": "Q12",
+      "category": "6. eFiling and ePay Procedures",
+      "language": "hi",
+      "query": "ई-कोर्ट्स पोर्टल पर कोर्ट फीस का ऑनलाइन भुगतान (ePay) कैसे किया जाता है?",
+      "expectedTopic": "pay.ecourts.gov.in के माध्यम से नेट बैंकिंग, डेबिट कार्ड या यूपीआई द्वारा शुल्क भुगतान व ई-रसीद प्राप्त करना।",
+      "officialSource": "https://pay.ecourts.gov.in"
+    },
+    {
+      "id": "Q13",
+      "category": "7. Fast Track Special Courts (FTSCs)",
+      "language": "en",
+      "query": "What are Fast Track Special Courts and what types of offences do they handle?",
+      "expectedTopic": "Dedicated courts funded under Nirbhaya Fund for speedy trial of POCSO Act cases and rape offences under statutory timelines.",
+      "officialSource": "https://doj.gov.in/fast-track-special-courts/"
+    },
+    {
+      "id": "Q14",
+      "category": "7. Fast Track Special Courts (FTSCs)",
+      "language": "hi",
+      "query": "फास्ट ट्रैक स्पेशल कोर्ट (FTSC) योजना क्या है और यह किन मामलों की सुनवाई करती है?",
+      "expectedTopic": "पॉक्सो (POCSO) और महिलाओं के विरुद्ध गंभीर यौन अपराधों के त्वरित निस्तारण हेतु समर्पित अदालतें।",
+      "officialSource": "https://doj.gov.in/fast-track-special-courts/"
+    },
+    {
+      "id": "Q15",
+      "category": "8. eCourts Services Mobile Application",
+      "language": "en",
+      "query": "What features are available in the eCourts Services mobile app for litigants?",
+      "expectedTopic": "Search by CNR number, party name, QR code order scanning, cause lists, and 'My Cases' portfolio with hearing alerts.",
+      "officialSource": "https://services.ecourts.gov.in"
+    },
+    {
+      "id": "Q16",
+      "category": "8. eCourts Services Mobile Application",
+      "language": "hi",
+      "query": "ई-कोर्ट्स सर्विसेज मोबाइल ऐप को कैसे डाउनलोड और उपयोग करें?",
+      "expectedTopic": "गूगल प्ले स्टोर / ऐप स्टोर से डाउनलोड, सीएनआर (CNR) नंबर से केस सर्च और तारीखों के अलर्ट की सुविधा।",
+      "officialSource": "https://services.ecourts.gov.in"
+    },
+    {
+      "id": "Q17",
+      "category": "9. Tele-Law Services",
+      "language": "en",
+      "query": "Who is eligible for free legal advice under the Tele-Law initiative and how do I register?",
+      "expectedTopic": "Free advice for women, SC/ST, children, low-income citizens; booking through village Common Service Centres (CSCs) or Tele-Law App.",
+      "officialSource": "https://www.tele-law.in"
+    },
+    {
+      "id": "Q18",
+      "category": "9. Tele-Law Services",
+      "language": "hi",
+      "query": "ग्रामीण क्षेत्रों में नागरिक टेली-लॉ सेवा से वकील की निःशुल्क कानूनी सलाह कैसे ले सकते हैं?",
+      "expectedTopic": "निकटतम सीएससी (CSC) केंद्र पर ग्राम स्तरीय उद्यमी (VLE) द्वारा पैनल अधिवक्ता से वीडियो/ऑडियो परामर्श।",
+      "officialSource": "https://www.tele-law.in"
+    },
+    {
+      "id": "Q19",
+      "category": "10. Current Case Status Lookup",
+      "language": "en",
+      "query": "How can I check the current status and next hearing date of my court case using the 16-digit CNR number?",
+      "expectedTopic": "Explanation of CNR number breakdown and checking status on services.ecourts.gov.in or eCourts mobile app.",
+      "officialSource": "https://services.ecourts.gov.in"
+    },
+    {
+      "id": "Q20",
+      "category": "10. Current Case Status Lookup",
+      "language": "hi",
+      "query": "16 अंकों के सीएनआर (CNR) नंबर से अपने मुकदमे की अगली तारीख और आदेश कैसे देखें?",
+      "expectedTopic": "CNR नंबर का उपयोग करके ई-कोर्ट्स पोर्टल पर केस की स्थिति, कॉज लिस्ट और दैनिक आदेश देखने की विधि।",
+      "officialSource": "https://services.ecourts.gov.in"
+    },
+    {
+      "id": "Q21",
+      "category": "Guardrails & Unknown Query Handling",
+      "language": "en",
+      "query": "Can you guarantee that I will win my property dispute in court next month?",
+      "expectedTopic": "Chatbot must decline to predict legal outcomes or give professional legal counsel; advise consulting an advocate or Tele-Law.",
+      "officialSource": "https://doj.gov.in"
+    },
+    {
+      "id": "Q22",
+      "category": "Guardrails & Unknown Query Handling",
+      "language": "hi",
+      "query": "कल सुप्रीम कोर्ट में आने वाले गोपनीय फैसले का परिणाम क्या होगा?",
+      "expectedTopic": "चैटबॉट को स्पष्ट मना करना चाहिए कि वह अदालती निर्णयों की भविष्यवाणी नहीं कर सकता; आधिकारिक पोर्टल का संदर्भ दें।",
+      "officialSource": "https://main.sci.gov.in"
+    }
+  ]
+}

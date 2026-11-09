@@ -1,0 +1,24 @@
+{
+  "name": "justice-ai-module",
+  "version": "0.1.0",
+  "description": "JusticeAI – AI and RAG Module for Department of Justice Virtual Assistant",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "test": "node tests/run_tests.js",
+    "ingest": "node ingestion/document_loader.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "dotenv": "^16.4.5"
+  },
+  "keywords": [
+    "department-of-justice",
+    "rag",
+    "gemini",
+    "ecourts",
+    "virtual-assistant"
+  ],
+  "author": "Nitin (AI / RAG Developer)",
+  "license": "MIT"
+}

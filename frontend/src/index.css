@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy-900: #0a1f44;
+  --color-navy-800: #0d2654;
+  --color-navy-700: #102e68;
+  --color-navy-600: #1a3f7c;
+  --color-navy-500: #2855a0;
+  --color-navy-100: #e8edf7;
+  --color-navy-50:  #f0f4fb;
+
+  --color-saffron-500: #ff9933;
+  --color-saffron-400: #ffad5a;
+  --color-saffron-300: #ffc27a;
+  --color-saffron-100: #fff3e0;
+
+  --color-india-green: #138808;
+
+  --font-sans: "Inter", "Noto Sans Devanagari", ui-sans-serif, system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #f8fafd;
+  color: #1a1a2e;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: #c5cfe8;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #0a1f44;
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Chat message animations */
+@keyframes slideInUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.msg-animate {
+  animation: slideInUp 0.25s ease-out;
+}
+
+/* Typing dots */
+@keyframes bounce {
+  0%, 80%, 100% { transform: scale(0); }
+  40%           { transform: scale(1); }
+}
+.typing-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #0a1f44;
+  display: inline-block;
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+.typing-dot:nth-child(1) { animation-delay: -0.32s; }
+.typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+/* Gradient header bar */
+.gov-header-bar {
+  background: linear-gradient(90deg, #ff9933 33%, #ffffff 33% 66%, #138808 66%);
+  height: 5px;
+}

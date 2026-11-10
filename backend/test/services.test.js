@@ -3,6 +3,7 @@ import assert from 'node:assert';
 import { judgeService } from '../src/services/judgeService.js';
 import { njdgService } from '../src/services/njdgService.js';
 import { eCourtsService } from '../src/services/eCourtsService.js';
+import { queryJusticeAI } from '../src/services/aiBridgeService.js';
 
 describe('JusticeAI Service Modules Unit Tests', () => {
   it('judgeService - returns official Supreme Court and High Court counts', async () => {
@@ -56,5 +57,13 @@ describe('JusticeAI Service Modules Unit Tests', () => {
 
     const teleLawInfo = eCourtsService.getTeleLawInfo('en');
     assert.strictEqual(teleLawInfo.helpline, '14416 (Toll-free National Helpline)');
+  });
+
+  it('aiBridgeService - queries AI module successfully with grounded responses', async () => {
+    const response = await queryJusticeAI('What are Fast Track Special Courts?', 'en');
+    assert.ok(response.answer.length > 30);
+    assert.strictEqual(response.language, 'en');
+    assert.strictEqual(response.intent, 'FAST_TRACK_COURTS');
+    assert.ok(response.sources.length > 0);
   });
 });

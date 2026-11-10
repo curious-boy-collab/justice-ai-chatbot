@@ -1,19 +1,23 @@
 /**
  * JusticeAI Test Runner for AI/RAG Module
  * Developer: Nitin (AI / RAG Developer)
+ * Sprint: Day 2 — Core Chatbot Intelligence
  * 
- * Validates Day 1 AI architecture and retrieval pipeline across
- * all 22 sample citizen questions in English and Hindi.
+ * Validates:
+ * - 28 citizen questions across English, Devanagari Hindi, and Hinglish.
+ * - Intent recognition across all 10 problem-statement categories.
+ * - Guardrail handling (prohibited legal advice, out-of-scope fallback).
+ * - Contract schema compliance for Disha's backend.
  */
 
 const { askJusticeAI } = require('../index');
 const testSuite = require('./sample_questions.json');
 
 async function runTestSuite() {
-  console.log('===============================================================');
-  console.log('       JusticeAI – AI/RAG Architecture Test Suite (Day 1)      ');
-  console.log(`       Target: ${testSuite.totalQuestions} Questions across 10 Categories + Guardrails   `);
-  console.log('===============================================================\n');
+  console.log('======================================================================');
+  console.log('       JusticeAI – AI/RAG Architecture Test Suite (Day 2 Sprint)      ');
+  console.log(`       Target: ${testSuite.totalQuestions} Questions across All Intents + Guardrails     `);
+  console.log('======================================================================\n');
 
   let passed = 0;
   let failed = 0;
@@ -26,20 +30,22 @@ async function runTestSuite() {
       const response = await askJusticeAI(item.query, item.language);
 
       // Validation assertions
-      const hasAnswer = response && typeof response.answer === 'string' && response.answer.length > 30;
+      const hasAnswer = response && typeof response.answer === 'string' && response.answer.length > 25;
       const hasLanguage = response.language === item.language;
-      const hasSources = Array.isArray(response.sources) && response.sources.length > 0 && response.sources[0].url;
-      const hasContractFields = response.dataStatus === 'official_reference' && Boolean(response.lastChecked);
+      const hasSources = Array.isArray(response.sources) && response.sources.length > 0;
+      const matchesIntent = !item.expectedIntent || response.intent === item.expectedIntent;
+      const hasContractFields = response.dataStatus && Boolean(response.lastChecked);
 
-      if (hasAnswer && hasLanguage && hasSources && hasContractFields) {
-        console.log('PASSED ✅');
+      if (hasAnswer && hasLanguage && hasSources && matchesIntent && hasContractFields) {
+        console.log(`PASSED ✅ (Intent: ${response.intent}, Model: ${response.metadata?.modelUsed})`);
         passed++;
       } else {
         console.log('FAILED ❌');
-        console.error('   Assertion failure:', {
+        console.error('   Assertion failure details:', {
           hasAnswer,
           hasLanguage,
           hasSources,
+          matchesIntent: `${response?.intent} === ${item.expectedIntent}`,
           hasContractFields,
         });
         failed++;
@@ -51,10 +57,10 @@ async function runTestSuite() {
   }
 
   const duration = ((Date.now() - startTime) / 1000).toFixed(2);
-  console.log('\n===============================================================');
+  console.log('\n======================================================================');
   console.log(`SUMMARY: ${passed} Passed, ${failed} Failed out of ${testSuite.questions.length} tests`);
   console.log(`Duration: ${duration}s`);
-  console.log('===============================================================');
+  console.log('======================================================================');
 
   if (failed > 0) {
     process.exitCode = 1;

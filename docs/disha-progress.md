@@ -2,58 +2,71 @@
 
 **Role**: Backend Developer  
 **Branch**: `feature/backend`  
-**Current Sprint**: Day 2 — Core Chatbot Development  
+**Current Sprint**: Day 3 — RAG Implementation & Knowledge Base Integration  
 **Status**: Completed & Verified  
 
 ---
 
-## 🎯 Day 2 Objectives & Achievements
+## 🎯 Day 3 Objectives & Achievements
 
-- [x] **Implement the `POST /api/chat` Endpoint**:
-  - Re-architected `chatController.js` to serve as the unified conversational entry point for citizen queries.
-  - Supports both `{ query }` (Shravani's frontend payload) and `{ message }` (contract specification) payloads interchangeably.
-  - Added session tracking with UUID generation and language auto-detection for Devanagari script.
+- [x] **Connect the RAG Service to the Chat API**:
+  - Upgraded [`backend/src/services/aiBridgeService.js`](../backend/src/services/aiBridgeService.js) to bridge directly with Nitin's RAG pipeline (`askJusticeAI`, `retriever.retrieve`, `vectorStore.search`).
+  - Seamlessly queries all 62 chunks indexed across 10 official Department of Justice knowledge documents.
 
-- [x] **Connect to Nitin's AI Service Interface**:
-  - Integrated with Nitin's AI / RAG module via [`src/services/aiBridgeService.js`](../backend/src/services/aiBridgeService.js).
-  - Calls `queryJusticeAI(query, language, sessionId, timeoutMs)`.
-  - Securely passes `GEMINI_API_KEY` from backend environment to the generative AI client on the server side.
+- [x] **Pass User Queries to the Retrieval Pipeline**:
+  - `POST /api/chat` passes sanitized citizen queries, language preferences, session IDs, and `topK` retrieval depths to the retrieval pipeline.
+  - Automatically activates semantic search over DoJ knowledge vectors while enforcing 15-second timeout protection.
 
-- [x] **Validate User Messages**:
-  - Validates JSON body existence and structure.
-  - Rejects empty, whitespace-only, null, or non-string queries with HTTP `400 BAD_REQUEST` and code `INVALID_INPUT`.
-  - Enforces 2000-character input ceiling with code `MESSAGE_TOO_LONG`.
-  - Strips non-printable ASCII/control characters to safeguard against injection and corrupt payloads.
+- [x] **Return Answer & Rich Source Metadata**:
+  - Enriched each source entry in the response with:
+    - `title`: Official title of the document/section
+    - `label`: UI display title
+    - `url`: Official verified government URL (`doj.gov.in`, `ecourts.gov.in`, `njdg.ecourts.gov.in`, `vcourts.gov.in`, `tele-law.in`)
+    - `category`: Legal/administrative division category
+    - `snippet`: Real text excerpt retrieved from the knowledge base for transparent grounding
+    - `relevanceScore`: Vector + keyword hybrid similarity score
+  - Dual support: provides both `sources` (for frontend components) and `citations` (for formal citation lists).
 
-- [x] **Implement Consistent JSON Response Formats**:
-  - Unified response payload adhering strictly to `contracts/api-contract.md` and `docs/AI_BACKEND_CONTRACT.md`.
-  - Provides both `reply` and `answer` fields for maximum frontend interoperability.
-  - Enriches responses with structured `dataCard` objects from `judgeService`, `njdgService`, and `eCourtsService`.
-  - Provides dual-format citations: `sources: [{ title, label, url }]` and `citations: [{ sourceTitle, url, snippet }]`.
-  - Generates context-aware `suggestedQuestions` tailored to the query intent and language.
+- [x] **Add Data Freshness Metadata**:
+  - Implemented top-level `dataFreshness` object in every chat response:
+    ```json
+    "dataFreshness": {
+      "lastUpdated": "2026-11-10",
+      "sourceStatus": "verified_official",
+      "asOfDate": "2026-03-01",
+      "cacheStatus": "live",
+      "disclaimer": "Official information grounded in Ministry of Law & Justice, NJDG, and eCourts documentation. Not formal legal advice."
+    }
+    ```
+  - Preserved backward-compatible `dataStatus: "official_reference"` and `lastChecked: "2026-11-10"`.
 
-- [x] **Add Error Handling & Request Validation**:
-  - Centralized error formatting ensures all errors return `{ success: false, error: { code, message, details }, timestamp }`.
-  - Handles unexpected AI service failures with structured, graceful fallback to official DoJ web references.
+- [x] **Standardize the API Response**:
+  - Standardized JSON responses for all chat queries, ensuring complete compatibility with Shravani's frontend (`answer`, `sources`, `dataStatus`) and Disha's master contract (`reply`, `dataCard`, `citations`, `suggestedQuestions`, `retrieval`, `responseTimeMs`).
 
-- [x] **Add Appropriate Request Timeout Handling**:
-  - Created [`src/middleware/timeoutHandler.js`](../backend/src/middleware/timeoutHandler.js) enforcing a 20,000ms ceiling on all HTTP requests (responds with HTTP 504 Gateway Timeout).
-  - In [`src/services/aiBridgeService.js`](../backend/src/services/aiBridgeService.js), added a 15,000ms `Promise.race` timeout protection around `askJusticeAI`.
+- [x] **Add Document-Related Service Interfaces**:
+  - Created [`backend/src/services/documentService.js`](../backend/src/services/documentService.js), [`backend/src/controllers/documentController.js`](../backend/src/controllers/documentController.js), and [`backend/src/routes/document.routes.js`](../backend/src/routes/document.routes.js):
+    - `GET /api/documents`: Lists all 10 indexed official documents with metadata and chunk counts.
+    - `GET /api/documents/stats`: Returns knowledge base metrics (total docs, chunks, categories, status).
+    - `GET /api/documents/search?q={query}&topK={k}` & `POST /api/documents/search`: Performs standalone semantic search over the vector store.
+    - `GET /api/documents/:id(*)`: Retrieves complete text content and chunk breakdown for any document (e.g. `doj/tele_law_services`).
 
-- [x] **Configure CORS for Frontend Integration**:
-  - Updated [`src/middleware/corsConfig.js`](../backend/src/middleware/corsConfig.js) to dynamically whitelist Vite frontend dev servers (`http://localhost:5173`, `http://localhost:3000`, `http://127.0.0.1:*`) and handle preflight `OPTIONS` requests seamlessly.
+- [x] **Validate Incoming Requests**:
+  - Added validation for `topK` parameter (clamped between 1 and 10).
+  - Validates document search query parameters and handles unknown document IDs with HTTP 404 (`DOCUMENT_NOT_FOUND`).
+  - Strengthened chat query validation (1 to 2000 characters, sanitizing non-printable characters).
 
-- [x] **Test Chat API Using Sample Requests**:
-  - Implemented 17 HTTP integration tests in [`backend/test/api.test.js`](../backend/test/api.test.js).
-  - Implemented 28 end-to-end question tests in [`backend/test/sample_questions_e2e.test.js`](../backend/test/sample_questions_e2e.test.js) validating all official sample questions across 10 DoJ categories in English, Hindi, and Hinglish.
-  - Implemented 6 service unit tests in [`backend/test/services.test.js`](../backend/test/services.test.js).
-  - **Result: 51 tests passing with 0 failures.**
+- [x] **Test Complete Backend-to-AI Communication**:
+  - Executed automated test suite comprising 61 tests:
+    - 22 HTTP integration tests in `backend/test/api.test.js`.
+    - 28 official end-to-end question tests in `backend/test/sample_questions_e2e.test.js`.
+    - 11 unit tests in `backend/test/services.test.js`.
+  - **100% test pass rate (61 passed, 0 failed in ~156ms).**
 
 ---
 
 ## 📡 API Request & Response Documentation
 
-### 1. English Procedural Query (Virtual Courts / Traffic Fine)
+### 1. RAG-Grounded Query with Sources & Data Freshness (`POST /api/chat`)
 
 **Request**:
 ```http
@@ -62,8 +75,9 @@ Host: localhost:5000
 Content-Type: application/json
 
 {
-  "query": "How do I pay a traffic police e-challan through Virtual Courts?",
-  "language": "en"
+  "query": "What is Tele-Law and who gets free legal aid?",
+  "language": "en",
+  "topK": 3
 }
 ```
 
@@ -71,138 +85,133 @@ Content-Type: application/json
 ```json
 {
   "success": true,
-  "sessionId": "4b2cf03b-c2e3-4d40-9e8a-e4277b58832a",
-  "reply": "Traffic challans can be paid online via the Virtual Courts portal (vcourts.gov.in) or the Parivahan eChallan portal...",
-  "answer": "Traffic challans can be paid online via the Virtual Courts portal (vcourts.gov.in) or the Parivahan eChallan portal...",
+  "sessionId": "b8f2a1c0-4e3d-4c8a-9a7b-123456789abc",
+  "reply": "Tele-Law connects citizens in rural and marginalized communities directly with panel lawyers...",
+  "answer": "Tele-Law connects citizens in rural and marginalized communities directly with panel lawyers...",
   "language": "en",
-  "intent": "TRAFFIC_FINES",
+  "intent": "TELE_LAW",
   "isLive": true,
   "dataStatus": "official_reference",
-  "lastChecked": "2026-11-10",
-  "dataCard": {
-    "type": "PROCEDURAL_GUIDE",
-    "title": "Virtual Court Traffic Violation Fine Payment Procedure",
-    "data": {
-      "steps": [
-        "Visit the official Virtual Courts portal at vcourts.gov.in.",
-        "Select your State and Judicial Department (e.g., Delhi Traffic Court).",
-        "Search your case using Mobile Number, Vehicle Number, or Challan Number.",
-        "Review the alleged offense, compounding amount, and summons notice.",
-        "Choose 'Propose to Plead Guilty' to settle online or 'Contest' to transfer the case to a regular magistrate.",
-        "Make payment via the integrated ePay gateway and download the court receipt."
-      ],
-      "officialPortalUrl": "https://vcourts.gov.in",
-      "helpline": "1800-11-0031"
-    }
+  "dataFreshness": {
+    "lastUpdated": "2026-11-10",
+    "sourceStatus": "verified_official",
+    "asOfDate": "2026-03-01",
+    "cacheStatus": "live",
+    "disclaimer": "Official information grounded in Ministry of Law & Justice, NJDG, and eCourts documentation. Not formal legal advice."
   },
   "sources": [
     {
-      "title": "Virtual Courts — Online Disposal of Petty Offences",
-      "label": "Virtual Courts — Online Disposal of Petty Offences",
-      "url": "https://vcourts.gov.in"
+      "title": "Tele-Law Service: Mainstreaming Legal Aid to the Marginalized",
+      "label": "Tele-Law Service: Mainstreaming Legal Aid to the Marginalized",
+      "url": "https://doj.gov.in/tele-law/",
+      "category": "Access to Justice & Free Legal Services",
+      "snippet": "Tele-Law is a pioneering initiative of the Department of Justice, Ministry of Law and Justice, in partnership with NALSA and CSC e-Governance Services...",
+      "relevanceScore": 0.884
     }
   ],
   "citations": [
     {
-      "sourceTitle": "Virtual Courts — Online Disposal of Petty Offences",
-      "url": "https://vcourts.gov.in",
-      "snippet": "Virtual Courts — Online Disposal of Petty Offences"
+      "sourceTitle": "Tele-Law Service: Mainstreaming Legal Aid to the Marginalized",
+      "url": "https://doj.gov.in/tele-law/",
+      "snippet": "Tele-Law is a pioneering initiative of the Department of Justice...",
+      "category": "Access to Justice & Free Legal Services"
     }
   ],
+  "dataCard": {
+    "type": "TELE_LAW_INFO",
+    "title": "Tele-Law Legal Aid Services",
+    "data": {
+      "helpline": "14416 (Toll-free National Helpline)",
+      "officialUrl": "https://www.tele-law.in"
+    }
+  },
   "suggestedQuestions": [
-    "Can I contest a traffic challan in a regular court?",
-    "How do I check case status using a CNR number?",
-    "What are the judicial statistics on the NJDG portal?"
+    "How can I find the nearest Common Service Centre (CSC)?",
+    "Is legal representation covered under Tele-Law?",
+    "What are the key divisions of the Department of Justice?"
   ],
+  "retrieval": {
+    "chunksRetrieved": 3,
+    "topK": 3,
+    "isRetrievedFromKnowledgeBase": true
+  },
   "metadata": {
     "modelUsed": "gemini-1.5-flash",
     "isLiveModel": true,
-    "durationMs": 340
+    "durationMs": 312
   },
-  "responseTimeMs": 345,
-  "timestamp": "2026-11-10T10:15:51.457Z"
+  "responseTimeMs": 318,
+  "timestamp": "2026-11-10T18:20:51.290Z"
 }
 ```
 
 ---
 
-### 2. Hindi Query (Judge Appointments & Vacancies)
+### 2. Standalone Semantic Search Endpoint (`GET /api/documents/search`)
 
 **Request**:
 ```http
-POST /api/chat HTTP/1.1
+GET /api/documents/search?q=Virtual+Courts+traffic+fines&topK=2 HTTP/1.1
 Host: localhost:5000
-Content-Type: application/json
-
-{
-  "query": "भारत के उच्च न्यायालयों में न्यायाधीशों की रिक्तियां कितनी हैं?",
-  "language": "hi"
-}
 ```
 
 **Response (HTTP 200 OK)**:
 ```json
 {
   "success": true,
-  "sessionId": "8d3e2f1a-b6c5-4a39-9d8e-123456789abc",
-  "reply": "भारत के 25 उच्च न्यायालयों में न्यायाधीशों के कुल स्वीकृत पद 1,114 हैं। रिक्तियों का विवरण न्याय विभाग द्वारा नियमित रूप से अधिसूचित किया जाता है...",
-  "answer": "भारत के 25 उच्च न्यायालयों में न्यायाधीशों के कुल स्वीकृत पद 1,114 हैं। रिक्तियों का विवरण न्याय विभाग द्वारा नियमित रूप से अधिसूचित किया जाता है...",
-  "language": "hi",
-  "intent": "JUDGES_AND_VACANCIES",
-  "isLive": true,
-  "dataStatus": "official_reference",
-  "lastChecked": "2026-11-10",
-  "dataCard": {
-    "type": "JUDGE_VACANCY",
-    "title": "न्यायाधीश रिक्ति एवं स्वीकृत पद विवरण",
-    "data": {
-      "summary": {
-        "supremeCourt": { "sanctioned": 34, "working": 33, "vacancies": 1 },
-        "highCourtsTotal": { "courtCount": 25, "sanctioned": 1114, "working": 778, "vacancies": 336 }
-      }
-    }
-  },
-  "sources": [
+  "query": "Virtual Courts traffic fines",
+  "resultsCount": 2,
+  "results": [
     {
-      "title": "Department of Justice — High Court Judges Strength",
-      "label": "Department of Justice — High Court Judges Strength",
-      "url": "https://doj.gov.in/list-of-high-court-judges/"
+      "chunkId": "ecourts/traffic_fine_payments#chunk-0",
+      "docId": "ecourts/traffic_fine_payments",
+      "sectionTitle": "Overview",
+      "title": "Virtual Courts: Online Adjudication of Traffic Violations",
+      "category": "eCourts Services / Digital Adjudication",
+      "url": "https://vcourts.gov.in",
+      "status": "Verified Official Government Data",
+      "relevanceScore": 0.865,
+      "snippet": "Virtual Courts is an eCourts initiative aimed at eliminating the presence of litigants or lawyers in court for petty offences like traffic violations..."
     }
   ],
-  "suggestedQuestions": [
-    "राष्ट्रीय न्यायिक डेटा ग्रिड (NJDG) में लंबित मामलों की स्थिति क्या है?",
-    "ई-चालान का भुगतान वर्चुअल कोर्ट से कैसे करें?",
-    "टेली-लॉ के तहत मुफ्त कानूनी सलाह कैसे पाएं?"
-  ],
-  "responseTimeMs": 280,
-  "timestamp": "2026-11-10T10:15:51.452Z"
+  "timestamp": "2026-11-10T18:20:51.304Z"
 }
 ```
 
 ---
 
-### 3. Input Validation Error (Empty Query)
+### 3. Knowledge Base Metrics (`GET /api/documents/stats`)
 
 **Request**:
 ```http
-POST /api/chat HTTP/1.1
+GET /api/documents/stats HTTP/1.1
 Host: localhost:5000
-Content-Type: application/json
-
-{
-  "query": ""
-}
 ```
 
-**Response (HTTP 400 Bad Request)**:
+**Response (HTTP 200 OK)**:
 ```json
 {
-  "success": false,
-  "error": {
-    "code": "INVALID_INPUT",
-    "message": "The query must be a non-empty string."
+  "success": true,
+  "totalDocuments": 10,
+  "totalChunks": 62,
+  "categoriesCount": 6,
+  "categories": [
+    "Departmental Administration & Functions",
+    "Higher Judiciary Appointments & Statistics",
+    "Access to Justice & Free Legal Services",
+    "Special Courts & Women/Child Safety",
+    "eCourts Services / Digital Adjudication",
+    "Judicial Data & Case Analytics"
+  ],
+  "vectorStoreType": "In-Memory / Hybrid Cosine + Keyword Embedding",
+  "status": "active",
+  "dataFreshness": {
+    "lastUpdated": "2026-11-10",
+    "sourceStatus": "verified_official",
+    "asOfDate": "2026-03-01",
+    "disclaimer": "Official information sourced from Ministry of Law & Justice and eCourts Project."
   },
-  "timestamp": "2026-11-10T10:15:51.441Z"
+  "timestamp": "2026-11-10T18:20:51.303Z"
 }
 ```
 
@@ -210,20 +219,19 @@ Content-Type: application/json
 
 ## 🧪 Automated Testing Verification
 
-Executed using Node.js built-in test runner (`node --test test/**/*.test.js`):
-- **Suite 1: Integration Tests (`test/api.test.js`)**: 17 tests passed.
+Executed using Node.js built-in test runner (`npm --prefix backend test`):
+- **Suite 1: Integration Tests (`test/api.test.js`)**: 22 tests passed.
 - **Suite 2: E2E Official Questions (`test/sample_questions_e2e.test.js`)**: 28 tests passed.
-- **Suite 3: Services Unit Tests (`test/services.test.js`)**: 6 tests passed.
-- **Total: 51 passed, 0 failed (100% pass rate in ~144ms)**.
+- **Suite 3: Services Unit Tests (`test/services.test.js`)**: 11 tests passed.
+- **Total: 61 passed, 0 failed (100% pass rate in ~156ms)**.
 
 ---
 
 ## 🤝 Team Coordination Summary
 
-1. **Nitin (AI / RAG Developer)**:
-   - Synchronized with Nitin's intent definitions and document retrieval models.
-   - Verified that all 28 test questions correctly trigger expected intents and grounded answers.
-2. **Shravani (Frontend Developer)**:
-   - Backend directly supports Shravani's `POST /api/chat` payload (`{ query, language, sessionId }`).
-   - Response includes `reply`, `answer`, `sources`, `dataCard`, `citations`, and `suggestedQuestions`.
-   - CORS is configured to accept connections from Vite dev server (`http://localhost:5173`).
+1. **For Nitin (AI / RAG Developer)**:
+   - Backend successfully invokes `askJusticeAI` with `topK` and reads semantic retrieval vectors from `retriever.js` and `vector_store.js`.
+   - Rich citations extracted with section titles, categories, and similarity scores.
+2. **For Shravani (Frontend Developer)**:
+   - Sources now contain `category`, `snippet`, and `relevanceScore` directly powering Shravani's Day 3 expandable citation UI.
+   - New document exploration endpoints (`/api/documents`, `/api/documents/search`) available for rich frontend knowledge browsing.

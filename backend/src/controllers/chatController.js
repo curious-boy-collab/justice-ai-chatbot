@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import { queryJusticeAI } from '../services/aiBridgeService.js';
+import { queryJusticeAI, OFFICIAL_DATA_FRESHNESS } from '../services/aiBridgeService.js';
 import { judgeService } from '../services/judgeService.js';
 import { njdgService } from '../services/njdgService.js';
 import { eCourtsService } from '../services/eCourtsService.js';
@@ -286,8 +286,8 @@ export async function handleChatMessage(req, res, next) {
     // Sanitize control characters (except newline, carriage return, tab)
     const sanitizedQuery = rawMessage.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '').trim();
 
-    // 3. Resolve session ID
-    const { sessionId, language } = req.body;
+    // 3. Resolve session ID & options
+    const { sessionId, language, topK } = req.body;
     let currentSessionId = sessionId;
     if (currentSessionId && (typeof currentSessionId !== 'string' || currentSessionId.length > 100)) {
       currentSessionId = randomUUID();
@@ -295,6 +295,8 @@ export async function handleChatMessage(req, res, next) {
     if (!currentSessionId) {
       currentSessionId = randomUUID();
     }
+
+    const requestedTopK = Math.max(1, Math.min(parseInt(topK, 10) || 3, 10));
 
     // 4. Resolve language ('hi' if explicitly requested or Devanagari script detected)
     const isHindi = language === 'hi' || /[\u0900-\u097F]/.test(sanitizedQuery);
@@ -307,7 +309,10 @@ export async function handleChatMessage(req, res, next) {
         sanitizedQuery,
         resolvedLanguage,
         currentSessionId,
-        config.aiTimeoutMs || 15000
+        {
+          topK: requestedTopK,
+          timeoutMs: config.aiTimeoutMs || 15000
+        }
       );
     } catch (aiError) {
       console.error('[chatController AI Query Error]:', aiError.message);
@@ -331,9 +336,24 @@ export async function handleChatMessage(req, res, next) {
         language: resolvedLanguage,
         intent: 'OUT_OF_SCOPE',
         sources: [
-          { title: 'Department of Justice — Official Portal', url: 'https://doj.gov.in' }
+          {
+            title: 'Department of Justice — Official Portal',
+            label: 'Department of Justice — Official Portal',
+            url: 'https://doj.gov.in',
+            category: 'Official Portal',
+            snippet: 'Department of Justice official government reference.'
+          }
+        ],
+        citations: [
+          {
+            sourceTitle: 'Department of Justice — Official Portal',
+            url: 'https://doj.gov.in',
+            snippet: 'Department of Justice official government reference.',
+            category: 'Official Portal'
+          }
         ],
         dataStatus: 'official_reference',
+        dataFreshness: OFFICIAL_DATA_FRESHNESS,
         lastChecked: new Date().toISOString().split('T')[0],
         cnr: null,
         metadata: {
@@ -355,13 +375,17 @@ export async function handleChatMessage(req, res, next) {
     const normalizedSources = (aiResponse.sources || []).map((s) => ({
       title: s.title || s.label || 'Department of Justice',
       label: s.label || s.title || 'Department of Justice',
-      url: s.url || 'https://doj.gov.in'
+      url: s.url || 'https://doj.gov.in',
+      category: s.category || 'Official Reference',
+      snippet: s.snippet || s.title || '',
+      relevanceScore: s.relevanceScore !== undefined ? s.relevanceScore : 1.0
     }));
 
-    const normalizedCitations = normalizedSources.map((s) => ({
-      sourceTitle: s.title,
-      url: s.url,
-      snippet: s.title
+    const normalizedCitations = (aiResponse.citations || []).map((c) => ({
+      sourceTitle: c.sourceTitle || c.title || 'Department of Justice',
+      url: c.url || 'https://doj.gov.in',
+      snippet: c.snippet || c.sourceTitle || '',
+      category: c.category || 'Official Reference'
     }));
 
     // 8. Generate contextual suggested follow-up questions
@@ -369,7 +393,7 @@ export async function handleChatMessage(req, res, next) {
 
     const durationMs = Date.now() - startTime;
 
-    // 9. Return consistent JSON response
+    // 9. Return standardized, rich JSON response
     return res.status(200).json({
       success: true,
       sessionId: currentSessionId,
@@ -379,11 +403,17 @@ export async function handleChatMessage(req, res, next) {
       intent: aiResponse.intent || 'GENERAL_DOJ_QUERY',
       isLive: aiResponse.metadata?.isLiveModel ?? true,
       dataStatus: aiResponse.dataStatus || 'official_reference',
-      lastChecked: aiResponse.lastChecked || new Date().toISOString().split('T')[0],
+      dataFreshness: aiResponse.dataFreshness || OFFICIAL_DATA_FRESHNESS,
+      lastChecked: aiResponse.lastChecked || OFFICIAL_DATA_FRESHNESS.lastUpdated,
       dataCard: dataCard,
       sources: normalizedSources,
       citations: normalizedCitations,
       suggestedQuestions: suggestedQuestions,
+      retrieval: {
+        chunksRetrieved: aiResponse.metadata?.chunksRetrieved ?? normalizedSources.length,
+        topK: requestedTopK,
+        isRetrievedFromKnowledgeBase: normalizedSources.length > 0
+      },
       metadata: aiResponse.metadata || {
         durationMs
       },

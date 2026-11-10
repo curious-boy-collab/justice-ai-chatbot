@@ -3,7 +3,8 @@ import assert from 'node:assert';
 import { judgeService } from '../src/services/judgeService.js';
 import { njdgService } from '../src/services/njdgService.js';
 import { eCourtsService } from '../src/services/eCourtsService.js';
-import { queryJusticeAI } from '../src/services/aiBridgeService.js';
+import { queryJusticeAI, OFFICIAL_DATA_FRESHNESS } from '../src/services/aiBridgeService.js';
+import { documentService } from '../src/services/documentService.js';
 
 describe('JusticeAI Service Modules Unit Tests', () => {
   it('judgeService - returns official Supreme Court and High Court counts', async () => {
@@ -59,11 +60,62 @@ describe('JusticeAI Service Modules Unit Tests', () => {
     assert.strictEqual(teleLawInfo.helpline, '14416 (Toll-free National Helpline)');
   });
 
-  it('aiBridgeService - queries AI module successfully with grounded responses', async () => {
-    const response = await queryJusticeAI('What are Fast Track Special Courts?', 'en');
+  it('aiBridgeService - queries AI module with grounded response, citations and data freshness', async () => {
+    const response = await queryJusticeAI('What are Fast Track Special Courts?', 'en', 'test-session-id', { topK: 3 });
     assert.ok(response.answer.length > 30);
     assert.strictEqual(response.language, 'en');
     assert.strictEqual(response.intent, 'FAST_TRACK_COURTS');
     assert.ok(response.sources.length > 0);
+    assert.ok(response.sources[0].category, 'Sources should contain category metadata');
+    assert.ok(response.citations.length > 0);
+    assert.strictEqual(response.dataFreshness.lastUpdated, OFFICIAL_DATA_FRESHNESS.lastUpdated);
+    assert.strictEqual(response.dataFreshness.sourceStatus, 'verified_official');
+  });
+
+  it('documentService - getAllDocuments returns indexed official knowledge documents', () => {
+    const docs = documentService.getAllDocuments();
+    assert.ok(docs.length >= 10);
+    const first = docs[0];
+    assert.ok(first.id);
+    assert.ok(first.title);
+    assert.ok(first.category);
+    assert.ok(first.url);
+    assert.ok(first.status);
+    assert.ok(first.fileSizeBytes > 0);
+  });
+
+  it('documentService - getDocumentById retrieves full document details', () => {
+    const doc = documentService.getDocumentById('doj/tele_law_services');
+    assert.strictEqual(doc.id, 'doj/tele_law_services');
+    assert.ok(doc.title.includes('Tele-Law'));
+    assert.ok(doc.rawContent.length > 100);
+    assert.ok(Array.isArray(doc.chunks));
+  });
+
+  it('documentService - getDocumentById throws 404 for missing document', () => {
+    assert.throws(
+      () => documentService.getDocumentById('invalid_doc_id_999'),
+      (err) => err.statusCode === 404 && err.code === 'DOCUMENT_NOT_FOUND'
+    );
+  });
+
+  it('documentService - searchKnowledge performs semantic retrieval with score and snippets', async () => {
+    const results = await documentService.searchKnowledge('Tele-Law legal aid', 3);
+    assert.ok(results.length > 0);
+    const top = results[0];
+    assert.ok(top.chunkId);
+    assert.ok(top.title);
+    assert.ok(top.url);
+    assert.ok(top.relevanceScore > 0);
+    assert.ok(top.snippet.length > 20);
+  });
+
+  it('documentService - getKnowledgeStats returns accurate metrics', () => {
+    const stats = documentService.getKnowledgeStats();
+    assert.strictEqual(stats.totalDocuments, 10);
+    assert.ok(stats.totalChunks >= 60);
+    assert.ok(stats.categoriesCount > 0);
+    assert.strictEqual(stats.status, 'active');
+    assert.strictEqual(stats.dataFreshness.sourceStatus, 'verified_official');
   });
 });

@@ -11,7 +11,9 @@ export function getHealth(req, res) {
       chat: 'active',
       njdgService: 'active',
       judgeService: 'active',
-      eCourtsService: 'active'
+      eCourtsService: 'active',
+      documentService: 'active',
+      ragRetriever: 'active'
     }
   });
 }

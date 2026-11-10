@@ -6,13 +6,24 @@ export type Page = 'landing' | 'chat'
 
 function App() {
   const [page, setPage] = useState<Page>('landing')
+  const [initialQuery, setInitialQuery] = useState<string | undefined>()
+
+  const handleStartChat = (query?: string) => {
+    setInitialQuery(query)
+    setPage('chat')
+  }
+
+  const handleBackToLanding = () => {
+    setInitialQuery(undefined)
+    setPage('landing')
+  }
 
   return (
-    <div className="min-h-screen bg-[#f8fafd]">
+    <div className="min-h-screen bg-[#f8fafd] flex flex-col font-sans">
       {page === 'landing' ? (
-        <LandingPage onStartChat={() => setPage('chat')} />
+        <LandingPage onStartChat={handleStartChat} />
       ) : (
-        <ChatPage onBack={() => setPage('landing')} />
+        <ChatPage onBack={handleBackToLanding} initialQuery={initialQuery} />
       )}
     </div>
   )

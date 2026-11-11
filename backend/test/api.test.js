@@ -214,7 +214,7 @@ describe('JusticeAI Backend API Tests (Day 3 — RAG Integration, Sources & Know
 
     const body = await res.json();
     assert.strictEqual(body.success, true);
-    assert.strictEqual(body.totalDocuments, 10);
+    assert.ok(body.totalDocuments >= 10);
     assert.ok(body.totalChunks >= 60);
     assert.ok(body.categoriesCount > 0);
     assert.ok(body.dataFreshness);

@@ -24,7 +24,11 @@ const DEFAULT_SIMILARITY_THRESHOLD = 0.20;
  */
 async function retrieve(query, topK = 3, threshold = DEFAULT_SIMILARITY_THRESHOLD) {
   if (!query || typeof query !== 'string' || !query.trim()) {
-    return { documents: [], hasMatches: false, topScore: 0 };
+    const emptyResult = [];
+    emptyResult.documents = [];
+    emptyResult.hasMatches = false;
+    emptyResult.topScore = 0;
+    return emptyResult;
   }
 
   try {
@@ -32,14 +36,20 @@ async function retrieve(query, topK = 3, threshold = DEFAULT_SIMILARITY_THRESHOL
     const topScore = rawResults.length > 0 ? rawResults[0].score : 0;
     const hasMatches = rawResults.length > 0 && topScore >= threshold;
 
-    return {
-      documents: rawResults,
-      hasMatches,
-      topScore,
-    };
+    // Return as array with attached metadata properties for dual compatibility
+    const result = [...rawResults];
+    result.documents = rawResults;
+    result.hasMatches = hasMatches;
+    result.topScore = topScore;
+
+    return result;
   } catch (err) {
     console.error('[Retriever Error]:', err.message);
-    return { documents: [], hasMatches: false, topScore: 0 };
+    const emptyResult = [];
+    emptyResult.documents = [];
+    emptyResult.hasMatches = false;
+    emptyResult.topScore = 0;
+    return emptyResult;
   }
 }
 

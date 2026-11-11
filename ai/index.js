@@ -1,26 +1,33 @@
 /**
  * JusticeAI – AI / RAG Module Core Entry Point
  * Developer: Nitin (AI / RAG Developer)
- * Sprint: Day 2 — Core Chatbot Intelligence & Backend Coordination
+ * Sprint: Day 3 — RAG Implementation & Knowledge Base Integration
  * 
  * Provides unified interface consumed by Disha's backend server.
- * Implements the AI_BACKEND_CONTRACT standard.
+ * Implements the AI_BACKEND_CONTRACT standard:
+ * - PDF and Text document ingestion
+ * - Vector store management
+ * - Semantic retrieval with thresholding
+ * - Grounded contextual generation with official government citations
+ * - Graceful fallback when no relevant document is found
  */
 
 require('dotenv').config();
 const geminiService = require('./services/gemini_service');
-const { retrieve, extractSourceCitations } = require('./retrieval/retriever');
+const { retrieve, extractSourceCitations, DEFAULT_SIMILARITY_THRESHOLD } = require('./retrieval/retriever');
 const { analyzeQuery, INTENTS } = require('./retrieval/intent_classifier');
+const vectorStore = require('./retrieval/vector_store');
+const { loadAllDocuments, loadAllDocumentsAsync } = require('./ingestion/document_loader');
 
 /**
  * Process a citizen query through the RAG pipeline
  * @param {string} query Citizen's natural language question
  * @param {string} [language] Preferred language ('en' or 'hi' or auto-detect)
- * @param {Object} [options] Optional parameters (apiKey, sessionId, topK)
+ * @param {Object} [options] Optional parameters (apiKey, sessionId, topK, threshold)
  * @returns {Promise<{
  *   answer: string,
  *   language: string,
- *   sources: Array<{title: string, url: string}>,
+ *   sources: Array<{title: string, url: string, category: string, format: string, relevanceScore: number, snippet: string}>,
  *   intent: string,
  *   detectedLang: string,
  *   cnr: string | null,
@@ -29,6 +36,9 @@ const { analyzeQuery, INTENTS } = require('./retrieval/intent_classifier');
  *   metadata: {
  *     modelUsed: string,
  *     isLiveModel: boolean,
+ *     isFallback: boolean,
+ *     topScore: number,
+ *     retrievedCount: number,
  *     durationMs: number
  *   }
  * }>} Standardized response payload
@@ -49,23 +59,32 @@ async function askJusticeAI(query, language = null, options = {}) {
     ? language
     : (analysis.detectedLang === 'hi' || analysis.detectedLang === 'hi-Latn' ? 'hi' : 'en');
 
-  // 3. Semantic retrieval of official knowledge records (if DoJ-relevant)
+  // 3. Semantic retrieval of official knowledge records
   let contextDocs = [];
-  if (analysis.isDoJRelevant && analysis.intent !== INTENTS.GREETING && analysis.intent !== INTENTS.LEGAL_ADVICE_PROHIBITED) {
+  let hasMatches = false;
+  let topScore = 0;
+
+  if (analysis.isDoJRelevant && analysis.intent !== INTENTS.GREETING && analysis.intent !== INTENTS.LEGAL_ADVICE_PROHIBITED && analysis.intent !== INTENTS.OUT_OF_SCOPE) {
     const topK = options.topK || 3;
-    contextDocs = await retrieve(query, topK);
+    const threshold = options.threshold || DEFAULT_SIMILARITY_THRESHOLD;
+    const retrievalResult = await retrieve(query, topK, threshold);
+    contextDocs = retrievalResult.documents;
+    hasMatches = retrievalResult.hasMatches;
+    topScore = retrievalResult.topScore;
   }
 
   // 4. Generate grounded response via Gemini service
-  const aiResult = await geminiService.generateAnswer(query, contextDocs, resolvedLang, analysis);
+  const aiResult = await geminiService.generateAnswer(query, contextDocs, resolvedLang, analysis, hasMatches);
 
-  // 5. Extract verified source citations
+  // 5. Extract verified source citations (with titles and official URLs)
   const sources = extractSourceCitations(contextDocs);
 
   // Determine data status
   let dataStatus = 'official_reference';
   if (analysis.intent === INTENTS.LEGAL_ADVICE_PROHIBITED || analysis.intent === INTENTS.OUT_OF_SCOPE) {
     dataStatus = 'guardrail_advisory';
+  } else if (!hasMatches && contextDocs.length === 0) {
+    dataStatus = 'fallback_guidance';
   } else if (analysis.intent === INTENTS.CASE_STATUS && analysis.cnr) {
     dataStatus = 'procedural_guidance';
   }
@@ -83,6 +102,9 @@ async function askJusticeAI(query, language = null, options = {}) {
     metadata: {
       modelUsed: aiResult.modelUsed,
       isLiveModel: aiResult.isLiveModel,
+      isFallback: aiResult.isFallback || false,
+      topScore,
+      retrievedCount: contextDocs.length,
       durationMs: aiResult.durationMs,
     },
   };
@@ -91,6 +113,10 @@ async function askJusticeAI(query, language = null, options = {}) {
 module.exports = {
   askJusticeAI,
   geminiService,
+  vectorStore,
+  retrieve,
   analyzeQuery,
+  loadAllDocuments,
+  loadAllDocumentsAsync,
   INTENTS,
 };

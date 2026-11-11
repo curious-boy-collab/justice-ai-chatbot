@@ -1,13 +1,13 @@
 /**
  * JusticeAI – Enhanced Gemini API Service
  * Developer: Nitin (AI / RAG Developer)
- * Sprint: Day 2 — Core Chatbot Intelligence & Backend Integration
+ * Sprint: Day 3 — RAG Implementation & Context Grounding
  * 
  * Provides:
  * - Dynamic server-side API key configuration via backend.
  * - Multi-model support with resilient error handling and timeouts.
- * - Intent-aware query synthesis (greetings, out-of-scope, legal advice guardrails).
  * - Grounded contextual generation with official government citations.
+ * - Graceful fallback responses when no relevant document is retrieved.
  */
 
 require('dotenv').config();
@@ -56,14 +56,16 @@ class GeminiService {
    * @param {Array<Object>} contextDocs Retrieved knowledge documents
    * @param {string} language 'en' or 'hi'
    * @param {Object} intentAnalysis Pre-analyzed intent and entities
+   * @param {boolean} hasMatches Whether semantic search found matching documents
    * @returns {Promise<{
    *   answer: string,
    *   modelUsed: string,
    *   isLiveModel: boolean,
+   *   isFallback: boolean,
    *   durationMs: number
    * }>}
    */
-  async generateAnswer(query, contextDocs = [], language = 'en', intentAnalysis = null) {
+  async generateAnswer(query, contextDocs = [], language = 'en', intentAnalysis = null, hasMatches = true) {
     const startTime = Date.now();
     const isHindi = language === 'hi';
 
@@ -75,6 +77,7 @@ class GeminiService {
           : 'As an AI Virtual Assistant for the Department of Justice, I provide procedural and judicial information only. I cannot offer professional legal counsel, legal strategies, or predict court outcomes. For legal advice, please consult a qualified advocate or seek free legal aid through Tele-Law at https://www.tele-law.in.',
         modelUsed: 'guardrail-policy-engine',
         isLiveModel: false,
+        isFallback: true,
         durationMs: Date.now() - startTime,
       };
     }
@@ -87,6 +90,7 @@ class GeminiService {
           : 'Hello! I am JusticeAI, dedicated to assisting citizens with Department of Justice services (eCourts, Tele-Law, NJDG, case status, judge vacancies, eFiling, and traffic fines). I cannot assist with topics outside the Department of Justice mandate. Please ask a question related to Indian judicial services or visit https://doj.gov.in.',
         modelUsed: 'guardrail-scope-filter',
         isLiveModel: false,
+        isFallback: true,
         durationMs: Date.now() - startTime,
       };
     }
@@ -99,11 +103,25 @@ class GeminiService {
           : 'Namaste! 🙏 I am JusticeAI, the official Virtual Assistant for the Department of Justice, Ministry of Law & Justice, Government of India. I can assist you with case status lookup, judge appointments & vacancies, court pendency statistics (NJDG), eFiling, ePay, Tele-Law, and Virtual Courts traffic fine procedures. How can I assist you today?',
         modelUsed: 'greeting-handler',
         isLiveModel: false,
+        isFallback: false,
         durationMs: Date.now() - startTime,
       };
     }
 
-    // 4. Generate with live Gemini model if configured
+    // 4. Fallback when no relevant document is found
+    if (!hasMatches && contextDocs.length === 0) {
+      return {
+        answer: isHindi
+          ? 'न्याय विभाग के ज्ञानकोष में आपके प्रश्न से सीधा संबंधित कोई सत्यापित रिकॉर्ड नहीं मिला। न्यायिक सेवाओं, केस स्थिति, अथवा सरकारी योजनाओं की आधिकारिक जानकारी के लिए कृपया न्याय विभाग के आधिकारिक पोर्टल https://doj.gov.in पर जाएँ अथवा टेली-लॉ नागरिक हेल्पलाइन 14416 (टोल-फ्री) पर संपर्क करें।'
+          : 'I could not find verified records directly matching your query in the Department of Justice knowledge base. For verified guidance on court services, case status, or legal schemes, please explore the official portal at https://doj.gov.in or contact the Tele-Law Citizen Helpline at 14416 (Toll-Free).',
+        modelUsed: 'no-relevant-document-fallback',
+        isLiveModel: false,
+        isFallback: true,
+        durationMs: Date.now() - startTime,
+      };
+    }
+
+    // 5. Generate with live Gemini model if configured
     if (this.isConfigured()) {
       try {
         const systemPrompt = getSystemPrompt(language);
@@ -125,6 +143,7 @@ class GeminiService {
           answer: text.trim(),
           modelUsed: this.modelName,
           isLiveModel: true,
+          isFallback: false,
           durationMs: Date.now() - startTime,
         };
       } catch (error) {
@@ -132,7 +151,7 @@ class GeminiService {
       }
     }
 
-    // 5. High-fidelity grounded context fallback (deterministic offline execution)
+    // 6. High-fidelity grounded context fallback (deterministic offline execution)
     return this._generateContextualFallback(query, contextDocs, language, startTime);
   }
 
@@ -147,7 +166,7 @@ class GeminiService {
       const topDoc = contextDocs[0];
       const paragraphs = topDoc.content
         .split('\n\n')
-        .filter(p => !p.startsWith('#') && !p.startsWith('>'))
+        .filter(p => !p.startsWith('#') && !p.startsWith('>') && !p.startsWith('Category:') && !p.startsWith('Source URL:'))
         .slice(0, 3)
         .join('\n\n');
 
@@ -163,6 +182,7 @@ class GeminiService {
         answer: `${prefix}${paragraphs}${footer}`,
         modelUsed: 'grounded-context-retrieval',
         isLiveModel: false,
+        isFallback: false,
         durationMs: Date.now() - startTime,
       };
     }
@@ -173,6 +193,7 @@ class GeminiService {
         : 'Hello! I am JusticeAI. Verified records for this specific inquiry are not available. Please visit the official Department of Justice portal at https://doj.gov.in or eCourts at https://ecourts.gov.in.',
       modelUsed: 'system-default-fallback',
       isLiveModel: false,
+      isFallback: true,
       durationMs: Date.now() - startTime,
     };
   }

@@ -2,8 +2,8 @@
   "version": "2.0",
   "project": "JusticeAI – Department of Justice Virtual Assistant",
   "developer": "Nitin (AI / RAG Developer)",
-  "sprint": "Day 2 — Core Chatbot Intelligence",
-  "totalQuestions": 28,
+  "sprint": "Day 3 — RAG Implementation & Multi-Format Ingestion",
+  "totalQuestions": 32,
   "categoriesCovered": [
     "1. DoJ Divisions and Functions",
     "2. Judges and Vacancies",
@@ -15,6 +15,9 @@
     "8. eCourts Services Mobile Application",
     "9. Tele-Law Services",
     "10. Current Case Status Lookup",
+    "11. Nyaya Bandhu (Pro Bono)",
+    "12. Inter-operable Criminal Justice System (ICJS)",
+    "13. Citizen Charter",
     "Hinglish Query Handling",
     "Guardrails & Prohibited Legal Advice",
     "Out-of-Scope Fallbacks",
@@ -243,6 +246,38 @@
       "language": "hi",
       "query": "नमस्ते",
       "expectedIntent": "GREETING",
+      "officialSource": "https://doj.gov.in"
+    },
+    {
+      "id": "Q29",
+      "category": "11. Nyaya Bandhu (Pro Bono)",
+      "language": "en",
+      "query": "How can marginalized citizens apply for free legal representation under the Nyaya Bandhu initiative?",
+      "expectedIntent": "TELE_LAW",
+      "officialSource": "https://doj.gov.in/nyaya-bandhu/"
+    },
+    {
+      "id": "Q30",
+      "category": "12. Inter-operable Criminal Justice System (ICJS)",
+      "language": "en",
+      "query": "What are the five pillars connected under the Inter-operable Criminal Justice System?",
+      "expectedIntent": "DOJ_ADMIN",
+      "officialSource": "https://doj.gov.in/inter-operable-criminal-justice-system/"
+    },
+    {
+      "id": "Q31",
+      "category": "13. Citizen Charter",
+      "language": "en",
+      "query": "Where can citizens read the Department of Justice Citizen Charter?",
+      "expectedIntent": "DOJ_ADMIN",
+      "officialSource": "https://doj.gov.in/citizen-charter"
+    },
+    {
+      "id": "Q32",
+      "category": "Fallback for Unknown Sub-Query",
+      "language": "en",
+      "query": "Can you explain the detailed rules of the 1923 Maritime Salt Works arbitration tribunal?",
+      "expectedIntent": "DOJ_ADMIN",
       "officialSource": "https://doj.gov.in"
     }
   ]

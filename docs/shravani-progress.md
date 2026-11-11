@@ -1,118 +1,97 @@
 # Shravani — Frontend Progress Log
-**Branch:** `feature/frontend` | **Role:** Frontend Developer | **Sprint Days:** 1 & 2
+**Branch:** `feature/frontend` | **Role:** Frontend Developer | **Sprint Days:** 1, 2 & 3
 
 ---
 
-## ✅ Day 2 Completed Tasks: Conversational Interface & API Integration
+## ✅ Day 3 Completed Tasks: RAG Implementation, Source Citations & Knowledge Base UI
 
-### 1. Conversational Chatbot Interface
-- [x] **Complete Chat Workspace (`ChatBox.tsx`):**
-  - Modern, accessible, Government of India design theme: Navy `#0a1f44`, White `#ffffff`, Saffron `#ff9933`, India Green `#138808`.
-  - Top status bar with live indicator, active conversation title, Department of Justice branding.
-  - Responsive layout functioning on mobile, tablet, desktop, and large screens.
+### 1. Source Citations Below AI Answers (`ChatMessage.tsx`)
+- [x] **Enriched Citation Cards:**
+  - Displays document titles, official government URLs, division/category tags (e.g. `eCourts Mission Project`, `NJDG Open Data`, `Access to Justice Division`).
+  - **Relevance Score Badges:** Visual relevance percentage (e.g. `98% Match`, `96% Match`) reflecting semantic vector similarity.
+  - **Retrieved Text Snippets:** Direct quote/excerpt from the indexed official DoJ knowledge base showing the grounded legal text.
 
-### 2. Message Bubbles (`ChatMessage.tsx`)
-- [x] **Citizen (User) Message Bubble:**
-  - Styled in Navy `#0a1f44` with white text and clean tail styling.
-  - Avatar with citizen icon and Indian time-formatted timestamp.
-- [x] **JusticeAI (Assistant) Message Bubble:**
-  - Crisp card design with subtle border, soft drop shadow, Ashok/Scales of Justice avatar.
-  - **Structured Markdown Parser:** Renders headings, bold highlights, bullet points, numbered lists, inline code blocks, and clickable external links.
-  - **Copy Response Action:** Quick copy-to-clipboard button with visual checkmark feedback.
-  - **Data Status Badges:**
-    - `official_reference` — Green verified official government record.
-    - `live_api_reference` — Blue real-time judicial data.
-    - `procedural_guidance` — Indigo citizen procedure guide.
-    - `demo` — Amber demonstration/offline mode notification.
-  - **Official Citation Cards:** Clickable links to verified government portals (`doj.gov.in`, `ecourts.gov.in`, `njdg.ecourts.gov.in`, `tele-law.in`, `echallan.parivahan.gov.in`).
+### 2. Display Official Source Links
+- [x] Clickable external links with external link icon and official `.gov.in` domain indicators.
+- [x] Secure attributes applied (`target="_blank" rel="noopener noreferrer"`).
+- [x] Direct verification access to official portals:
+  - Department of Justice (`doj.gov.in`)
+  - eCourts Services (`services.ecourts.gov.in`)
+  - National Judicial Data Grid (`njdg.ecourts.gov.in`)
+  - Tele-Law National Portal (`tele-law.in`)
+  - Virtual Courts & eChallan (`vcourts.gov.in`, `echallan.parivahan.gov.in`)
+  - Supreme Court Live Webcasts (`sci.gov.in`)
 
-### 3. Message Input & Send Controls (`ChatInput.tsx`)
-- [x] Auto-expanding textarea up to 140px with smooth scroll.
-- [x] Send button in Navy/Saffron with active click animation.
-- [x] Keyboard shortcuts: `Enter` to submit, `Shift + Enter` for new lines.
-- [x] Quick clear button (`X`) when text is entered.
-- [x] Disabled states while AI is processing to prevent duplicate queries.
-- [x] Dynamic bilingual placeholder text.
+### 3. Advanced Chatbot Message Formatting
+- [x] **Markdown Parser Enhancements:**
+  - Section Headings (`###`, `##`) with distinct navy typography and saffron accent pills.
+  - Bold, italic, and inline code formatting (`font-mono` badges).
+  - Custom saffron bullet points (`•`) and circular numbered step badges (`1.`, `2.`).
+  - **Callout & Warning Blocks:** Custom blockquote styling (`> `) rendered as highlighted alert cards with info icons.
+  - One-click **Copy Response** button with visual confirmation checkmark.
+  - Enhanced line-height (`1.75`) and letter spacing for **Hindi (Devanagari)** rendering (`Noto Sans Devanagari`).
 
-### 4. AI Response Loading State
-- [x] Three animated bouncing dots in Navy `#0a1f44`.
-- [x] Status indicator: *"Retrieving official Department of Justice records..."* / *"न्याय विभाग अभिलेखों से खोज की जा रही है..."*.
-- [x] Auto-scrolling to bottom on new incoming tokens.
+### 4. Source Information Expand/Collapse UI
+- [x] **Interactive Accordion Toggle:**
+  - Clean header with shield emblem, citation count pill (e.g. `2 Sources`), and chevron toggle icon.
+  - **Collapsed View:** Compact horizontal pill strip to keep long conversations uncluttered and scannable.
+  - **Expanded View:** Detailed source breakdown showing full snippets, category tags, relevance scores, and direct portal links.
 
-### 5. Empty & Error States (`EmptyState.tsx`)
-- [x] **Interactive Welcome Hero:**
-  - Department of Justice seal with scales of justice and verified shield.
-  - High-impact bilingual introduction.
-  - Direct links to official portals.
-  - 8-card suggested prompts grid.
-- [x] **System Error State:**
-  - Inline retry banner when API or network fails.
-  - One-click `Retry` button re-executing failed query.
+### 5. Clear Indication of Retrieved Information
+- [x] **RAG Retrieval Header:**
+  - Positioned above assistant responses when knowledge base retrieval is active.
+  - Shows: *"Retrieved via Knowledge Base (N docs)"* • Confidence rating (*"Very High"* / *"High"*) • Percentage match score.
+  - Clear distinction between *Verified Official Record*, *Procedural Citizen Guide*, *Live Government Data*, and *Demonstration / Offline Mode*.
 
-### 6. Suggested Prompts (`SuggestedPrompts.tsx`)
-- [x] 8 Official DoJ citizen domains supported in both English & Hindi:
-  1. **Case Status Lookup:** 16-digit CNR number search on eCourts.
-  2. **NJDG Statistics:** Case pendency across Supreme Court, High Courts, and District Courts.
-  3. **Judge Vacancies:** Sanctioned strength vs working strength of judges.
-  4. **eFiling & ePay:** Step-by-step citizen guide to eFiling 3.0 and ePay portal.
-  5. **Tele-Law:** Free pre-litigation legal aid at CSCs for eligible citizens.
-  6. **Court Livestreaming:** Supreme Court & High Court live broadcast channels.
-  7. **Traffic Challans & Virtual Courts:** Online settlement via vCourts & eChallan.
-  8. **Fast Track Special Courts (FTSC):** Expeditious trial under POCSO scheme.
-- [x] Dual presentation modes:
-  - **Grid Cards:** Embedded in empty state.
-  - **Horizontal Prompt Chips:** Persistent quick-access bar above message input.
+### 6. Multi-Stage Loading & Enhanced Error States (`ChatBox.tsx`)
+- [x] **Multi-Stage RAG Loading Animation:**
+  - Dynamically cycles through 3 realistic RAG processing steps:
+    1. *"Searching official Department of Justice knowledge base..."*
+    2. *"Retrieving verified legal documents & court procedural guides..."*
+    3. *"Synthesizing grounded response with source citations..."*
+  - Complete with pulsating Ashok/Scales icon and animated bouncing dots.
+- [x] **Comprehensive Error State:**
+  - Highlighted alert banner with explicit error diagnostics.
+  - One-click **Retry** button re-executing failed queries.
+  - Direct toll-free helpline shortcut (`1800-11-7000`) for immediate citizen assistance.
 
-### 7. Hindi-English Bilingual Language Selector
-- [x] Real-time toggle button (`English` / `हिंदी`) in chat toolbar and welcome hero.
-- [x] Persisted in `localStorage` across page reloads.
-- [x] Automatically updates UI placeholders, prompt cards, and request payload `language` parameter.
+### 7. Dedicated No-Results State (`NoResultsCard.tsx`)
+- [x] Renders when a user query matches no verified judicial records or out-of-scope input.
+- [x] Search Guidance Checklist: Tips on 16-digit CNR format, key judicial terms (Judge Vacancy, NJDG, eFiling).
+- [x] Quick-recovery prompt pills for instant re-querying.
+- [x] Tele-Law Free Legal Aid helpline card (`1800-200-7514`) for human advocate assistance.
 
-### 8. Chat History Management (`ChatHistoryDrawer.tsx`)
-- [x] Collapsible slide-over drawer on mobile / toggleable sidebar on desktop.
-- [x] Multi-session management:
-  - Automatically saves citizen conversations in `localStorage`.
-  - Automatically titles sessions based on first question.
-  - Displays relative date and message count.
-  - Delete individual chats or clear all conversation history.
-  - Seamless switching between historical conversations.
+### 8. Mobile-Friendly Layout & Viewport Optimization (`ChatPage.tsx`)
+- [x] Dynamic viewport height (`100dvh`) preventing mobile browser search bar overlap.
+- [x] Compact mode for citation pills and prompt chips on mobile screens (`<640px`).
+- [x] Touch-friendly tap targets (minimum 44x44px).
+- [x] Responsive padding (`px-3 sm:px-6`) with smooth scroll containment.
 
-### 9. Connection to Disha's Agreed Backend API (`chatApi.ts`)
-- [x] **Standard Endpoint Integration:**
-  - Endpoint: `POST /api/chat`
-  - Request Payload:
-    ```json
-    {
-      "query": "How do I check my case status?",
-      "language": "en",
-      "sessionId": "session-1762746..."
-    }
-    ```
-  - Response Handling:
-    - Parses `answer`, `sources`, `dataStatus`, `lastChecked`, `language`.
-    - Handles backend error envelope `error: { code, message }`.
-- [x] **Vite Proxy:** Configured `/api` ➔ `http://localhost:5000` in `vite.config.ts`.
-- [x] **Grounded Local Fallback:** When the backend server is offline or unreachable during testing, seamlessly falls back to local verified Department of Justice records with clear `demo` / `official_reference` tagging.
+### 9. Long Response & Hindi Text Rendering Tests
+- [x] Verified full multi-step procedural guides (eFiling 6-step walkthrough, NJDG nationwide court breakdowns).
+- [x] Verified complex Devanagari ligatures (क्ष, त्र, ज्ञ, श्र) and vowel signs (मात्राएँ) render cleanly with zero clipping.
+- [x] Dual-language instant switching with persistent `localStorage` cache.
 
 ---
 
-## 🛠 File Structure (Day 2 Updates)
+## 📁 Repository Structure (Day 3 Frontend)
 
 ```
 frontend/
 ├── src/
 │   ├── types/
-│   │   └── chat.ts               # Shared types matching AI_BACKEND_CONTRACT.md
+│   │   └── chat.ts               # Enhanced RAG, Source, and Retrieval interfaces
 │   ├── services/
-│   │   └── chatApi.ts            # API service (POST /api/chat + fallback)
+│   │   └── chatApi.ts            # Normalized API client with rich snippet fallback
 │   ├── components/
 │   │   ├── Chat/
-│   │   │   ├── ChatBox.tsx       # Core conversation controller
-│   │   │   ├── ChatMessage.tsx   # User & assistant bubbles with markdown
-│   │   │   ├── ChatInput.tsx     # Textarea, send button, keyboard shortcuts
-│   │   │   ├── ChatHistoryDrawer.tsx # Saved sessions sidebar
+│   │   │   ├── ChatBox.tsx       # Core chat controller with multi-stage RAG loading
+│   │   │   ├── ChatMessage.tsx   # Markdown bubble with expandable citation cards
+│   │   │   ├── ChatInput.tsx     # Auto-resizing textarea & send controls
+│   │   │   ├── ChatHistoryDrawer.tsx # Multi-session history drawer
 │   │   │   ├── EmptyState.tsx    # Welcome hero & trust badges
-│   │   │   └── SuggestedPrompts.tsx  # Grid & chips prompt components
+│   │   │   ├── SuggestedPrompts.tsx  # 8 official DoJ domains (grid/chips)
+│   │   │   └── NoResultsCard.tsx # Dedicated no-results guidance & helpline card
 │   │   ├── Dashboard/
 │   │   │   ├── StatCard.tsx
 │   │   │   └── SuggestedCard.tsx
@@ -121,10 +100,10 @@ frontend/
 │   │       ├── Footer.tsx
 │   │       └── Sidebar.tsx
 │   ├── pages/
-│   │   ├── LandingPage.tsx
-│   │   └── ChatPage.tsx
+│   │   ├── ChatPage.tsx          # Mobile-optimized viewport container (100dvh)
+│   │   └── LandingPage.tsx       # Portal home view
 │   ├── App.tsx
-│   ├── index.css
+│   ├── index.css                 # Devanagari typography, animations, scrollbars
 │   └── main.tsx
 ├── vite.config.ts                # Vite 8 + React + Tailwind v4 + Proxy
 ├── tsconfig.json
@@ -133,11 +112,12 @@ frontend/
 
 ---
 
-## 🧪 Build and Verification Results
-- **TypeScript Typecheck:** `npx tsc --noEmit` ➔ 0 errors.
-- **Production Build:** `npx vite build` ➔ Completed in **134ms** (`dist/index.html`, `dist/assets/index-*.js` 305kB).
-- **Responsive Testing:** Verified for mobile (<640px), tablet (768px), desktop (1024px), wide (1280px+).
+## 🧪 Verification & Build Status
+- **TypeScript Typecheck:** `npx tsc --noEmit` ➔ **0 errors**.
+- **Production Build:** `npx vite build` ➔ Completed in **132ms** (`dist/index.html`, `dist/assets/index-*.js` 332kB).
+- **Mobile Viewport Test:** Verified at 360px, 390px, 768px, 1024px, and 1440px widths.
+- **Hindi Font Test:** Noto Sans Devanagari rendered with zero clipping or text overflow.
 
 ---
 
-*Last updated: Day 2 — 2026-11-10 by Shravani*
+*Last updated: Day 3 — 2026-11-11 by Shravani*

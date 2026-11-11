@@ -9,6 +9,26 @@ export type DataStatus =
 export interface Source {
   title: string
   url: string
+  label?: string
+  category?: string
+  snippet?: string
+  relevanceScore?: number
+}
+
+export interface RetrievalInfo {
+  documentCount?: number
+  chunksRetrieved?: number
+  strategy?: string
+  confidence?: string
+  confidenceScore?: number
+}
+
+export interface DataFreshness {
+  lastUpdated?: string
+  sourceStatus?: string
+  asOfDate?: string
+  cacheStatus?: string
+  disclaimer?: string
 }
 
 export interface Message {
@@ -19,7 +39,11 @@ export interface Message {
   sources?: Source[]
   dataStatus?: DataStatus
   lastChecked?: string
+  retrieval?: RetrievalInfo
+  dataFreshness?: DataFreshness
+  suggestedQuestions?: string[]
   isError?: boolean
+  isNoResults?: boolean
 }
 
 export interface ChatSession {
@@ -38,11 +62,18 @@ export interface ChatRequest {
 }
 
 export interface AIResponsePayload {
-  answer: string
-  language: Language
-  sources: Source[]
-  dataStatus: DataStatus
-  lastChecked: string
+  answer?: string
+  reply?: string
+  language?: Language
+  sources?: Source[]
+  citations?: Source[]
+  dataStatus?: DataStatus
+  lastChecked?: string
+  retrieval?: RetrievalInfo
+  dataFreshness?: DataFreshness
+  suggestedQuestions?: string[]
+  isLive?: boolean
+  success?: boolean
 }
 
 export interface APIErrorResponse {

@@ -1,0 +1,25 @@
+# Inter-operable Criminal Justice System (ICJS)
+
+Category: ICT in Judiciary & Criminal Justice
+Source URL: https://doj.gov.in/inter-operable-criminal-justice-system/
+Retrieval Date: 2026-11-11
+Verification Status: Verified Official Government Data
+
+INTRODUCTION:
+The Inter-operable Criminal Justice System (ICJS) is a national initiative spearheaded by the Ministry of Home Affairs and the Department of Justice, Ministry of Law and Justice, to integrate the key pillars of the criminal justice system in India.
+
+THE FIVE PILLARS OF ICJS:
+1. Police (Crime and Criminal Tracking Network & Systems - CCTNS)
+2. Courts (Case Information System - CIS under eCourts Mission Mode Project)
+3. Prisons (e-Prisons application tracking inmate history, custody, and warrants)
+4. Forensics (e-Forensics linking forensic laboratory analysis and reports)
+5. Prosecution (e-Prosecution facilitating electronic chargesheets and status)
+
+CORE BENEFITS:
+- Real-time transmission of electronic FIRs and chargesheets directly from police stations to court dockets.
+- Instant execution of court summons and warrants through police digital networks.
+- Production of undertrial prisoners via high-definition video conferencing (VC), reducing security risks and transit expenses.
+- Accelerated justice delivery through seamless data exchange, eliminating missing case files and manual docket delays.
+
+PHASE II IMPLEMENTATION:
+Under Phase II of the ICJS project, the system has adopted One Data Once Entry principles with cloud infrastructure and dedicated APIs across all States and Union Territories.

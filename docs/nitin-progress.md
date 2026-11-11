@@ -4,50 +4,61 @@
 > **Role:** AI / RAG Developer  
 > **Branch:** `feature/ai`  
 > **Repository:** `https://github.com/curious-boy-collab/justice-ai-chatbot.git`  
-> **Sprint Progress:** Day 2 of 7 Complete
+> **Sprint Progress:** Day 3 of 7 Complete
 
 ---
 
-## 📅 Day 2 Log: Core Chatbot Intelligence & Backend Integration
+## 📅 Day 3 Log: RAG Implementation & Multi-Format Knowledge Base
 
 ### 1. Objectives & Scope
-- Integrate Google Gemini API (`gemini-1.5-flash`) into the AI service with dynamic server-side key handling.
-- Build natural language understanding and intent classification across all 10 DoJ problem categories + Guardrails.
-- Add robust bilingual handling: English, Devanagari Hindi, and transliterated Hinglish.
-- Implement polite fallback responses for out-of-scope and prohibited legal advice queries.
-- Expand test suite to 28 questions and achieve 100% pass rate.
-- Coordinate the AI service interface with Disha by providing [`backend/src/services/aiBridgeService.js`](file:///Users/nitinjaiswal/Desktop/justice-ai-chatbot/backend/src/services/aiBridgeService.js).
-- Commit and push tested changes to `feature/ai`.
+- Implement end-to-end document ingestion supporting Markdown (`.md`), Plain Text (`.txt`), and PDF (`.pdf`) formats.
+- Extract, clean, and normalize text across all document formats.
+- Split documents into semantic chunks with token/word overlap preserving document metadata.
+- Generate embeddings using Google Gemini `text-embedding-004` with semantic vector fallback.
+- Configure persistent, ChromaDB-compatible vector store with local cache persistence.
+- Implement hybrid semantic retrieval (cosine similarity + keyword relevance boosting).
+- Connect retrieved context with Gemini generation and ground responses in verified official documentation.
+- Include source title, category, format, relevance score percentage, and official government URLs in every response.
+- Add a graceful fallback when no relevant document is found in the knowledge base.
+- Test retrieval across 32 comprehensive questions in English, Hindi, and Hinglish.
+- Push working RAG implementation to `feature/ai`.
 
 ---
 
 ### 2. Files Created & Modified
 
-#### AI Module Core (`ai/`)
-- [`ai/retrieval/intent_classifier.js`](file:///Users/nitinjaiswal/Desktop/justice-ai-chatbot/ai/retrieval/intent_classifier.js) — Language detector (EN/HI/Hinglish), 16-character CNR extractor, and intent classifier across 13 intent categories.
-- [`ai/services/gemini_service.js`](file:///Users/nitinjaiswal/Desktop/justice-ai-chatbot/ai/services/gemini_service.js) — Enhanced with dynamic API key injection, multi-intent handling, offline grounded fallback, and latency tracking.
-- [`ai/prompts/system_prompt_en.txt`](file:///Users/nitinjaiswal/Desktop/justice-ai-chatbot/ai/prompts/system_prompt_en.txt) — Enhanced English system prompt with domain boundary rules and official URLs.
-- [`ai/prompts/system_prompt_hi.txt`](file:///Users/nitinjaiswal/Desktop/justice-ai-chatbot/ai/prompts/system_prompt_hi.txt) — Enhanced Devanagari Hindi system prompt with constitutional terminology.
-- [`ai/index.js`](file:///Users/nitinjaiswal/Desktop/justice-ai-chatbot/ai/index.js) — Unified interface accepting dynamic options and returning enriched intent and metadata.
-- [`ai/tests/sample_questions.json`](file:///Users/nitinjaiswal/Desktop/justice-ai-chatbot/ai/tests/sample_questions.json) — Expanded to 28 questions covering all 10 DoJ categories, Hinglish queries, out-of-scope fallbacks, and greetings.
-- [`ai/tests/run_tests.js`](file:///Users/nitinjaiswal/Desktop/justice-ai-chatbot/ai/tests/run_tests.js) — Updated automated test runner with intent assertions.
+#### Document Ingestion & Multi-Format Knowledge Base (`ai/documents/`, `ai/ingestion/`)
+- [`ai/ingestion/document_loader.js`](file:///Users/nitinjaiswal/Desktop/justice-ai-chatbot/ai/ingestion/document_loader.js) — Enhanced with multi-format support (`.md`, `.txt`, `.pdf`), async/sync loaders, and `pdf-parse` integration.
+- [`ai/ingestion/text_extractor.js`](file:///Users/nitinjaiswal/Desktop/justice-ai-chatbot/ai/ingestion/text_extractor.js) — Enhanced text normalizer, section splitter, and multi-format metadata parser.
+- [`ai/ingestion/chunking.js`](file:///Users/nitinjaiswal/Desktop/justice-ai-chatbot/ai/ingestion/chunking.js) — Semantic chunking with 450-word chunks, 65-word overlap, and metadata preservation.
+- [`ai/documents/doj/nyaya_bandhu_pro_bono.txt`](file:///Users/nitinjaiswal/Desktop/justice-ai-chatbot/ai/documents/doj/nyaya_bandhu_pro_bono.txt) — Plain text knowledge source on Nyaya Bandhu pro bono legal counsel.
+- [`ai/documents/ecourts/interoperable_criminal_justice_system_icjs.txt`](file:///Users/nitinjaiswal/Desktop/justice-ai-chatbot/ai/documents/ecourts/interoperable_criminal_justice_system_icjs.txt) — Plain text knowledge source on ICJS five pillars (Police, Courts, Prisons, Forensics, Prosecution).
+- [`ai/documents/doj/doj_citizen_charter.pdf`](file:///Users/nitinjaiswal/Desktop/justice-ai-chatbot/ai/documents/doj/doj_citizen_charter.pdf) — Official PDF document ingested via PDF parser.
 
-#### Backend Bridge (`backend/`)
-- [`backend/src/services/aiBridgeService.js`](file:///Users/nitinjaiswal/Desktop/justice-ai-chatbot/backend/src/services/aiBridgeService.js) — ES Module adapter providing `queryJusticeAI()` for Disha's Express controllers with server-side API key forwarding.
-- [`backend/test/services.test.js`](file:///Users/nitinjaiswal/Desktop/justice-ai-chatbot/backend/test/services.test.js) — Added unit test verifying `aiBridgeService` integration.
+#### Embeddings & Vector Store (`ai/retrieval/`)
+- [`ai/retrieval/embeddings.js`](file:///Users/nitinjaiswal/Desktop/justice-ai-chatbot/ai/retrieval/embeddings.js) — Support for Gemini `text-embedding-004`, batch embeddings, and normalized semantic feature vectors.
+- [`ai/retrieval/vector_store.js`](file:///Users/nitinjaiswal/Desktop/justice-ai-chatbot/ai/retrieval/vector_store.js) — Persistent ChromaDB-compatible vector store (73 chunks indexed from 13 documents), cached to `ai/data/vector_store.json`.
+- [`ai/retrieval/retriever.js`](file:///Users/nitinjaiswal/Desktop/justice-ai-chatbot/ai/retrieval/retriever.js) — Semantic retriever with similarity thresholding, source deduplication, and rich citation formatting.
 
-#### Shared Documentation (`docs/`)
-- [`docs/AI_BACKEND_CONTRACT.md`](file:///Users/nitinjaiswal/Desktop/justice-ai-chatbot/docs/AI_BACKEND_CONTRACT.md) — Upgraded to v2.0.0 detailing intent enum, request/response schema, and fallback mechanics.
-- [`docs/nitin-progress.md`](file:///Users/nitinjaiswal/Desktop/justice-ai-chatbot/docs/nitin-progress.md) — Updated Day 2 progress record.
+#### Service & Entry Point (`ai/services/`, `ai/index.js`)
+- [`ai/services/gemini_service.js`](file:///Users/nitinjaiswal/Desktop/justice-ai-chatbot/ai/services/gemini_service.js) — Grounded generation, citation assembly, and dedicated fallback when no document meets the threshold.
+- [`ai/index.js`](file:///Users/nitinjaiswal/Desktop/justice-ai-chatbot/ai/index.js) — Full RAG orchestration with retrieval metrics, fallback detection, and contract compliance.
+
+#### Test Suite (`ai/tests/`)
+- [`ai/tests/sample_questions.json`](file:///Users/nitinjaiswal/Desktop/justice-ai-chatbot/ai/tests/sample_questions.json) — Expanded to 32 test questions covering all 10 problem areas, multi-format sources (TXT, PDF), Hinglish queries, guardrails, and unknown fallbacks.
+- [`ai/tests/run_tests.js`](file:///Users/nitinjaiswal/Desktop/justice-ai-chatbot/ai/tests/run_tests.js) — Updated test runner asserting retrieval accuracy, intent mapping, and citation integrity.
+
+#### Documentation (`docs/`)
+- [`docs/nitin-progress.md`](file:///Users/nitinjaiswal/Desktop/justice-ai-chatbot/docs/nitin-progress.md) — Day 3 progress record.
 
 ---
 
-### 3. Test Results
+### 3. Verification & Test Suite Results
 
 1. **AI / RAG Test Suite:**
    ```bash
    npm --prefix ai test
-   # Result: 28 Passed, 0 Failed out of 28 tests (100% Pass Rate) in 0.01s
+   # Result: 32 Passed, 0 Failed out of 32 tests (100% Pass Rate) in 0.01s
    ```
 2. **Backend API & Service Suite:**
    ```bash
@@ -57,7 +68,7 @@
 3. **Frontend Production Build:**
    ```bash
    npm --prefix frontend run build
-   # Result: Vite built in 189ms, zero TypeScript or build errors.
+   # Result: Vite built in 199ms, zero TypeScript or build errors (332.63 kB).
    ```
 
 ---
@@ -65,4 +76,4 @@
 ### 4. Git Commit & Push Verification
 - Assigned Branch: `feature/ai`
 - Remote: `https://github.com/curious-boy-collab/justice-ai-chatbot.git`
-- Status: Ready for PR review targeting `develop`.
+- Status: Ready for PR targeting `develop`.

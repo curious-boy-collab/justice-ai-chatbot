@@ -1,12 +1,13 @@
 /**
  * JusticeAI Test Runner for AI/RAG Module
  * Developer: Nitin (AI / RAG Developer)
- * Sprint: Day 2 — Core Chatbot Intelligence
+ * Sprint: Day 3 — RAG Implementation & Vector Retrieval
  * 
  * Validates:
- * - 28 citizen questions across English, Devanagari Hindi, and Hinglish.
- * - Intent recognition across all 10 problem-statement categories.
- * - Guardrail handling (prohibited legal advice, out-of-scope fallback).
+ * - 32 citizen questions across English, Devanagari Hindi, and Hinglish.
+ * - Ingestion of Markdown, Plain Text (.txt), and PDF (.pdf) knowledge sources.
+ * - Intent recognition across all DoJ categories + Multi-format Retrieval.
+ * - Guardrail handling (prohibited legal advice, out-of-scope fallback, no-document fallback).
  * - Contract schema compliance for Disha's backend.
  */
 
@@ -15,8 +16,8 @@ const testSuite = require('./sample_questions.json');
 
 async function runTestSuite() {
   console.log('======================================================================');
-  console.log('       JusticeAI – AI/RAG Architecture Test Suite (Day 2 Sprint)      ');
-  console.log(`       Target: ${testSuite.totalQuestions} Questions across All Intents + Guardrails     `);
+  console.log('       JusticeAI – AI/RAG Architecture Test Suite (Day 3 Sprint)      ');
+  console.log(`       Target: ${testSuite.totalQuestions} Questions across Multi-Format Knowledge Base `);
   console.log('======================================================================\n');
 
   let passed = 0;

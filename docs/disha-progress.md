@@ -1,118 +1,237 @@
-# Disha — Backend Progress Log (Day 1)
+# Disha — Backend Progress Log
 
 **Role**: Backend Developer  
 **Branch**: `feature/backend`  
-**Date**: Day 1 — Foundation & Initial Setup  
+**Current Sprint**: Day 3 — RAG Implementation & Knowledge Base Integration  
 **Status**: Completed & Verified  
 
 ---
 
-## 🎯 Day 1 Objectives
+## 🎯 Day 3 Objectives & Achievements
 
-- [x] Initialize Node.js and Express inside `backend/`.
-- [x] Configure `dotenv` and `CORS` middleware.
-- [x] Create structured folders: `routes/`, `controllers/`, `services/`, `middleware/`, `config/`, and `test/`.
-- [x] Create the Express server in `src/server.js` and `src/app.js`.
-- [x] Implement and verify `GET /api/health`.
-- [x] Prepare and implement `POST /api/chat` conversational endpoint with bilingual intent routing.
-- [x] Define the shared common API request/response contract in `contracts/api-contract.md`.
-- [x] Implement official service modules for:
-  - **NJDG** (`njdgService.js`): Aggregate case pendency, civil vs. criminal ratio, age-wise distribution.
-  - **Judge Strengths** (`judgeService.js`): Sanctioned, working, and vacancy counts for Supreme Court and 25 High Courts.
-  - **eCourts & Citizen Services** (`eCourtsService.js`): 16-character CNR parser/validator, Virtual Courts traffic challan payment procedure, eFiling 3.0, ePay, Tele-Law legal aid, Fast Track Special Courts (FTSCs), and Court proceedings live streaming.
-- [x] Create environment templates: `.env.example` and local `.env`.
-- [x] Write automated integration and unit test suites:
-  - `backend/test/api.test.js`: 9/9 integration tests passing.
-  - `backend/test/services.test.js`: 5/5 unit tests passing.
-- [x] Commit changes to `feature/backend`.
+- [x] **Connect the RAG Service to the Chat API**:
+  - Upgraded [`backend/src/services/aiBridgeService.js`](../backend/src/services/aiBridgeService.js) to bridge directly with Nitin's RAG pipeline (`askJusticeAI`, `retriever.retrieve`, `vectorStore.search`).
+  - Seamlessly queries all 62 chunks indexed across 10 official Department of Justice knowledge documents.
 
----
+- [x] **Pass User Queries to the Retrieval Pipeline**:
+  - `POST /api/chat` passes sanitized citizen queries, language preferences, session IDs, and `topK` retrieval depths to the retrieval pipeline.
+  - Automatically activates semantic search over DoJ knowledge vectors while enforcing 15-second timeout protection.
 
-## 📁 Repository Structure Created
+- [x] **Return Answer & Rich Source Metadata**:
+  - Enriched each source entry in the response with:
+    - `title`: Official title of the document/section
+    - `label`: UI display title
+    - `url`: Official verified government URL (`doj.gov.in`, `ecourts.gov.in`, `njdg.ecourts.gov.in`, `vcourts.gov.in`, `tele-law.in`)
+    - `category`: Legal/administrative division category
+    - `snippet`: Real text excerpt retrieved from the knowledge base for transparent grounding
+    - `relevanceScore`: Vector + keyword hybrid similarity score
+  - Dual support: provides both `sources` (for frontend components) and `citations` (for formal citation lists).
 
-```
-adcms-justiceai/
-├── .gitignore
-├── README.md
-├── contracts/
-│   └── api-contract.md             # Shared API contract for Frontend, Backend, AI
-├── docs/
-│   └── disha-progress.md           # This daily progress record
-└── backend/
-    ├── package.json
-    ├── .env.example
-    ├── .env
-    ├── src/
-    │   ├── server.js               # Application bootstrap & graceful shutdown
-    │   ├── app.js                  # Express middleware & router mounting
-    │   ├── config/
-    │   │   └── env.js              # Environment variable loader
-    │   ├── middleware/
-    │   │   ├── corsConfig.js       # CORS policies for Vite/React dev server
-    │   │   ├── requestLogger.js    # HTTP request duration & status logger
-    │   │   └── errorHandler.js     # Standardized JSON error response handler
-    │   ├── controllers/
-    │   │   ├── healthController.js # GET /api/health
-    │   │   ├── chatController.js   # POST /api/chat
-    │   │   ├── statsController.js  # GET /api/stats/judges, /api/stats/njdg
-    │   │   └── caseController.js   # GET /api/cases/lookup
-    │   ├── services/
-    │   │   ├── judgeService.js     # DoJ vacancy data service
-    │   │   ├── njdgService.js      # NJDG pendency data service
-    │   │   └── eCourtsService.js   # Virtual courts, CNR parser & procedures
-    │   └── routes/
-    │       ├── health.routes.ts
-    │       ├── chat.routes.ts
-    │       ├── stats.routes.ts
-    │       └── case.routes.ts
-    └── test/
-        ├── api.test.js             # HTTP endpoint integration tests
-        └── services.test.js        # Offline in-memory service unit tests
-```
+- [x] **Add Data Freshness Metadata**:
+  - Implemented top-level `dataFreshness` object in every chat response:
+    ```json
+    "dataFreshness": {
+      "lastUpdated": "2026-11-10",
+      "sourceStatus": "verified_official",
+      "asOfDate": "2026-03-01",
+      "cacheStatus": "live",
+      "disclaimer": "Official information grounded in Ministry of Law & Justice, NJDG, and eCourts documentation. Not formal legal advice."
+    }
+    ```
+  - Preserved backward-compatible `dataStatus: "official_reference"` and `lastChecked: "2026-11-10"`.
+
+- [x] **Standardize the API Response**:
+  - Standardized JSON responses for all chat queries, ensuring complete compatibility with Shravani's frontend (`answer`, `sources`, `dataStatus`) and Disha's master contract (`reply`, `dataCard`, `citations`, `suggestedQuestions`, `retrieval`, `responseTimeMs`).
+
+- [x] **Add Document-Related Service Interfaces**:
+  - Created [`backend/src/services/documentService.js`](../backend/src/services/documentService.js), [`backend/src/controllers/documentController.js`](../backend/src/controllers/documentController.js), and [`backend/src/routes/document.routes.js`](../backend/src/routes/document.routes.js):
+    - `GET /api/documents`: Lists all 10 indexed official documents with metadata and chunk counts.
+    - `GET /api/documents/stats`: Returns knowledge base metrics (total docs, chunks, categories, status).
+    - `GET /api/documents/search?q={query}&topK={k}` & `POST /api/documents/search`: Performs standalone semantic search over the vector store.
+    - `GET /api/documents/:id(*)`: Retrieves complete text content and chunk breakdown for any document (e.g. `doj/tele_law_services`).
+
+- [x] **Validate Incoming Requests**:
+  - Added validation for `topK` parameter (clamped between 1 and 10).
+  - Validates document search query parameters and handles unknown document IDs with HTTP 404 (`DOCUMENT_NOT_FOUND`).
+  - Strengthened chat query validation (1 to 2000 characters, sanitizing non-printable characters).
+
+- [x] **Test Complete Backend-to-AI Communication**:
+  - Executed automated test suite comprising 61 tests:
+    - 22 HTTP integration tests in `backend/test/api.test.js`.
+    - 28 official end-to-end question tests in `backend/test/sample_questions_e2e.test.js`.
+    - 11 unit tests in `backend/test/services.test.js`.
+  - **100% test pass rate (61 passed, 0 failed in ~156ms).**
 
 ---
 
-## 🧪 Verification & Test Results
+## 📡 API Request & Response Documentation
 
-### 1. Health Check Endpoint
-- **Request**: `GET /api/health`
-- **Output**:
-```json
+### 1. RAG-Grounded Query with Sources & Data Freshness (`POST /api/chat`)
+
+**Request**:
+```http
+POST /api/chat HTTP/1.1
+Host: localhost:5000
+Content-Type: application/json
+
 {
-  "status": "healthy",
-  "version": "1.0.0",
-  "service": "justiceai-backend",
-  "uptimeSeconds": 23.1,
-  "modules": {
-    "chat": "active",
-    "njdgService": "active",
-    "judgeService": "active",
-    "eCourtsService": "active"
-  }
+  "query": "What is Tele-Law and who gets free legal aid?",
+  "language": "en",
+  "topK": 3
 }
 ```
 
-### 2. Automated Test Execution
-- Total test suites: 2
-- Total tests: 14 (9 HTTP integration tests + 5 unit tests)
-- **Pass rate: 100% (14 passed, 0 failed)**
+**Response (HTTP 200 OK)**:
+```json
+{
+  "success": true,
+  "sessionId": "b8f2a1c0-4e3d-4c8a-9a7b-123456789abc",
+  "reply": "Tele-Law connects citizens in rural and marginalized communities directly with panel lawyers...",
+  "answer": "Tele-Law connects citizens in rural and marginalized communities directly with panel lawyers...",
+  "language": "en",
+  "intent": "TELE_LAW",
+  "isLive": true,
+  "dataStatus": "official_reference",
+  "dataFreshness": {
+    "lastUpdated": "2026-11-10",
+    "sourceStatus": "verified_official",
+    "asOfDate": "2026-03-01",
+    "cacheStatus": "live",
+    "disclaimer": "Official information grounded in Ministry of Law & Justice, NJDG, and eCourts documentation. Not formal legal advice."
+  },
+  "sources": [
+    {
+      "title": "Tele-Law Service: Mainstreaming Legal Aid to the Marginalized",
+      "label": "Tele-Law Service: Mainstreaming Legal Aid to the Marginalized",
+      "url": "https://doj.gov.in/tele-law/",
+      "category": "Access to Justice & Free Legal Services",
+      "snippet": "Tele-Law is a pioneering initiative of the Department of Justice, Ministry of Law and Justice, in partnership with NALSA and CSC e-Governance Services...",
+      "relevanceScore": 0.884
+    }
+  ],
+  "citations": [
+    {
+      "sourceTitle": "Tele-Law Service: Mainstreaming Legal Aid to the Marginalized",
+      "url": "https://doj.gov.in/tele-law/",
+      "snippet": "Tele-Law is a pioneering initiative of the Department of Justice...",
+      "category": "Access to Justice & Free Legal Services"
+    }
+  ],
+  "dataCard": {
+    "type": "TELE_LAW_INFO",
+    "title": "Tele-Law Legal Aid Services",
+    "data": {
+      "helpline": "14416 (Toll-free National Helpline)",
+      "officialUrl": "https://www.tele-law.in"
+    }
+  },
+  "suggestedQuestions": [
+    "How can I find the nearest Common Service Centre (CSC)?",
+    "Is legal representation covered under Tele-Law?",
+    "What are the key divisions of the Department of Justice?"
+  ],
+  "retrieval": {
+    "chunksRetrieved": 3,
+    "topK": 3,
+    "isRetrievedFromKnowledgeBase": true
+  },
+  "metadata": {
+    "modelUsed": "gemini-1.5-flash",
+    "isLiveModel": true,
+    "durationMs": 312
+  },
+  "responseTimeMs": 318,
+  "timestamp": "2026-11-10T18:20:51.290Z"
+}
+```
 
 ---
 
-## 🤝 Coordination with Team Members
+### 2. Standalone Semantic Search Endpoint (`GET /api/documents/search`)
 
-1. **For Shravani (Frontend Developer - `feature/frontend`)**:
-   - The backend runs on `http://localhost:5000`.
-   - All response schemas strictly comply with [`contracts/api-contract.md`](../contracts/api-contract.md).
-   - In `POST /api/chat`, response objects contain `reply`, `dataCard`, `citations`, and `suggestedQuestions` ready for UI cards and bubbles.
-2. **For Nitin (AI / RAG Developer - `feature/ai`)**:
-   - The `chatController.js` is structured to forward un-cached / free-form legal queries to `AI_SERVICE_URL` (`http://localhost:8000`) on Day 3.
-   - Grounded citations structure expects `{ sourceTitle, url, snippet }` which matches our shared contract.
+**Request**:
+```http
+GET /api/documents/search?q=Virtual+Courts+traffic+fines&topK=2 HTTP/1.1
+Host: localhost:5000
+```
+
+**Response (HTTP 200 OK)**:
+```json
+{
+  "success": true,
+  "query": "Virtual Courts traffic fines",
+  "resultsCount": 2,
+  "results": [
+    {
+      "chunkId": "ecourts/traffic_fine_payments#chunk-0",
+      "docId": "ecourts/traffic_fine_payments",
+      "sectionTitle": "Overview",
+      "title": "Virtual Courts: Online Adjudication of Traffic Violations",
+      "category": "eCourts Services / Digital Adjudication",
+      "url": "https://vcourts.gov.in",
+      "status": "Verified Official Government Data",
+      "relevanceScore": 0.865,
+      "snippet": "Virtual Courts is an eCourts initiative aimed at eliminating the presence of litigants or lawyers in court for petty offences like traffic violations..."
+    }
+  ],
+  "timestamp": "2026-11-10T18:20:51.304Z"
+}
+```
 
 ---
 
-## 🗓️ Next Steps (Day 2 Plan)
-- Setup PostgreSQL with Prisma ORM.
-- Create database migration for `chat_sessions`, `chat_messages`, `judge_strengths`, and `njdg_snapshots`.
-- Seed official baseline datasets into PostgreSQL.
-- Add live database health check to `GET /api/health`.
+### 3. Knowledge Base Metrics (`GET /api/documents/stats`)
+
+**Request**:
+```http
+GET /api/documents/stats HTTP/1.1
+Host: localhost:5000
+```
+
+**Response (HTTP 200 OK)**:
+```json
+{
+  "success": true,
+  "totalDocuments": 10,
+  "totalChunks": 62,
+  "categoriesCount": 6,
+  "categories": [
+    "Departmental Administration & Functions",
+    "Higher Judiciary Appointments & Statistics",
+    "Access to Justice & Free Legal Services",
+    "Special Courts & Women/Child Safety",
+    "eCourts Services / Digital Adjudication",
+    "Judicial Data & Case Analytics"
+  ],
+  "vectorStoreType": "In-Memory / Hybrid Cosine + Keyword Embedding",
+  "status": "active",
+  "dataFreshness": {
+    "lastUpdated": "2026-11-10",
+    "sourceStatus": "verified_official",
+    "asOfDate": "2026-03-01",
+    "disclaimer": "Official information sourced from Ministry of Law & Justice and eCourts Project."
+  },
+  "timestamp": "2026-11-10T18:20:51.303Z"
+}
+```
+
+---
+
+## 🧪 Automated Testing Verification
+
+Executed using Node.js built-in test runner (`npm --prefix backend test`):
+- **Suite 1: Integration Tests (`test/api.test.js`)**: 22 tests passed.
+- **Suite 2: E2E Official Questions (`test/sample_questions_e2e.test.js`)**: 28 tests passed.
+- **Suite 3: Services Unit Tests (`test/services.test.js`)**: 11 tests passed.
+- **Total: 61 passed, 0 failed (100% pass rate in ~156ms)**.
+
+---
+
+## 🤝 Team Coordination Summary
+
+1. **For Nitin (AI / RAG Developer)**:
+   - Backend successfully invokes `askJusticeAI` with `topK` and reads semantic retrieval vectors from `retriever.js` and `vector_store.js`.
+   - Rich citations extracted with section titles, categories, and similarity scores.
+2. **For Shravani (Frontend Developer)**:
+   - Sources now contain `category`, `snippet`, and `relevanceScore` directly powering Shravani's Day 3 expandable citation UI.
+   - New document exploration endpoints (`/api/documents`, `/api/documents/search`) available for rich frontend knowledge browsing.

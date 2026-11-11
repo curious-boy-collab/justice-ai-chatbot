@@ -1,6 +1,6 @@
 # JusticeAI — AI / Backend Integration Contract
 
-> **Document Version:** 2.0.0 (Day 2 Active Implementation)  
+> **Document Version:** 3.0.0 (Day 3 RAG & Knowledge Base Implementation)  
 > **Authors:** Nitin (AI / RAG Developer) & Disha (Backend Developer)  
 > **Status:** Active Production Contract  
 > **Date:** 2026-11-10
@@ -9,14 +9,15 @@
 
 ## 1. Overview & Architectural Boundary
 
-The **JusticeAI AI / RAG Module** (`ai/`) is integrated directly with Disha's **Express.js Backend Server** (`backend/`) via the dedicated bridge service [`backend/src/services/aiBridgeService.js`](file:///Users/nitinjaiswal/Desktop/justice-ai-chatbot/backend/src/services/aiBridgeService.js).
+The **JusticeAI AI / RAG Module** (`ai/`) is integrated directly with Disha's **Express.js Backend Server** (`backend/`) via the dedicated bridge service [`backend/src/services/aiBridgeService.js`](../backend/src/services/aiBridgeService.js) and knowledge document service [`backend/src/services/documentService.js`](../backend/src/services/documentService.js).
 
 ### Integration Pattern:
 ```javascript
 import { queryJusticeAI } from './services/aiBridgeService.js';
+import { documentService } from './services/documentService.js';
 
 // Inside Express controller:
-const aiResponse = await queryJusticeAI(message, language, sessionId);
+const aiResponse = await queryJusticeAI(message, language, sessionId, { topK: 3 });
 ```
 
 ---
@@ -32,6 +33,7 @@ askJusticeAI(
     apiKey?: string;
     sessionId?: string;
     topK?: number;
+    timeoutMs?: number;
   }
 ): Promise<AIResponsePayload>
 ```
@@ -41,40 +43,91 @@ askJusticeAI(
 {
   "query": "High court me judges ki vacancy kitni hai?",
   "language": "hi",
-  "sessionId": "a8f3b4c1-92d5-4e7a-b9c2-123456789abc"
+  "sessionId": "a8f3b4c1-92d5-4e7a-b9c2-123456789abc",
+  "topK": 3
 }
 ```
 
 ---
 
-## 3. Response Contract (AI Service ➔ Backend)
+## 3. Response Contract (AI Service ➔ Backend / Client)
 
 ```json
 {
+  "success": true,
+  "sessionId": "a8f3b4c1-92d5-4e7a-b9c2-123456789abc",
+  "reply": "भारत के 25 उच्च न्यायालयों में न्यायाधीशों के कुल स्वीकृत पद 1,114 हैं। रिक्तियों का विवरण न्याय विभाग द्वारा नियमित रूप से अधिसूचित किया जाता है। ताज़ा व आधिकारिक आंकड़ों के लिए https://doj.gov.in/list-of-high-court-judges/ पर देखें।",
   "answer": "भारत के 25 उच्च न्यायालयों में न्यायाधीशों के कुल स्वीकृत पद 1,114 हैं। रिक्तियों का विवरण न्याय विभाग द्वारा नियमित रूप से अधिसूचित किया जाता है। ताज़ा व आधिकारिक आंकड़ों के लिए https://doj.gov.in/list-of-high-court-judges/ पर देखें।",
   "language": "hi",
   "intent": "JUDGES_AND_VACANCIES",
   "detectedLang": "hi-Latn",
   "cnr": null,
+  "isLive": true,
+  "dataStatus": "official_reference",
+  "dataFreshness": {
+    "lastUpdated": "2026-11-10",
+    "sourceStatus": "verified_official",
+    "asOfDate": "2026-03-01",
+    "cacheStatus": "live",
+    "disclaimer": "Official information grounded in Ministry of Law & Justice, NJDG, and eCourts documentation. Not formal legal advice."
+  },
   "sources": [
     {
       "title": "Judges Strength, Appointment Process, and Vacancy Data",
-      "url": "https://doj.gov.in/list-of-high-court-judges/"
+      "label": "Judges Strength, Appointment Process, and Vacancy Data",
+      "url": "https://doj.gov.in/list-of-high-court-judges/",
+      "category": "Judicial Appointments & Vacancies",
+      "snippet": "India currently has 25 High Courts with sanctioned strength of 1,114 judges...",
+      "relevanceScore": 0.892
     }
   ],
-  "dataStatus": "official_reference",
-  "lastChecked": "2026-11-10",
+  "citations": [
+    {
+      "sourceTitle": "Judges Strength, Appointment Process, and Vacancy Data",
+      "url": "https://doj.gov.in/list-of-high-court-judges/",
+      "snippet": "India currently has 25 High Courts with sanctioned strength of 1,114 judges...",
+      "category": "Judicial Appointments & Vacancies"
+    }
+  ],
+  "dataCard": {
+    "type": "JUDGE_VACANCY",
+    "title": "न्यायाधीश रिक्ति एवं स्वीकृत पद विवरण",
+    "data": { ... }
+  },
+  "suggestedQuestions": [
+    "राष्ट्रीय न्यायिक डेटा ग्रिड (NJDG) में लंबित मामलों की स्थिति क्या है?",
+    "ई-चालान का भुगतान वर्चुअल कोर्ट से कैसे करें?"
+  ],
+  "retrieval": {
+    "chunksRetrieved": 3,
+    "topK": 3,
+    "isRetrievedFromKnowledgeBase": true
+  },
   "metadata": {
     "modelUsed": "gemini-1.5-flash",
     "isLiveModel": true,
     "durationMs": 420
-  }
+  },
+  "responseTimeMs": 425,
+  "timestamp": "2026-11-10T18:13:00.000Z"
 }
 ```
 
 ---
 
-## 4. Recognized Intent Enum
+## 4. Document Service Endpoints (Day 3 Addition)
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/documents` | Lists all 10 indexed official knowledge documents with metadata, chunk count, file size, and last modified timestamps. |
+| `GET` | `/api/documents/stats` | Returns aggregate knowledge base statistics (total documents, chunks, categories, freshness). |
+| `GET` | `/api/documents/search?q={query}&topK={k}` | Direct semantic retrieval over the official vector store without full text generation. |
+| `POST` | `/api/documents/search` | Semantic search via JSON body: `{ "query": "string", "topK": 3 }`. |
+| `GET` | `/api/documents/:id(*)` | Retrieves complete content and chunk breakdown of a specific document (e.g. `doj/tele_law_services`). |
+
+---
+
+## 5. Recognized Intent Enum
 
 | Intent Code | Description | Example Query |
 |---|---|---|
@@ -94,7 +147,7 @@ askJusticeAI(
 
 ---
 
-## 5. Security & API Key Management
-- The Gemini API Key (`GEMINI_API_KEY`) is stored **strictly server-side** in `backend/.env`.
-- It is never transmitted across client boundaries or stored in frontend bundles.
-- If the API key is not present or rate limits are reached, the service gracefully degrades to **deterministic grounded context fallback** using verified Department of Justice documentation.
+## 6. Security & Data Integrity
+- Gemini API Key (`GEMINI_API_KEY`) is stored strictly server-side in `backend/.env`.
+- Data Freshness metadata (`dataFreshness`) is returned with every query to verify official Department of Justice sourcing.
+- Fallback degradation guarantees 0% hallucination by serving grounded official document excerpts when offline or rate-limited.

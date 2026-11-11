@@ -1,147 +1,60 @@
-import { useState } from 'react'
-import { ArrowLeft, PanelLeftOpen, Scale, FileText, Users, BarChart3, Phone, Smartphone } from 'lucide-react'
+import { ArrowLeft, Scale, Shield, ExternalLink } from 'lucide-react'
 import Header from '../components/Layout/Header'
-import Sidebar from '../components/Layout/Sidebar'
 import ChatBox from '../components/Chat/ChatBox'
-import SuggestedCard from '../components/Dashboard/SuggestedCard'
 
 interface ChatPageProps {
   onBack: () => void
   initialQuery?: string
 }
 
-const quickSuggestions = [
-  {
-    icon: Scale,
-    title: 'Case Status',
-    description: 'Look up your case by CNR number or party name.',
-    query: 'How do I check my case status?',
-    accentColor: '#0a1f44',
-  },
-  {
-    icon: BarChart3,
-    title: 'NJDG Statistics',
-    description: 'View court-wise pendency and clearance data.',
-    query: 'Show me NJDG statistics and case pendency data',
-    accentColor: '#1a3f7c',
-  },
-  {
-    icon: Users,
-    title: 'Judge Vacancies',
-    description: 'Check current judge appointments and vacancies.',
-    query: 'What are the current judge vacancies in India?',
-    accentColor: '#ff9933',
-  },
-  {
-    icon: FileText,
-    title: 'eFiling & ePay',
-    description: 'Step-by-step guide to file and pay court fees.',
-    query: 'How do I file a case using eFiling and ePay?',
-    accentColor: '#138808',
-  },
-  {
-    icon: Phone,
-    title: 'Tele-Law',
-    description: 'Free legal advice via Common Service Centres.',
-    query: 'How can I access Tele-Law services?',
-    accentColor: '#6b21a8',
-  },
-  {
-    icon: Smartphone,
-    title: 'eCourts App',
-    description: 'Download the official eCourts mobile application.',
-    query: 'How do I download and use the eCourts mobile app?',
-    accentColor: '#0369a1',
-  },
-]
-
 export default function ChatPage({ onBack, initialQuery }: ChatPageProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [activeSection, setActiveSection] = useState('chat')
-  const [currentQuery, setCurrentQuery] = useState<string | undefined>(initialQuery)
-
-  const handleSuggestedQuery = (query: string) => {
-    setCurrentQuery(query)
-    // Reset after consumption so re-clicking same works
-    setTimeout(() => setCurrentQuery(undefined), 100)
-  }
-
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="h-[100dvh] min-h-screen flex flex-col bg-[#f8fafd] overflow-hidden">
+      {/* 1. Global Header with navigation */}
       <Header onLogoClick={onBack} />
 
-      {/* Sub-header breadcrumb */}
-      <div className="bg-white border-b border-gray-100 px-4 sm:px-6 py-2.5 flex items-center gap-3">
-        <button
-          onClick={onBack}
-          className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#0a1f44] transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Home
-        </button>
-        <span className="text-gray-300">/</span>
-        <span className="text-sm text-[#0a1f44] font-medium">AI Chat Assistant</span>
+      {/* 2. Government Breadcrumb Subheader */}
+      <div className="bg-white border-b border-slate-200/80 px-3 sm:px-6 py-2 shadow-2xs flex-shrink-0">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs">
+            <button
+              onClick={onBack}
+              className="flex items-center gap-1.5 font-medium text-slate-500 hover:text-[#0a1f44] transition-colors"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Portal Home</span>
+            </button>
+            <span className="text-slate-300">/</span>
+            <div className="flex items-center gap-1.5 text-[#0a1f44] font-semibold">
+              <Scale className="w-3.5 h-3.5 text-[#ff9933]" />
+              <span className="truncate max-w-[170px] sm:max-w-none">
+                JusticeAI Official Assistant
+              </span>
+            </div>
+          </div>
 
-        <button
-          className="ml-auto flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#0a1f44]
-                     transition-colors lg:hidden"
-          onClick={() => setSidebarOpen(true)}
-        >
-          <PanelLeftOpen className="w-4 h-4" />
-          Menu
-        </button>
+          <div className="hidden md:flex items-center gap-4 text-xs">
+            <div className="flex items-center gap-1.5 text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 font-medium">
+              <Shield className="w-3 h-3 text-emerald-600" />
+              <span>Department of Justice Knowledge Base</span>
+            </div>
+            <a
+              href="https://doj.gov.in"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-slate-500 hover:text-[#0a1f44] transition-colors"
+            >
+              <span>doj.gov.in</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
+        </div>
       </div>
 
-      <div className="flex flex-1 overflow-hidden max-w-7xl w-full mx-auto">
-        {/* Sidebar */}
-        <Sidebar
-          isOpen={sidebarOpen}
-          onClose={() => setSidebarOpen(false)}
-          onNavigate={(section) => {
-            setActiveSection(section)
-            if (section !== 'chat') onBack()
-          }}
-          activeSection={activeSection}
-        />
-
-        {/* Main content */}
-        <div className="flex-1 flex gap-5 p-4 sm:p-6 overflow-y-auto min-w-0">
-          {/* Chat */}
-          <div className="flex-1 flex flex-col min-h-[600px] min-w-0">
-            <ChatBox initialQuery={currentQuery} />
-          </div>
-
-          {/* Right panel — suggested queries */}
-          <div className="w-72 flex-shrink-0 hidden xl:flex flex-col gap-4">
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="bg-[#e8edf7] rounded-lg p-1.5">
-                  <Scale className="w-4 h-4 text-[#0a1f44]" />
-                </div>
-                <div>
-                  <div className="text-sm font-semibold text-[#0a1f44]">Quick Topics</div>
-                  <div className="text-xs text-gray-400">Click to ask instantly</div>
-                </div>
-              </div>
-              <div className="space-y-2.5">
-                {quickSuggestions.map((s) => (
-                  <SuggestedCard
-                    key={s.title}
-                    {...s}
-                    onClick={handleSuggestedQuery}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Disclaimer */}
-            <div className="bg-[#fff3e0] rounded-2xl border border-orange-100 p-4 text-xs text-orange-800 leading-relaxed">
-              <strong className="block mb-1">⚠️ Important Disclaimer</strong>
-              JusticeAI provides general guidance only. All critical information should be verified
-              at official government portals (doj.gov.in, ecourts.gov.in).
-              This is not legal advice.
-            </div>
-          </div>
+      {/* 3. Main Chatbox Workspace (Mobile viewport responsive) */}
+      <div className="flex-1 max-w-7xl w-full mx-auto p-1.5 sm:p-4 md:p-6 flex flex-col min-h-0 overflow-hidden">
+        <div className="flex-1 w-full h-full min-h-0">
+          <ChatBox initialQuery={initialQuery} />
         </div>
       </div>
     </div>

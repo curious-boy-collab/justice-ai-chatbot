@@ -1,9 +1,13 @@
 # Nyaya Bandhu (Pro Bono Legal Services) Initiative
 
 Category: Pro Bono Legal Services & Legal Aid
+Source Portal: Department of Justice Pro Bono Portal
 Source URL: https://doj.gov.in/nyaya-bandhu/
-Retrieval Date: 2026-11-11
+Dedicated Portal: https://www.probono-doj.in
+Retrieval Date: 2026-11-12
 Verification Status: Verified Official Government Data
+Helpline: 14416 (Tele-Law / Access to Justice Desk)
+Data Freshness: Official baseline (verify on official portal)
 
 OVERVIEW:
 Nyaya Bandhu (Pro Bono Legal Services) is an initiative of the Department of Justice, Ministry of Law and Justice, Government of India. The primary objective is to encourage advocates across the nation to offer pro bono legal counsel to disadvantaged individuals and marginalized communities who cannot afford legal representation.

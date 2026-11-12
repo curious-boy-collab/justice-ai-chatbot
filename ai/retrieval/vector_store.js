@@ -118,8 +118,16 @@ class VectorStore {
       }
       const keywordScore = queryTokens.length > 0 ? (keywordHits / queryTokens.length) : 0;
 
-      // Combined hybrid score (65% vector similarity + 35% term presence)
-      const combinedScore = (vectorScore * 0.65) + (keywordScore * 0.35);
+      // 3. Section title & metadata relevance boost
+      const metadataText = `${chunk.metadata?.title || ''} ${chunk.sectionTitle || ''} ${chunk.metadata?.category || ''}`.toLowerCase();
+      let metaHits = 0;
+      for (const token of queryTokens) {
+        if (metadataText.includes(token)) metaHits++;
+      }
+      const metaScore = queryTokens.length > 0 ? (metaHits / queryTokens.length) : 0;
+
+      // Combined hybrid score (60% vector similarity + 30% content terms + 10% title/section boost)
+      const combinedScore = (vectorScore * 0.60) + (keywordScore * 0.30) + (metaScore * 0.10);
 
       return {
         ...chunk,

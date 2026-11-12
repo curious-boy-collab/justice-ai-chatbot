@@ -16,8 +16,8 @@ const testSuite = require('./sample_questions.json');
 
 async function runTestSuite() {
   console.log('======================================================================');
-  console.log('       JusticeAI – AI/RAG Architecture Test Suite (Day 3 Sprint)      ');
-  console.log(`       Target: ${testSuite.totalQuestions} Questions across Multi-Format Knowledge Base `);
+  console.log('    JusticeAI – AI/RAG Architecture Test Suite (Day 4 Sprint)         ');
+  console.log(`    Target: ${testSuite.totalQuestions} Questions across Multi-Format Knowledge Base `);
   console.log('======================================================================\n');
 
   let passed = 0;

@@ -1,52 +1,66 @@
-# National Judicial Data Grid (NJDG): Case Pendency Statistics and Data Guide
+# National Judicial Data Grid (NJDG): Real-Time Case Pendency Statistics and Data Guide
 
 > **Category:** Judicial Data, Transparency & Pendency Statistics  
+> **Source Portal:** National Judicial Data Grid (eCourts Project)  
 > **Source URL:** https://njdg.ecourts.gov.in  
-> **Retrieval Date:** 2026-11-08  
-> **Verification Status:** Verified Official Government Data (Statistics represent official baseline benchmark; live totals vary daily)
+> **Secondary URL:** https://ecourts.gov.in  
+> **Retrieval Date:** 2026-11-12  
+> **Verification Status:** Verified Official Government Data  
+> **Official Helpline / Nodal Desk:** eCourts Helpdesk / support@ecourts.gov.in  
+> **Data Freshness:** Official baseline benchmark (live statistics vary dynamically every court day; verify on official portal)
 
 ---
 
 ## 1. What is the National Judicial Data Grid (NJDG)?
-The National Judicial Data Grid (NJDG) is a national data repository created under the eCourts Project that tracks judicial case status, pending cases, disposal rates, and institutional statistics across the entire Indian judiciary in real time.
+The National Judicial Data Grid (NJDG) is a comprehensive national judicial data warehouse developed under the eCourts Mission Mode Project. It integrates data from the Supreme Court of India, all 25 High Courts, and over 18,700 District and Subordinate Court establishments across India.
 
-It is accessible to the public, policy makers, judges, and researchers, promoting unprecedented transparency in the administration of justice. In September 2023, the Supreme Court of India was also onboarded onto the NJDG open-access platform.
+NJDG provides public, open-access dashboards displaying real-time information on case registration, institution, disposal, and pendency of civil and criminal cases across the country. In September 2023, the Supreme Court of India was formally integrated onto the NJDG open platform, creating end-to-end transparency across all tiers of the Indian judiciary.
 
 ---
 
 ## 2. Benchmark Case Pendency Profile (National Figures)
 
-> **IMPORTANT CITIZEN NOTICE:** Judicial figures change every business day as courts dispose of cases and new cases are registered. The figures below represent official public baseline benchmarks:
+> **IMPORTANT CITIZEN & AI MANDATE:** Judicial pendency figures change on every court working day as matters are instituted, heard, settled in Lok Adalats, and finally disposed. Never invent current statistics. The numbers below represent official reference benchmarks:
 
 ### A. Supreme Court of India
-- **Pending Cases:** ~83,000 cases.
-- **Judge Sanctioned Strength:** 34 Judges.
+- **Pending Matters:** Approximately 80,000 to 84,000 cases.
+- **Breakdown:** Miscellaneous matters and regular hearing matters.
+- **Sanctioned Judicial Strength:** 34 Judges.
 
 ### B. High Courts (25 High Courts Pan-India)
-- **Total Pending Cases:** Approximately 61 Lakh (6.1 Million) cases.
-- **Breakup:** ~44 Lakh Civil cases, ~17 Lakh Criminal cases.
-- **Sanctioned Strength:** 1,114 Judges.
+- **Total Pending Matters:** Approximately 60 Lakh to 62 Lakh (6.0 to 6.2 Million) cases.
+- **Breakdown:** ~43 to 45 Lakh Civil cases, ~17 to 18 Lakh Criminal cases.
+- **Approved Judge Strength:** 1,114 Judges nationwide.
 
-### C. District and Subordinate Courts
-- **Total Pending Cases:** Approximately 3.86 Crore (38.6 Million) cases.
-- **Breakup:** ~1.08 Crore Civil cases, ~2.78 Crore Criminal cases.
-- **Over 10 Years Old Pendency:** Approximately 8% to 10% of total pending cases.
-- **Disposal Rates:** Courts nationwide dispose of millions of matters annually, bolstered by National Lok Adalats and Special Drives.
+### C. District and Subordinate Courts (Subordinate Judiciary)
+- **Total Pending Matters:** Approximately 4.4 Crore to 4.5 Crore (44 to 45 Million) cases.
+- **Breakdown:** Approximately 1.1 Crore Civil cases (~25%) and 3.3 Crore Criminal cases (~75%).
+- **Age-wise Classification Benchmark:**
+  - Cases pending for 0 to 1 year: ~30%
+  - Cases pending for 1 to 3 years: ~28%
+  - Cases pending for 3 to 5 years: ~16%
+  - Cases pending for 5 to 10 years: ~15%
+  - Cases pending for over 10 years: ~9% to 11%
+- **Disposal Trajectory:** District Courts dispose of millions of cases annually, supported by National Lok Adalats organized by NALSA, Fast Track Special Courts, and special disposal drives.
 
 ---
 
-## 3. How Citizens Can Explore NJDG
+## 3. How Citizens, Advocates, and Researchers Can Explore NJDG
 1. Visit [https://njdg.ecourts.gov.in](https://njdg.ecourts.gov.in).
-2. Choose between **High Court NJDG** and **District Court NJDG**.
-3. View interactive heatmaps and charts broken down by:
-   - State-wise pendency
-   - Age of cases (0 to 1 year, 1 to 3 years, 3 to 5 years, 5 to 10 years, and >10 years)
-   - Civil vs Criminal cases
-   - Senior Citizen and Female Litigant cases
-   - Listed for today and disposed yesterday counts.
+2. Select between:
+   - **Supreme Court NJDG**
+   - **High Court NJDG**
+   - **District Court NJDG**
+3. Filter interactive drill-down data by:
+   - State, District, and Court Establishment.
+   - Case Type (Civil Suits, Criminal Trials, Appeals, Execution Petitions).
+   - Age of Pendency (0-1 yr, 1-3 yrs, 3-5 yrs, 5-10 yrs, >10 yrs).
+   - Cases filed by Senior Citizens and Women Litigants.
+   - Cases listed for hearing today and cases disposed yesterday.
+4. Download state-wise and district-wise statistical reports in open CSV/PDF formats.
 
 ---
 
-## 4. Guardrail for JusticeAI Chatbot
-- Never claim that demo statistics represent the minute-by-minute live count of the Supreme Court or High Courts.
-- Always provide the link to [https://njdg.ecourts.gov.in](https://njdg.ecourts.gov.in) so citizens can examine today's live official dashboard.
+## 4. Strict Guardrail for Statistics
+- The JusticeAI Assistant must never guess, invent, or extrapolate live pending case counts.
+- Always provide the official baseline benchmark, cite the retrieval date, and direct citizens to [https://njdg.ecourts.gov.in](https://njdg.ecourts.gov.in) for live, minute-by-minute figures.

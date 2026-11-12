@@ -174,9 +174,20 @@ class GeminiService {
         ? `**न्याय विभाग आधिकारिक संदर्भ [${topDoc.metadata?.title || 'सत्यापित रिकॉर्ड'}]:**\n\n`
         : `**Department of Justice Official Record [${topDoc.metadata?.title || 'Verified Record'}]:**\n\n`;
 
+      let statisticsNote = '';
+      const docTitleCategory = `${topDoc.metadata?.title || ''} ${topDoc.metadata?.category || ''}`.toLowerCase();
+      if (docTitleCategory.includes('vacanc') || 
+          docTitleCategory.includes('pendency') ||
+          docTitleCategory.includes('njdg') ||
+          docTitleCategory.includes('judge')) {
+        statisticsNote = isHindi
+          ? '\n\n*सूचना: न्यायिक आँकड़े और रिक्तियाँ प्रतिदिन अद्यतन होती हैं। कृपया ताज़ा व वास्तविक समय के आधिकारिक आँकड़ों के लिए https://njdg.ecourts.gov.in तथा https://doj.gov.in पर देखें।*'
+          : '\n\n*Official Notice: Judicial vacancy figures and case counts fluctuate continuously on business days. For real-time live official counts, please refer directly to https://njdg.ecourts.gov.in and https://doj.gov.in.*';
+      }
+
       const footer = isHindi
-        ? `\n\nविस्तृत जानकारी एवं आधिकारिक सेवाओं के लिए कृपया आधिकारिक पोर्टल पर जाएँ: ${topDoc.metadata?.url || 'https://doj.gov.in'}`
-        : `\n\nFor verified details and online services, please visit the official portal: ${topDoc.metadata?.url || 'https://doj.gov.in'}`;
+        ? `${statisticsNote}\n\nविस्तृत जानकारी एवं आधिकारिक सेवाओं के लिए कृपया आधिकारिक पोर्टल पर जाएँ: ${topDoc.metadata?.url || 'https://doj.gov.in'}${topDoc.metadata?.helpline ? ` | हेल्पलाइन: ${topDoc.metadata.helpline}` : ''}`
+        : `${statisticsNote}\n\nFor verified details and online services, please visit the official portal: ${topDoc.metadata?.url || 'https://doj.gov.in'}${topDoc.metadata?.helpline ? ` | Helpline: ${topDoc.metadata.helpline}` : ''}`;
 
       return {
         answer: `${prefix}${paragraphs}${footer}`,

@@ -1,9 +1,9 @@
 {
-  "version": "2.0",
+  "version": "2.1",
   "project": "JusticeAI – Department of Justice Virtual Assistant",
   "developer": "Nitin (AI / RAG Developer)",
-  "sprint": "Day 3 — RAG Implementation & Multi-Format Ingestion",
-  "totalQuestions": 32,
+  "sprint": "Day 4 — Government Services and Judicial Information",
+  "totalQuestions": 40,
   "categoriesCovered": [
     "1. DoJ Divisions and Functions",
     "2. Judges and Vacancies",
@@ -279,6 +279,70 @@
       "query": "Can you explain the detailed rules of the 1923 Maritime Salt Works arbitration tribunal?",
       "expectedIntent": "DOJ_ADMIN",
       "officialSource": "https://doj.gov.in"
+    },
+    {
+      "id": "Q33",
+      "category": "4. Traffic Fine Payments (Virtual Courts)",
+      "language": "en",
+      "query": "What happens if I click contest instead of plead guilty on the Virtual Courts traffic portal?",
+      "expectedIntent": "TRAFFIC_FINES",
+      "officialSource": "https://vcourts.gov.in"
+    },
+    {
+      "id": "Q34",
+      "category": "4. Traffic Fine Payments (Virtual Courts)",
+      "language": "hi",
+      "query": "यदि नागरिक वर्चुअल कोर्ट पर चालान को कंटेस्ट करता है तो क्या प्रक्रिया होती है?",
+      "expectedIntent": "TRAFFIC_FINES",
+      "officialSource": "https://vcourts.gov.in"
+    },
+    {
+      "id": "Q35",
+      "category": "6. eFiling and ePay Procedures",
+      "language": "en",
+      "query": "What document formats and digital signing options are required for eFiling 3.0?",
+      "expectedIntent": "EFILING_EPAY",
+      "officialSource": "https://efiling.ecourts.gov.in"
+    },
+    {
+      "id": "Q36",
+      "category": "6. eFiling and ePay Procedures",
+      "language": "hi",
+      "query": "ई-फाइलिंग 3.0 पर याचिका अपलोड करने के लिए कौन से दस्तावेज प्रारूप और ई-साइन आवश्यक हैं?",
+      "expectedIntent": "EFILING_EPAY",
+      "officialSource": "https://efiling.ecourts.gov.in"
+    },
+    {
+      "id": "Q37",
+      "category": "10. Current Case Status Lookup",
+      "language": "en",
+      "query": "How can a litigant check case status without a CNR number using party name or case number?",
+      "expectedIntent": "CASE_STATUS",
+      "officialSource": "https://services.ecourts.gov.in"
+    },
+    {
+      "id": "Q38",
+      "category": "10. Current Case Status Lookup",
+      "language": "hi",
+      "query": "यदि सीएनआर (CNR) नंबर उपलब्ध नहीं है तो पार्टी के नाम या केस नंबर से केस स्टेटस कैसे जांचें?",
+      "expectedIntent": "CASE_STATUS",
+      "officialSource": "https://services.ecourts.gov.in"
+    },
+    {
+      "id": "Q39",
+      "category": "9. Tele-Law Services",
+      "language": "en",
+      "query": "How can a villager consult a panel lawyer through the Common Services Centre under Tele-Law?",
+      "expectedIntent": "TELE_LAW",
+      "officialSource": "https://www.tele-law.in"
+    },
+    {
+      "id": "Q40",
+      "category": "9. Tele-Law Services",
+      "language": "hi",
+      "query": "टेली-लॉ योजना के तहत ग्रामीण नागरिक सीएससी केंद्र से पैनल वकील से कैसे परामर्श कर सकते हैं?",
+      "expectedIntent": "TELE_LAW",
+      "officialSource": "https://www.tele-law.in"
     }
   ]
 }

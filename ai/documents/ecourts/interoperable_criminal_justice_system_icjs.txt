@@ -1,9 +1,12 @@
 # Inter-operable Criminal Justice System (ICJS)
 
 Category: ICT in Judiciary & Criminal Justice
+Source Portal: Department of Justice & MHA ICJS Portal
 Source URL: https://doj.gov.in/inter-operable-criminal-justice-system/
-Retrieval Date: 2026-11-11
+Retrieval Date: 2026-11-12
 Verification Status: Verified Official Government Data
+Helpline: eCourts Helpdesk / support-icjs@gov.in
+Data Freshness: Official baseline (verify on official portal)
 
 INTRODUCTION:
 The Inter-operable Criminal Justice System (ICJS) is a national initiative spearheaded by the Ministry of Home Affairs and the Department of Justice, Ministry of Law and Justice, to integrate the key pillars of the criminal justice system in India.

@@ -88,9 +88,13 @@ function extractMetadata(content, filename = '') {
   const metadata = {
     title: filename.replace(/\.[^/.]+$/, '').replace(/_/g, ' '),
     category: 'Department of Justice',
+    portal: 'Department of Justice Official Portal',
     url: 'https://doj.gov.in',
-    lastChecked: '2026-11-11',
+    secondaryUrl: '',
+    helpline: '14416 (Tele-Law Toll-Free) / doj@gov.in',
+    lastChecked: '2026-11-12',
     status: 'Verified Official Government Data',
+    freshness: 'Official baseline (live statistics fluctuate dynamically; verify on official portal)',
   };
 
   const titleMatch = content.match(/^#\s+(.+)$/m) || content.match(/^Title:\s*(.+)$/im);
@@ -99,14 +103,26 @@ function extractMetadata(content, filename = '') {
   const categoryMatch = content.match(/>?\s*\*?\*?Category:\*?\*?\s*(.+)$/im);
   if (categoryMatch) metadata.category = categoryMatch[1].trim();
 
+  const portalMatch = content.match(/>?\s*\*?\*?(?:Source\s+Portal|Official\s+Portal):\*?\*?\s*(.+)$/im);
+  if (portalMatch) metadata.portal = portalMatch[1].trim();
+
   const urlMatch = content.match(/>?\s*\*?\*?Source URL:\*?\*?\s*(https?:\/\/\S+)/im);
   if (urlMatch) metadata.url = urlMatch[1].trim();
+
+  const secondaryMatch = content.match(/>?\s*\*?\*?(?:Secondary\s+Portal|Secondary\s+URL|Secondary\s+Source|Payment\s+Portal|Dedicated\s+Portal):\*?\*?\s*(https?:\/\/\S+)/im);
+  if (secondaryMatch) metadata.secondaryUrl = secondaryMatch[1].trim();
+
+  const helplineMatch = content.match(/>?\s*\*?\*?(?:Helpline|Helpline\s*\/\s*Portal|Official\s+Helpline\s*\/\s*Nodal\s+Desk):\*?\*?\s*(.+)$/im);
+  if (helplineMatch) metadata.helpline = helplineMatch[1].trim();
 
   const dateMatch = content.match(/>?\s*\*?\*?Retrieval Date:\*?\*?\s*(.+)$/im);
   if (dateMatch) metadata.lastChecked = dateMatch[1].trim();
 
   const statusMatch = content.match(/>?\s*\*?\*?Verification Status:\*?\*?\s*(.+)$/im);
   if (statusMatch) metadata.status = statusMatch[1].trim();
+
+  const freshnessMatch = content.match(/>?\s*\*?\*?Data Freshness:\*?\*?\s*(.+)$/im);
+  if (freshnessMatch) metadata.freshness = freshnessMatch[1].trim();
 
   return metadata;
 }

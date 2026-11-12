@@ -37,43 +37,43 @@ const INTENT_PATTERNS = [
   },
   {
     intent: INTENTS.CASE_STATUS,
-    regex: /(case status|cnr|cause list|hearing date|next date|court order|case number|केस की स्थिति|मुकदमे की तारीख|सीएनआर|कॉज लिस्ट|केस स्टेटस|अदालती आदेश)/i,
+    regex: /(case status|cnr|cause list|hearing date|next date|court order|case number|peshi|tarikh|case check|case tracking|order sheet|judgement download|केस की स्थिति|मुकदमे की तारीख|सीएनआर|कॉज लिस्ट|केस स्टेटस|अदालती आदेश|पेशी की तारीख|तारीख कब है|केस नंबर से स्थिति)/i,
   },
   {
     intent: INTENTS.JUDGES_AND_VACANCIES,
-    regex: /(judge|judges|vacancy|vacancies|sanctioned strength|working strength|collegium|appointment of judges|न्यायाधीश|जज|रिक्तियां|स्वीकृत पद|कॉलेजियम|नियुक्ति)/i,
+    regex: /(judge|judges|vacancy|vacancies|sanctioned strength|working strength|collegium|appointment of judges|cji|chief justice|mop|memorandum of procedure|न्यायाधीश|जज|रिक्तियां|स्वीकृत पद|कॉलेजियम|नियुक्ति|हाई कोर्ट जज|सुप्रीम कोर्ट जज)/i,
   },
   {
     intent: INTENTS.NJDG_PENDENCY,
-    regex: /(njdg|pendency|pending cases|disposal rate|disposed cases|national judicial data grid|लंबित मामले|लंबित केस|एनजेडीजी|लंबित मुकदमे|निस्तारण दर)/i,
+    regex: /(njdg|pendency|pending cases|disposal rate|disposed cases|national judicial data grid|case statistics|case backlog|how many cases pending|लंबित मामले|लंबित केस|एनजेडीजी|लंबित मुकदमे|निस्तारण दर|कितने केस पेंडिंग|न्यायिक डेटा)/i,
   },
   {
     intent: INTENTS.TRAFFIC_FINES,
-    regex: /(traffic|challan|virtual court|vcourt|parivahan|traffic fine|motor vehicle|ट्रैफिक|चालान|वर्चुअल कोर्ट|ई-चालान|यातायात जुर्माना)/i,
+    regex: /(traffic|challan|virtual court|vcourt|vcourts|parivahan|traffic fine|motor vehicle|plead guilty|contest challan|fine payment|challan kaise bhare|challan status|ट्रैफिक|चालान|वर्चुअल कोर्ट|ई-चालान|यातायात जुर्माना|चालान भुगतान|जुर्माना कैसे भरें)/i,
   },
   {
     intent: INTENTS.LIVE_STREAMING,
-    regex: /(live stream|streaming|watch court|broadcast|swapnil tripathi|live hearing|लाइव प्रसारण|स्ट्रीमिंग|अदालत की सुनवाई|लाइव देखें)/i,
+    regex: /(live stream|streaming|watch court|broadcast|swapnil tripathi|live hearing|court proceeding live|stream sci|youtube court|लाइव प्रसारण|स्ट्रीमिंग|अदालत की सुनवाई|लाइव देखें|अदालत की लाइव कार्यवाही)/i,
   },
   {
     intent: INTENTS.EFILING_EPAY,
-    regex: /(efiling|e-filing|epay|e-pay|court fee|online filing|judicial stamp|vakalatnama|ई-फाइलिंग|ई-पे|कोर्ट फीस|ऑनलाइन फाइलिंग|स्टाम्प शुल्क)/i,
+    regex: /(efiling|e-filing|epay|e-pay|court fee|online filing|judicial stamp|vakalatnama|electronic court fee|pay ecourts|efiling 3\.0|ई-फाइलिंग|ई-पे|कोर्ट फीस|ऑनलाइन फाइलिंग|स्टाम्प शुल्क|कोर्ट फीस भुगतान)/i,
   },
   {
     intent: INTENTS.FAST_TRACK_COURTS,
-    regex: /(fast track|ftsc|pocso|nirbhaya|rape case|special court|फास्ट ट्रैक|पॉक्सो|निर्भया|विशेष अदालत|यौन अपराध)/i,
+    regex: /(fast track|ftsc|pocso|nirbhaya|rape case|special court|vulnerable witness|1 year trial|फास्ट ट्रैक|पॉक्सो|निर्भया|विशेष अदालत|यौन अपराध|शीघ्र न्याय)/i,
   },
   {
     intent: INTENTS.ECOURTS_APP,
-    regex: /(ecourts app|mobile app|download app|services app|play store|app store|मोबाइल ऐप|ई-कोर्ट्स ऐप|ऐप डाउनलोड)/i,
+    regex: /(ecourts app|mobile app|download app|services app|play store|app store|qr code case|case diary|my cases|मोबाइल ऐप|ई-कोर्ट्स ऐप|ऐप डाउनलोड|ई-कोर्ट्स सर्विसेज मोबाइल ऐप)/i,
   },
   {
     intent: INTENTS.TELE_LAW,
-    regex: /(tele-law|telelaw|free legal|legal aid|csc|panel lawyer|marginalized|disha scheme|टेली-लॉ|टेली लॉ|निःशुल्क कानूनी|विधिक सहायता|पैनल वकील|सीएससी)/i,
+    regex: /(tele-law|telelaw|free legal|legal aid|csc|panel lawyer|marginalized|disha scheme|nyaya bandhu|pro bono|section 12|muft vakil|muft kanuni salah|टेली-लॉ|टेली लॉ|निःशुल्क कानूनी|विधिक सहायता|पैनल वकील|सीएससी|दिशा योजना|न्याय बंधु)/i,
   },
   {
     intent: INTENTS.DOJ_ADMIN,
-    regex: /(department of justice|doj|ministry of law|divisions|mandate|infrastructure scheme|न्याय विभाग|विधि मंत्रालय|प्रभाग|कार्यप्रणाली)/i,
+    regex: /(department of justice|doj|ministry of law|divisions|mandate|infrastructure scheme|citizen charter|icjs|jaisalmer house|allocation of business|न्याय विभाग|विधि मंत्रालय|प्रभाग|कार्यप्रणाली|नागरिक चार्टर)/i,
   },
 ];
 

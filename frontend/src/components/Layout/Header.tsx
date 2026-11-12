@@ -3,19 +3,29 @@ import { useState } from 'react'
 
 interface HeaderProps {
   onLogoClick?: () => void
+  onNavigate?: (page: string) => void
 }
 
-export default function Header({ onLogoClick }: HeaderProps) {
+export default function Header({ onLogoClick, onNavigate }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [lang, setLang] = useState<'EN' | 'HI'>('EN')
 
   const navLinks = [
-    { label: lang === 'EN' ? 'Home' : 'होम', href: '#' },
-    { label: lang === 'EN' ? 'About' : 'परिचय', href: '#' },
-    { label: lang === 'EN' ? 'Services' : 'सेवाएं', href: '#' },
-    { label: lang === 'EN' ? 'Statistics' : 'आँकड़े', href: '#' },
-    { label: lang === 'EN' ? 'Contact' : 'संपर्क', href: '#' },
+    { label: lang === 'EN' ? 'Home' : 'होम', action: 'home' },
+    { label: lang === 'EN' ? 'Services' : 'सेवाएं', action: 'services' },
+    { label: lang === 'EN' ? 'Statistics' : 'आँकड़े', action: 'njdg' },
+    { label: lang === 'EN' ? 'About' : 'परिचय', action: 'about' },
+    { label: lang === 'EN' ? 'Contact' : 'संपर्क', action: 'contact' },
   ]
+
+  const handleNavClick = (action: string) => {
+    if (action === 'home' && onLogoClick) {
+      onLogoClick()
+    } else if (onNavigate) {
+      onNavigate(action)
+    }
+    setMenuOpen(false)
+  }
 
   return (
     <header className="bg-[#0a1f44] text-white shadow-lg sticky top-0 z-50">
@@ -43,13 +53,13 @@ export default function Header({ onLogoClick }: HeaderProps) {
           {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
             {navLinks.map((l) => (
-              <a
+              <button
                 key={l.label}
-                href={l.href}
-                className="text-blue-100 hover:text-[#ff9933] transition-colors"
+                onClick={() => handleNavClick(l.action)}
+                className="text-blue-100 hover:text-[#ff9933] transition-colors bg-transparent border-none cursor-pointer"
               >
                 {l.label}
-              </a>
+              </button>
             ))}
           </nav>
 
@@ -79,14 +89,13 @@ export default function Header({ onLogoClick }: HeaderProps) {
         {menuOpen && (
           <div className="md:hidden py-3 border-t border-[#1a3f7c]">
             {navLinks.map((l) => (
-              <a
+              <button
                 key={l.label}
-                href={l.href}
-                className="block py-2 text-sm text-blue-100 hover:text-[#ff9933] transition-colors"
-                onClick={() => setMenuOpen(false)}
+                onClick={() => handleNavClick(l.action)}
+                className="block w-full text-left py-2 text-sm text-blue-100 hover:text-[#ff9933] transition-colors bg-transparent border-none cursor-pointer"
               >
                 {l.label}
-              </a>
+              </button>
             ))}
           </div>
         )}

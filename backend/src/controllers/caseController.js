@@ -1,3 +1,9 @@
+/**
+ * eCourts Case Lookup & Guidance Controller
+ * Developer: Disha (Backend Developer)
+ * Sprint: Day 4 — Government Services & Judicial Information
+ */
+
 import { eCourtsService } from '../services/eCourtsService.js';
 
 export function lookupCase(req, res, next) {
@@ -15,7 +21,7 @@ export function lookupCase(req, res, next) {
       });
     }
 
-    const result = eCourtsService.validateAndParseCNR(cnr);
+    const result = eCourtsService.lookupCaseStatus(cnr);
 
     if (!result.isValid) {
       return res.status(400).json({
@@ -30,12 +36,34 @@ export function lookupCase(req, res, next) {
 
     return res.status(200).json({
       success: true,
-      cnr: result.cnr,
-      isValidCnrFormat: true,
-      parsed: result.parsed,
-      isLive: false,
-      disclaimer: 'Live CNR status requires CAPTCHA verification on the official eCourts Services portal. Use the direct link below to verify official real-time orders.',
-      officialPortalUrl: result.officialPortalUrl,
+      ...result,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export function getCaseGuidance(req, res, next) {
+  try {
+    const language = req.query.language || req.query.lang || 'en';
+    const guidance = eCourtsService.getCaseGuidance(language);
+
+    return res.status(200).json({
+      success: true,
+      ...guidance,
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export function getDemoSamples(req, res, next) {
+  try {
+    const samples = eCourtsService.getDemoSamples();
+    return res.status(200).json({
+      ...samples,
       timestamp: new Date().toISOString()
     });
   } catch (error) {

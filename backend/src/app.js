@@ -10,6 +10,8 @@ import chatRoutes from './routes/chat.routes.js';
 import statsRoutes from './routes/stats.routes.js';
 import caseRoutes from './routes/case.routes.js';
 import documentRoutes from './routes/document.routes.js';
+import dojRoutes from './routes/doj.routes.js';
+import servicesRoutes from './routes/services.routes.js';
 
 const app = express();
 
@@ -27,20 +29,24 @@ app.use(`${apiPrefix}/chat`, chatRoutes);
 app.use(`${apiPrefix}/stats`, statsRoutes);
 app.use(`${apiPrefix}/cases`, caseRoutes);
 app.use(`${apiPrefix}/documents`, documentRoutes);
+app.use(`${apiPrefix}/doj`, dojRoutes);
+app.use(`${apiPrefix}/services`, servicesRoutes);
 
 // Root Index Route
 app.get('/', (req, res) => {
   res.json({
     service: 'JusticeAI Backend API',
     description: 'Official AI-Powered Digital Assistant for Department of Justice, GoI',
-    documentation: 'Refer to /contracts/api-contract.md',
+    documentation: 'Refer to /contracts/api-contract.md and /docs/disha-progress.md',
     healthCheck: `${apiPrefix}/health`,
     endpoints: {
       health: `${apiPrefix}/health`,
       chat: `${apiPrefix}/chat`,
       stats: `${apiPrefix}/stats`,
       cases: `${apiPrefix}/cases`,
-      documents: `${apiPrefix}/documents`
+      documents: `${apiPrefix}/documents`,
+      doj: `${apiPrefix}/doj`,
+      services: `${apiPrefix}/services`
     }
   });
 });

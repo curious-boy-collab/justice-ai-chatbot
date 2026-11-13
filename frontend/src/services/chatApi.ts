@@ -1,15 +1,14 @@
 import type { ChatRequest, AIResponsePayload, Source, RetrievalInfo } from '../types/chat'
-
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined) || '/api'
+import { API_BASE_URL, ApiError } from './apiClient'
 
 /**
- * Connects to Disha's agreed backend API endpoint:
+ * Connects to Disha's backend API endpoint:
  * POST /api/chat
  * Payload: { query, message, language, sessionId }
  */
 export async function sendChatMessage(request: ChatRequest): Promise<AIResponsePayload> {
   const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), 25000)
+  const timeoutId = setTimeout(() => controller.abort(), 20000)
 
   try {
     const response = await fetch(`${API_BASE_URL}/chat`, {
@@ -34,21 +33,44 @@ export async function sendChatMessage(request: ChatRequest): Promise<AIResponseP
       return normalizeBackendResponse(data, request)
     }
 
-    // Try parsing error payload from backend
+    // Try parsing explicit error payload from backend (e.g. 400 validation error)
+    let errorMessage = `Server returned status ${response.status}`
+    let errorCode: string | undefined
     try {
       const errorJson = await response.json()
       if (errorJson?.error?.message) {
-        throw new Error(errorJson.error.message)
+        errorMessage = errorJson.error.message
+        errorCode = errorJson.error.code
       }
     } catch {
-      // Proceed to fallback if backend is offline or returns error
+      // JSON parse error, keep fallback message
     }
 
-    throw new Error(`Server returned status ${response.status}`)
+    // For 4xx client errors, throw directly so UI displays validation feedback
+    if (response.status >= 400 && response.status < 500) {
+      throw new ApiError(errorMessage, response.status, errorCode)
+    }
+
+    throw new ApiError(errorMessage, response.status, errorCode)
   } catch (err: unknown) {
     clearTimeout(timeoutId)
-    // If backend is not running or network request fails, provide grounded local response
-    return getLocalGroundedResponse(request)
+
+    // Re-throw 4xx client validation errors so UI handles them directly
+    if (err instanceof ApiError && err.status >= 400 && err.status < 500) {
+      throw err
+    }
+
+    // If backend is offline or network fails, provide grounded local response with offline indicator
+    const fallback = getLocalGroundedResponse(request)
+    return {
+      ...fallback,
+      dataFreshness: {
+        ...fallback.dataFreshness,
+        sourceStatus: request.language === 'hi'
+          ? 'ऑफलाइन संदर्भ (सर्वर से संपर्क नहीं हो सका)'
+          : 'Offline Reference (Live Server Standby)',
+      },
+    }
   }
 }
 
@@ -57,13 +79,13 @@ export async function sendChatMessage(request: ChatRequest): Promise<AIResponseP
  */
 function normalizeBackendResponse(data: Record<string, unknown>, request: ChatRequest): AIResponsePayload {
   const answer = (data.answer as string) || (data.reply as string) || ''
-  const sourcesRaw = (data.sources as Source[]) || (data.citations as Source[]) || []
+  const sourcesRaw = (data.sources as Array<Record<string, unknown>>) || (data.citations as Array<Record<string, unknown>>) || []
   const sources: Source[] = sourcesRaw.map((s) => ({
-    title: s.title || s.label || 'Official Department of Justice Document',
-    url: s.url || 'https://doj.gov.in',
-    category: s.category || 'Department of Justice',
-    snippet: s.snippet || undefined,
-    relevanceScore: s.relevanceScore !== undefined ? s.relevanceScore : 0.92,
+    title: (s.title as string) || (s.sourceTitle as string) || (s.label as string) || 'Official Department of Justice Document',
+    url: (s.url as string) || 'https://doj.gov.in',
+    category: (s.category as string) || (s.division as string) || 'Department of Justice',
+    snippet: (s.snippet as string) || undefined,
+    relevanceScore: s.relevanceScore !== undefined ? Number(s.relevanceScore) : 0.94,
   }))
 
   const today = new Date().toISOString().split('T')[0]
@@ -74,7 +96,7 @@ function normalizeBackendResponse(data: Record<string, unknown>, request: ChatRe
     sources,
     dataStatus:
       (data.dataStatus as 'official_reference' | 'live_api_reference' | 'procedural_guidance' | 'demo') ||
-      (data.isLive ? 'official_reference' : 'procedural_guidance'),
+      (data.isLive ? 'live_api_reference' : 'official_reference'),
     lastChecked: (data.lastChecked as string) || today,
     retrieval: (data.retrieval as RetrievalInfo) || {
       documentCount: sources.length || 1,

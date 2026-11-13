@@ -1,131 +1,96 @@
 # Shravani — Frontend Progress Log
-**Branch:** `feature/frontend` | **Role:** Frontend Developer | **Sprint Days:** 1, 2, 3 & 4
+**Branch:** `feature/frontend` | **Role:** Frontend Developer | **Sprint Days:** 1, 2, 3, 4 & 5
 
 ---
 
-## ✅ Day 4 Completed Tasks: Government Services & Judicial Information Pages
+## ✅ Day 5 Completed Tasks: Frontend Integration, End-to-End Testing & Bug Fixing
 
-### 1. NJDG Statistics Dashboard (`pages/NJDGDashboard.tsx`)
-- [x] Court-wise pendency overview: Supreme Court, High Courts, District Courts, FTSCs
-- [x] Case age distribution with horizontal bar chart (Under 1 year through Over 20 years)
-- [x] High Court-wise summary table (top 8 HCs by pendency with filed/disposed/trend)
-- [x] Official NJDG resource links section
-- [x] All figures prominently labelled as **⚠️ Demo Data** with verification links to njdg.ecourts.gov.in
+### 1. Centralized Backend API Client (`services/apiClient.ts` & `types/api.ts`)
+- [x] Unified HTTP client (`apiRequest`) with configurable base URL (`VITE_API_BASE_URL` with default `/api` proxy).
+- [x] Request timeout protection (15s default) using `AbortController`.
+- [x] Strongly-typed error model (`ApiError`) differentiating 4xx client errors, 5xx server failures, and network timeouts.
+- [x] Implemented API helper functions:
+  - `checkBackendHealth()`: Queries `GET /api/health`
+  - `fetchNjdgStats()`: Queries `GET /api/stats/njdg`
+  - `fetchJudgeStats()`: Queries `GET /api/stats/judges`
+  - `lookupCaseByCNR(cnr)`: Queries `GET /api/cases/lookup?cnr=...`
+  - `fetchKnowledgeStats()`: Queries `GET /api/documents/stats`
+  - `fetchKnowledgeDocuments()`: Queries `GET /api/documents`
 
-### 2. Judge Strength & Vacancy Report (`pages/JudgeVacancyPage.tsx`)
-- [x] Three main cards: Supreme Court (34 sanctioned), High Courts (1,114), District Courts (25,628)
-- [x] Color-coded fill percentage bars (green >85%, orange >70%, red <70%)
-- [x] Vacancy count badges with percentage
-- [x] HC-wise vacancy detail table with fill percentage badges
-- [x] Info box about judicial appointment process
-- [x] Source links to doj.gov.in and main.sci.gov.in
-- [x] All figures clearly marked as **⚠️ Demo Data**
+### 2. Backend Chatbot Service Integration (`services/chatApi.ts`)
+- [x] Connected `sendChatMessage` directly through centralized `apiClient`.
+- [x] Correctly mapped backend RAG citation properties (`sourceTitle`, `division`, `category`, `relevanceScore`).
+- [x] Propagated 4xx validation errors directly from backend (e.g. `INVALID_INPUT`) so citizen receives explicit feedback.
+- [x] Added transparent offline reference fallback with status indicator when live backend is unreachable.
 
-### 3. Government Services Section (`pages/ServicesPage.tsx`)
-- [x] 7 service cards with bilingual titles (Hindi + English): Case Status, NJDG, Judge Vacancies, eFiling, Tele-Law, FTSC, eCourts App
-- [x] 8 official portal quick links (eCourts, NJDG, eFiling, ePay, Tele-Law, DoJ, Live Streaming, Supreme Court)
-- [x] Each card navigates to its dedicated detail page
-- [x] Chat CTA at bottom
+### 3. NJDG Dashboard API Integration (`pages/NJDGDashboard.tsx`)
+- [x] Connected to backend endpoint `GET /api/stats/njdg`.
+- [x] Dynamic loading skeleton and live API connection status pill (`🟢 Live Backend API Connected`).
+- [x] Rendered real-time cumulative statistics (5.12 Cr cases, 78.14% criminal, 21.86% civil).
+- [x] Rendered court tier breakdown: Supreme Court (82.5K pending), 25 High Courts (61.5L pending), District Courts (4.50 Cr pending).
+- [x] Rendered nationwide case age distribution with responsive multi-color progress bars.
+- [x] Added manual data refresh button and graceful reference baseline when backend is offline.
 
-### 4. eFiling & ePay Guidance Page (`pages/EFilingPage.tsx`)
-- [x] 6-step numbered procedure with bilingual step titles
-- [x] Portal link cards for filing.ecourts.gov.in and pay.ecourts.gov.in
-- [x] Payment methods info: UPI, Net Banking, RuPay Debit Card
-- [x] Aadhaar e-Sign and DSC (Digital Signature Certificate) information
-- [x] 6 FAQ accordion items (expandable/collapsible)
-- [x] Chat CTA for filing guidance
+### 4. Judge Strength & Vacancy Integration (`pages/JudgeVacancyPage.tsx`)
+- [x] Connected to backend endpoint `GET /api/stats/judges`.
+- [x] Dynamic capacity fill bars with color coding (>85% green, >70% saffron, <70% red).
+- [x] Real-time rendering of Supreme Court (33/34 working, 1 vacancy) and 25 High Courts (778/1,114 working, 336 vacancies).
+- [x] Top High Court vacancy matrix dynamically rendered from DoJ data.
+- [x] Connected to official source statements at `doj.gov.in/appointments-of-judges/`.
 
-### 5. Tele-Law Information Page (`pages/TeleLawPage.tsx`)
-- [x] Key info cards: 5,00,000+ CSCs, FREE for eligible, Video + Audio consultation
-- [x] 4-step "How to Access Tele-Law" guide with numbered cards
-- [x] Eligibility table: Women, SC/ST, BPL, Disabled, Children = FREE; Others = ₹30
-- [x] Helpline numbers: 1800-200-7514 (toll-free) and 14416 (short code)
-- [x] Official links: tele-law.in and locator.csccloud.in (CSC locator)
-- [x] Demo data notice for CSC counts
+### 5. Case Status Search API Integration (`pages/CaseStatusPage.tsx`)
+- [x] Connected to backend endpoint `GET /api/cases/lookup?cnr=...`.
+- [x] Validated 16-character alphanumeric CNR format with backend registry verification.
+- [x] Parsed breakdown display: State Code, Court Establishment, Case Serial Index, Filing Year.
+- [x] Displayed official CAPTCHA requirement notice explaining anti-scraping safeguards on eCourts.
+- [x] Added sample CNR chips (`DLHC010012342023`, `MHBB010056782024`, `KABC010098762022`) for instant testing.
+- [x] One-click direct verified portal link to `services.ecourts.gov.in`.
 
-### 6. Fast Track Courts Information Page (`pages/FTSCPage.tsx`)
-- [x] 4 stat cards: 761 FTSCs, 414 exclusive POCSO courts, 28 states, 2,34,567+ disposed
-- [x] About FTSC section: Purpose and Key Features with check-listed items
-- [x] State-wise FTSC distribution table (top 8 states with FTSC and POCSO counts)
-- [x] POCSO Act info box
-- [x] Official link to doj.gov.in/fast-track-special-court-ftsc/
-- [x] All stats marked as **⚠️ Demo Data**
+### 6. Loading, Error & Accessibility Enhancements (`components/Chat/`)
+- [x] Fixed boolean operator precedence bug in `ChatBox.tsx` for `isNoResults` detection.
+- [x] Added `initialQueryHandledRef` guard preventing duplicate request dispatch in React strict mode.
+- [x] Verified button loading spinner, disabled state during active requests, and Shift+Enter multi-line support.
+- [x] Added `break-words` and `break-all` on user/assistant bubbles to prevent container overflow on long Hindi ligatures and code blocks.
+- [x] Added accessible keyboard navigation (`role="button"`, `tabIndex={0}`, Enter/Space keys) and `aria-expanded` to citations accordion.
+- [x] Added `aria-label` to copy button.
 
-### 7. eCourts App Guidance Section (`pages/ECourtsAppPage.tsx`)
-- [x] Download links: Google Play Store and Apple App Store
-- [x] 4 key features with bilingual labels: CNR Search, Hearing Alerts, Cause Lists, Case History
-- [x] 5 case search methods with examples (CNR, Party Name, Advocate, FIR, Case Number)
-- [x] SMS service: `ECOURTS <CNR>` to 9766899899
-- [x] IVR helpline: 1800-200-0498 (24/7 toll-free)
-- [x] eCourts Mission Mode Project info box
+### 7. Layout & Navigation Routing (`App.tsx`, `Header.tsx`, `ServicesPage.tsx`, `LandingPage.tsx`)
+- [x] Extended header navigation to route between Home, Services, Statistics, About, and Contact.
+- [x] Synced LandingPage overview statistics with verified official DoJ and NJDG figures.
+- [x] Added RAG Verified Knowledge Base metrics banner in ServicesPage (`15 Official Documents`, `105 Indexed Chunks`).
 
-### 8. Case Status Search Interface (`pages/CaseStatusPage.tsx`)
-- [x] CNR number input with format validation (`[A-Z]{4}\d{2}\d{6}\d{4}`)
-- [x] "How to find your CNR" collapsible guidance with 5 tips
-- [x] Search button opens official eCourts portal in new tab
-- [x] 4 alternative search methods: Party Name, Advocate Name, FIR Number, Case Number
-- [x] CNR format info box with example
-- [x] Demo mode notice — actual lookup via ecourts.gov.in
+### 8. Official Government Links Verification
+- [x] Audited all external links across all frontend components.
+- [x] 100% of external links use `target="_blank" rel="noopener noreferrer"`.
+- [x] Zero placeholder (`href="#"`) links remaining on interactive navigation.
+- [x] Verified official destinations: `doj.gov.in`, `ecourts.gov.in`, `njdg.ecourts.gov.in`, `services.ecourts.gov.in`, `filing.ecourts.gov.in`, `pay.ecourts.gov.in`, `tele-law.in`, `vcourts.gov.in`, `main.sci.gov.in`.
 
-### 9. Updated Navigation & Routing
-- [x] `App.tsx` — expanded `Page` union type with 10 page states and `renderPage()` switch
-- [x] `Header.tsx` — accepts `onNavigate` callback; Services and Statistics nav items navigate to respective pages
-- [x] `LandingPage.tsx` — "Browse All Government Services" link below chat CTA
-
-### 10. Official Portal Links Added Throughout
-- [x] njdg.ecourts.gov.in, ecourts.gov.in, filing.ecourts.gov.in, pay.ecourts.gov.in
-- [x] tele-law.in, locator.csccloud.in, doj.gov.in, main.sci.gov.in
-- [x] liveproceedings.ecourts.gov.in, doj.gov.in/appointments-of-judges/
-- [x] Google Play & App Store links for eCourts Services app
-- [x] All external links use `target="_blank" rel="noopener noreferrer"`
+### 9. Automated Testing & Verification
+- [x] Created `frontend/test/cnr_validation.test.js` (testing CNR regex and parsing rules).
+- [x] Created `frontend/test/api_integration.test.js` (testing response normalization, source parsing, and calculations).
+- [x] Added `npm test` script to `frontend/package.json`.
+- [x] **Test Results:** 8/8 tests passed (0 failures).
+- [x] **TypeScript:** `npx tsc --noEmit` ➔ 0 errors.
+- [x] **Production Build:** `npx vite build` ➔ Completed in ~160ms with zero warnings.
 
 ---
 
-## ✅ Day 3 Completed Tasks: RAG Implementation, Source Citations & Knowledge Base UI
-
-### 1. Source Citations Below AI Answers (`ChatMessage.tsx`)
-- [x] Enriched Citation Cards with document titles, official URLs, division tags, relevance scores, retrieved text snippets.
-
-### 2. Display Official Source Links
-- [x] Clickable external links with secure attributes to DoJ, eCourts, NJDG, Tele-Law portals.
-
-### 3. Advanced Chatbot Message Formatting
-- [x] Markdown parser: headings, bold, italic, inline code, custom bullets, numbered steps, callout blocks, copy button.
-
-### 4. Source Information Expand/Collapse UI
-- [x] Interactive accordion with citation count, chevron toggle, compact/detailed views.
-
-### 5. Clear Indication of Retrieved Information
-- [x] RAG retrieval header with confidence rating and match score.
-
-### 6. Multi-Stage Loading & Enhanced Error States
-- [x] 3-stage RAG loading animation. Comprehensive error with retry and helpline.
-
-### 7. Dedicated No-Results State
-- [x] Search guidance checklist, quick-recovery prompts, Tele-Law helpline card.
-
-### 8. Mobile-Friendly Layout
-- [x] Dynamic viewport height (`100dvh`), compact mobile citations, touch-friendly targets.
-
-### 9. Hindi Text Rendering
-- [x] Verified complex Devanagari ligatures, dual-language switching with localStorage.
-
----
-
-## 📁 Repository Structure (Day 4 Frontend)
+## 📁 Repository Structure (Day 5 Frontend)
 
 ```
 frontend/
 ├── src/
 │   ├── types/
-│   │   └── chat.ts
+│   │   ├── api.ts                ← NEW Day 5 (Health, NJDG, Judges, Case, Documents types)
+│   │   └── chat.ts               (RAG, Message, Source interfaces)
 │   ├── services/
-│   │   └── chatApi.ts
+│   │   ├── apiClient.ts          ← NEW Day 5 (Centralized HTTP client, error handling)
+│   │   └── chatApi.ts            (RAG chat endpoint integration)
 │   ├── components/
 │   │   ├── Chat/
-│   │   │   ├── ChatBox.tsx
-│   │   │   ├── ChatMessage.tsx
-│   │   │   ├── ChatInput.tsx
+│   │   │   ├── ChatBox.tsx       (Loading, retry, duplicate-prevention)
+│   │   │   ├── ChatMessage.tsx   (Markdown, break-words, citations, copy button)
+│   │   │   ├── ChatInput.tsx     (Auto-resize, Shift+Enter, loading spinner)
 │   │   │   ├── ChatHistoryDrawer.tsx
 │   │   │   ├── EmptyState.tsx
 │   │   │   ├── SuggestedPrompts.tsx
@@ -134,23 +99,26 @@ frontend/
 │   │   │   ├── StatCard.tsx
 │   │   │   └── SuggestedCard.tsx
 │   │   └── Layout/
-│   │       ├── Header.tsx
+│   │       ├── Header.tsx        (Bilingual, navigation routing)
 │   │       ├── Footer.tsx
 │   │       └── Sidebar.tsx
 │   ├── pages/
-│   │   ├── LandingPage.tsx
-│   │   ├── ChatPage.tsx
-│   │   ├── ServicesPage.tsx          ← NEW Day 4
-│   │   ├── NJDGDashboard.tsx         ← NEW Day 4
-│   │   ├── JudgeVacancyPage.tsx      ← NEW Day 4
-│   │   ├── EFilingPage.tsx           ← NEW Day 4
-│   │   ├── TeleLawPage.tsx           ← NEW Day 4
-│   │   ├── FTSCPage.tsx              ← NEW Day 4
-│   │   ├── ECourtsAppPage.tsx        ← NEW Day 4
-│   │   └── CaseStatusPage.tsx        ← NEW Day 4
-│   ├── App.tsx                       ← UPDATED Day 4 (10 page routes)
-│   ├── index.css
+│   │   ├── LandingPage.tsx       (Official stats, navigation callbacks)
+│   │   ├── ChatPage.tsx          (100dvh viewport container)
+│   │   ├── ServicesPage.tsx      (7 services, knowledge base metrics banner)
+│   │   ├── NJDGDashboard.tsx     (API integrated with GET /api/stats/njdg)
+│   │   ├── JudgeVacancyPage.tsx  (API integrated with GET /api/stats/judges)
+│   │   ├── CaseStatusPage.tsx    (API integrated with GET /api/cases/lookup)
+│   │   ├── EFilingPage.tsx
+│   │   ├── TeleLawPage.tsx
+│   │   ├── FTSCPage.tsx
+│   │   └── ECourtsAppPage.tsx
+│   ├── App.tsx                   (10 page router)
+│   ├── index.css                 (Tailwind v4, Devanagari typography)
 │   └── main.tsx
+├── test/
+│   ├── api_integration.test.js   ← NEW Day 5 (Response normalization tests)
+│   └── cnr_validation.test.js    ← NEW Day 5 (CNR validation regex tests)
 ├── vite.config.ts
 ├── tsconfig.json
 └── package.json
@@ -159,12 +127,11 @@ frontend/
 ---
 
 ## 🧪 Verification & Build Status
+- **Backend Unit & E2E Tests:** `73/73 passed` (including Disha & Nitin's RAG test suites).
+- **Frontend Automated Tests:** `8/8 passed` via `npm test`.
 - **TypeScript Typecheck:** `npx tsc --noEmit` ➔ **0 errors**.
-- **Production Build:** `npx vite build` ➔ Completed in **161ms** (404.62 kB JS, 48.22 kB CSS).
-- **New Pages:** 8 new page/component files created, 3 existing files updated.
-- **Demo Data:** Every statistical figure prominently marked with ⚠️ Demo Data badges and verification links.
-- **Official Links:** 12+ real government portal URLs added with secure attributes.
+- **Production Build:** `npx vite build` ➔ Completed in **161ms** (`422 kB JS`, `51 kB CSS`).
 
 ---
 
-*Last updated: Day 4 — 2026-11-12 by Shravani*
+*Last updated: Day 5 — 2026-11-13 by Shravani*

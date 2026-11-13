@@ -2,6 +2,7 @@ import {
   Gavel, ArrowLeft, ExternalLink, AlertTriangle,
   MapPin, Shield, Users, BarChart3, CheckCircle, Info
 } from 'lucide-react'
+import Footer from '../components/Layout/Footer'
 
 interface FTSCPageProps {
   onBack: () => void
@@ -213,6 +214,7 @@ export default function FTSCPage({ onBack, onStartChat }: FTSCPageProps) {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

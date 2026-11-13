@@ -4,6 +4,7 @@ import {
   ShieldCheck, ChevronDown, ChevronUp
 } from 'lucide-react'
 import { useState } from 'react'
+import Footer from '../components/Layout/Footer'
 
 interface EFilingPageProps {
   onBack: () => void
@@ -251,6 +252,7 @@ export default function EFilingPage({ onBack, onStartChat }: EFilingPageProps) {
           </button>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

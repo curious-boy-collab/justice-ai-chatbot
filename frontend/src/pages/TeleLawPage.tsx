@@ -2,6 +2,7 @@ import {
   Phone, ArrowLeft, ExternalLink, Users, MapPin,
   CheckCircle, AlertTriangle, Clock, Video, Headphones
 } from 'lucide-react'
+import Footer from '../components/Layout/Footer'
 
 interface TeleLawPageProps {
   onBack: () => void
@@ -218,6 +219,7 @@ export default function TeleLawPage({ onBack, onStartChat }: TeleLawPageProps) {
           </button>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

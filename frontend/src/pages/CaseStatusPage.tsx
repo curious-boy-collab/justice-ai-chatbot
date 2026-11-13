@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import { lookupCaseByCNR, ApiError } from '../services/apiClient'
 import type { CaseLookupResponse } from '../types/api'
+import Footer from '../components/Layout/Footer'
 
 interface CaseStatusPageProps {
   onBack: () => void
@@ -342,6 +343,7 @@ export default function CaseStatusPage({ onBack, onStartChat }: CaseStatusPagePr
           <strong>Official Transparency Note:</strong> JusticeAI does not harvest or retain confidential court records. Case search queries are resolved in accordance with Supreme Court e-Committee guidelines for citizen access to public justice data.
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

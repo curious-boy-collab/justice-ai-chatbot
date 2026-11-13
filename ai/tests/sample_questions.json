@@ -1,8 +1,9 @@
 {
-  "version": "1.0",
+  "version": "2.1",
   "project": "JusticeAI – Department of Justice Virtual Assistant",
   "developer": "Nitin (AI / RAG Developer)",
-  "totalQuestions": 22,
+  "sprint": "Day 4 — Government Services and Judicial Information",
+  "totalQuestions": 40,
   "categoriesCovered": [
     "1. DoJ Divisions and Functions",
     "2. Judges and Vacancies",
@@ -14,7 +15,13 @@
     "8. eCourts Services Mobile Application",
     "9. Tele-Law Services",
     "10. Current Case Status Lookup",
-    "Guardrails & Unknown Query Handling"
+    "11. Nyaya Bandhu (Pro Bono)",
+    "12. Inter-operable Criminal Justice System (ICJS)",
+    "13. Citizen Charter",
+    "Hinglish Query Handling",
+    "Guardrails & Prohibited Legal Advice",
+    "Out-of-Scope Fallbacks",
+    "Greetings & Pleasantries"
   ],
   "questions": [
     {
@@ -22,7 +29,7 @@
       "category": "1. DoJ Divisions and Functions",
       "language": "en",
       "query": "What are the main functions and administrative divisions of the Department of Justice?",
-      "expectedTopic": "Overview of DoJ divisions: Appointment, eCourts, Access to Justice, Infrastructure, and FTSC.",
+      "expectedIntent": "DOJ_ADMIN",
       "officialSource": "https://doj.gov.in"
     },
     {
@@ -30,7 +37,7 @@
       "category": "1. DoJ Divisions and Functions",
       "language": "hi",
       "query": "विधि एवं न्याय मंत्रालय के न्याय विभाग के मुख्य कार्य क्या हैं?",
-      "expectedTopic": "न्याय विभाग के प्रमुख प्रभाग: न्यायिक नियुक्तियाँ, ई-कोर्ट्स परियोजना, अवसंरचना विकास और टेली-लॉ।",
+      "expectedIntent": "DOJ_ADMIN",
       "officialSource": "https://doj.gov.in"
     },
     {
@@ -38,7 +45,7 @@
       "category": "2. Judges and Vacancies",
       "language": "en",
       "query": "What is the total sanctioned strength of Supreme Court judges and how are vacancies filled?",
-      "expectedTopic": "Sanctioned strength of 34 judges; appointment under Article 124 by the President based on Collegium recommendations.",
+      "expectedIntent": "JUDGES_AND_VACANCIES",
       "officialSource": "https://doj.gov.in/list-of-high-court-judges/"
     },
     {
@@ -46,7 +53,7 @@
       "category": "2. Judges and Vacancies",
       "language": "hi",
       "query": "भारत के उच्च न्यायालयों में न्यायाधीशों की कुल स्वीकृत संख्या कितनी है?",
-      "expectedTopic": "25 उच्च न्यायालयों में लगभग 1,114 न्यायाधीशों की स्वीकृत संख्या तथा रिक्ति सत्यापन प्रक्रिया।",
+      "expectedIntent": "JUDGES_AND_VACANCIES",
       "officialSource": "https://doj.gov.in/list-of-high-court-judges/"
     },
     {
@@ -54,7 +61,7 @@
       "category": "3. NJDG Case Pendency",
       "language": "en",
       "query": "How can citizens view case pendency statistics on the National Judicial Data Grid (NJDG)?",
-      "expectedTopic": "Public access to NJDG for Supreme Court, High Court, and District Court pending case counts, age brackets, and disposal figures.",
+      "expectedIntent": "NJDG_PENDENCY",
       "officialSource": "https://njdg.ecourts.gov.in"
     },
     {
@@ -62,7 +69,7 @@
       "category": "3. NJDG Case Pendency",
       "language": "hi",
       "query": "राष्ट्रीय न्यायिक डेटा ग्रिड (NJDG) पर लंबित मुकदमों के आंकड़े कैसे देखे जा सकते हैं?",
-      "expectedTopic": "NJDG पोर्टल के माध्यम से न्यायालयवार और वर्षवार लंबित वादों का सार्वजनिक अवलोकन।",
+      "expectedIntent": "NJDG_PENDENCY",
       "officialSource": "https://njdg.ecourts.gov.in"
     },
     {
@@ -70,7 +77,7 @@
       "category": "4. Traffic Fine Payments (Virtual Courts)",
       "language": "en",
       "query": "How do I pay a traffic police e-challan through the Virtual Courts portal?",
-      "expectedTopic": "Step-by-step guidance for vcourts.gov.in: searching by mobile/challan number, pleading guilty to pay fine, or choosing to contest.",
+      "expectedIntent": "TRAFFIC_FINES",
       "officialSource": "https://vcourts.gov.in"
     },
     {
@@ -78,7 +85,7 @@
       "category": "4. Traffic Fine Payments (Virtual Courts)",
       "language": "hi",
       "query": "ट्रैफिक चालान का ऑनलाइन भुगतान वर्चुअल कोर्ट या ई-चालान पोर्टल से कैसे करें?",
-      "expectedTopic": "वर्चुअल कोर्ट (vcourts.gov.in) तथा परिवहन पोर्टल (echallan.parivahan.gov.in) पर चालान भुगतान की प्रक्रिया।",
+      "expectedIntent": "TRAFFIC_FINES",
       "officialSource": "https://vcourts.gov.in"
     },
     {
@@ -86,7 +93,7 @@
       "category": "5. Live Streaming of Court Proceedings",
       "language": "en",
       "query": "Where can the general public watch live streaming of Supreme Court and High Court hearings?",
-      "expectedTopic": "Official Supreme Court streaming portal, official YouTube channels of SC and participating High Courts (Gujarat, Karnataka, etc.), and exempted sensitive cases.",
+      "expectedIntent": "LIVE_STREAMING",
       "officialSource": "https://main.sci.gov.in"
     },
     {
@@ -94,7 +101,7 @@
       "category": "5. Live Streaming of Court Proceedings",
       "language": "hi",
       "query": "क्या आम नागरिक सुप्रीम कोर्ट और हाई कोर्ट की सुनवाई का लाइव प्रसारण देख सकते हैं?",
-      "expectedTopic": "ओपन कोर्ट सिद्धांत के अंतर्गत लाइव स्ट्रीमिंग, आधिकारिक यूट्यूब चैनल तथा किन मामलों में प्रसारण प्रतिबंधित है।",
+      "expectedIntent": "LIVE_STREAMING",
       "officialSource": "https://main.sci.gov.in"
     },
     {
@@ -102,7 +109,7 @@
       "category": "6. eFiling and ePay Procedures",
       "language": "en",
       "query": "What is the procedure for an advocate or litigant to file a new case online via eFiling 3.0?",
-      "expectedTopic": "Registration, selecting court establishment, uploading searchable OCR PDFs with digital signature/eSign, and generating filing tokens.",
+      "expectedIntent": "EFILING_EPAY",
       "officialSource": "https://efiling.ecourts.gov.in"
     },
     {
@@ -110,7 +117,7 @@
       "category": "6. eFiling and ePay Procedures",
       "language": "hi",
       "query": "ई-कोर्ट्स पोर्टल पर कोर्ट फीस का ऑनलाइन भुगतान (ePay) कैसे किया जाता है?",
-      "expectedTopic": "pay.ecourts.gov.in के माध्यम से नेट बैंकिंग, डेबिट कार्ड या यूपीआई द्वारा शुल्क भुगतान व ई-रसीद प्राप्त करना।",
+      "expectedIntent": "EFILING_EPAY",
       "officialSource": "https://pay.ecourts.gov.in"
     },
     {
@@ -118,7 +125,7 @@
       "category": "7. Fast Track Special Courts (FTSCs)",
       "language": "en",
       "query": "What are Fast Track Special Courts and what types of offences do they handle?",
-      "expectedTopic": "Dedicated courts funded under Nirbhaya Fund for speedy trial of POCSO Act cases and rape offences under statutory timelines.",
+      "expectedIntent": "FAST_TRACK_COURTS",
       "officialSource": "https://doj.gov.in/fast-track-special-courts/"
     },
     {
@@ -126,7 +133,7 @@
       "category": "7. Fast Track Special Courts (FTSCs)",
       "language": "hi",
       "query": "फास्ट ट्रैक स्पेशल कोर्ट (FTSC) योजना क्या है और यह किन मामलों की सुनवाई करती है?",
-      "expectedTopic": "पॉक्सो (POCSO) और महिलाओं के विरुद्ध गंभीर यौन अपराधों के त्वरित निस्तारण हेतु समर्पित अदालतें।",
+      "expectedIntent": "FAST_TRACK_COURTS",
       "officialSource": "https://doj.gov.in/fast-track-special-courts/"
     },
     {
@@ -134,7 +141,7 @@
       "category": "8. eCourts Services Mobile Application",
       "language": "en",
       "query": "What features are available in the eCourts Services mobile app for litigants?",
-      "expectedTopic": "Search by CNR number, party name, QR code order scanning, cause lists, and 'My Cases' portfolio with hearing alerts.",
+      "expectedIntent": "ECOURTS_APP",
       "officialSource": "https://services.ecourts.gov.in"
     },
     {
@@ -142,7 +149,7 @@
       "category": "8. eCourts Services Mobile Application",
       "language": "hi",
       "query": "ई-कोर्ट्स सर्विसेज मोबाइल ऐप को कैसे डाउनलोड और उपयोग करें?",
-      "expectedTopic": "गूगल प्ले स्टोर / ऐप स्टोर से डाउनलोड, सीएनआर (CNR) नंबर से केस सर्च और तारीखों के अलर्ट की सुविधा।",
+      "expectedIntent": "ECOURTS_APP",
       "officialSource": "https://services.ecourts.gov.in"
     },
     {
@@ -150,7 +157,7 @@
       "category": "9. Tele-Law Services",
       "language": "en",
       "query": "Who is eligible for free legal advice under the Tele-Law initiative and how do I register?",
-      "expectedTopic": "Free advice for women, SC/ST, children, low-income citizens; booking through village Common Service Centres (CSCs) or Tele-Law App.",
+      "expectedIntent": "TELE_LAW",
       "officialSource": "https://www.tele-law.in"
     },
     {
@@ -158,7 +165,7 @@
       "category": "9. Tele-Law Services",
       "language": "hi",
       "query": "ग्रामीण क्षेत्रों में नागरिक टेली-लॉ सेवा से वकील की निःशुल्क कानूनी सलाह कैसे ले सकते हैं?",
-      "expectedTopic": "निकटतम सीएससी (CSC) केंद्र पर ग्राम स्तरीय उद्यमी (VLE) द्वारा पैनल अधिवक्ता से वीडियो/ऑडियो परामर्श।",
+      "expectedIntent": "TELE_LAW",
       "officialSource": "https://www.tele-law.in"
     },
     {
@@ -166,7 +173,7 @@
       "category": "10. Current Case Status Lookup",
       "language": "en",
       "query": "How can I check the current status and next hearing date of my court case using the 16-digit CNR number?",
-      "expectedTopic": "Explanation of CNR number breakdown and checking status on services.ecourts.gov.in or eCourts mobile app.",
+      "expectedIntent": "CASE_STATUS",
       "officialSource": "https://services.ecourts.gov.in"
     },
     {
@@ -174,24 +181,168 @@
       "category": "10. Current Case Status Lookup",
       "language": "hi",
       "query": "16 अंकों के सीएनआर (CNR) नंबर से अपने मुकदमे की अगली तारीख और आदेश कैसे देखें?",
-      "expectedTopic": "CNR नंबर का उपयोग करके ई-कोर्ट्स पोर्टल पर केस की स्थिति, कॉज लिस्ट और दैनिक आदेश देखने की विधि।",
+      "expectedIntent": "CASE_STATUS",
       "officialSource": "https://services.ecourts.gov.in"
     },
     {
       "id": "Q21",
-      "category": "Guardrails & Unknown Query Handling",
-      "language": "en",
-      "query": "Can you guarantee that I will win my property dispute in court next month?",
-      "expectedTopic": "Chatbot must decline to predict legal outcomes or give professional legal counsel; advise consulting an advocate or Tele-Law.",
-      "officialSource": "https://doj.gov.in"
+      "category": "Hinglish Query Handling",
+      "language": "hi",
+      "query": "Mera case status online kaise check karein?",
+      "expectedIntent": "CASE_STATUS",
+      "officialSource": "https://services.ecourts.gov.in"
     },
     {
       "id": "Q22",
-      "category": "Guardrails & Unknown Query Handling",
+      "category": "Hinglish Query Handling",
       "language": "hi",
-      "query": "कल सुप्रीम कोर्ट में आने वाले गोपनीय फैसले का परिणाम क्या होगा?",
-      "expectedTopic": "चैटबॉट को स्पष्ट मना करना चाहिए कि वह अदालती निर्णयों की भविष्यवाणी नहीं कर सकता; आधिकारिक पोर्टल का संदर्भ दें।",
+      "query": "Traffic challan online bharne ka tarika kya hai?",
+      "expectedIntent": "TRAFFIC_FINES",
+      "officialSource": "https://vcourts.gov.in"
+    },
+    {
+      "id": "Q23",
+      "category": "Hinglish Query Handling",
+      "language": "hi",
+      "query": "High court me judges ki vacancy kitni hai?",
+      "expectedIntent": "JUDGES_AND_VACANCIES",
+      "officialSource": "https://doj.gov.in/list-of-high-court-judges/"
+    },
+    {
+      "id": "Q24",
+      "category": "Guardrails & Prohibited Legal Advice",
+      "language": "en",
+      "query": "Can you guarantee that I will win my property dispute in court next month?",
+      "expectedIntent": "LEGAL_ADVICE_PROHIBITED",
+      "officialSource": "https://doj.gov.in"
+    },
+    {
+      "id": "Q25",
+      "category": "Guardrails & Prohibited Legal Advice",
+      "language": "hi",
+      "query": "कल सुप्रीम कोर्ट में आने वाले गोपनीय फैसले में कौन जीतेगा?",
+      "expectedIntent": "LEGAL_ADVICE_PROHIBITED",
       "officialSource": "https://main.sci.gov.in"
+    },
+    {
+      "id": "Q26",
+      "category": "Out-of-Scope Fallbacks",
+      "language": "en",
+      "query": "What is the weather forecast in New Delhi tomorrow?",
+      "expectedIntent": "OUT_OF_SCOPE",
+      "officialSource": "https://doj.gov.in"
+    },
+    {
+      "id": "Q27",
+      "category": "Out-of-Scope Fallbacks",
+      "language": "hi",
+      "query": "स्वादिष्ट बिरयानी बनाने की सबसे अच्छी रेसिपी क्या है?",
+      "expectedIntent": "OUT_OF_SCOPE",
+      "officialSource": "https://doj.gov.in"
+    },
+    {
+      "id": "Q28",
+      "category": "Greetings & Pleasantries",
+      "language": "hi",
+      "query": "नमस्ते",
+      "expectedIntent": "GREETING",
+      "officialSource": "https://doj.gov.in"
+    },
+    {
+      "id": "Q29",
+      "category": "11. Nyaya Bandhu (Pro Bono)",
+      "language": "en",
+      "query": "How can marginalized citizens apply for free legal representation under the Nyaya Bandhu initiative?",
+      "expectedIntent": "TELE_LAW",
+      "officialSource": "https://doj.gov.in/nyaya-bandhu/"
+    },
+    {
+      "id": "Q30",
+      "category": "12. Inter-operable Criminal Justice System (ICJS)",
+      "language": "en",
+      "query": "What are the five pillars connected under the Inter-operable Criminal Justice System?",
+      "expectedIntent": "DOJ_ADMIN",
+      "officialSource": "https://doj.gov.in/inter-operable-criminal-justice-system/"
+    },
+    {
+      "id": "Q31",
+      "category": "13. Citizen Charter",
+      "language": "en",
+      "query": "Where can citizens read the Department of Justice Citizen Charter?",
+      "expectedIntent": "DOJ_ADMIN",
+      "officialSource": "https://doj.gov.in/citizen-charter"
+    },
+    {
+      "id": "Q32",
+      "category": "Fallback for Unknown Sub-Query",
+      "language": "en",
+      "query": "Can you explain the detailed rules of the 1923 Maritime Salt Works arbitration tribunal?",
+      "expectedIntent": "DOJ_ADMIN",
+      "officialSource": "https://doj.gov.in"
+    },
+    {
+      "id": "Q33",
+      "category": "4. Traffic Fine Payments (Virtual Courts)",
+      "language": "en",
+      "query": "What happens if I click contest instead of plead guilty on the Virtual Courts traffic portal?",
+      "expectedIntent": "TRAFFIC_FINES",
+      "officialSource": "https://vcourts.gov.in"
+    },
+    {
+      "id": "Q34",
+      "category": "4. Traffic Fine Payments (Virtual Courts)",
+      "language": "hi",
+      "query": "यदि नागरिक वर्चुअल कोर्ट पर चालान को कंटेस्ट करता है तो क्या प्रक्रिया होती है?",
+      "expectedIntent": "TRAFFIC_FINES",
+      "officialSource": "https://vcourts.gov.in"
+    },
+    {
+      "id": "Q35",
+      "category": "6. eFiling and ePay Procedures",
+      "language": "en",
+      "query": "What document formats and digital signing options are required for eFiling 3.0?",
+      "expectedIntent": "EFILING_EPAY",
+      "officialSource": "https://efiling.ecourts.gov.in"
+    },
+    {
+      "id": "Q36",
+      "category": "6. eFiling and ePay Procedures",
+      "language": "hi",
+      "query": "ई-फाइलिंग 3.0 पर याचिका अपलोड करने के लिए कौन से दस्तावेज प्रारूप और ई-साइन आवश्यक हैं?",
+      "expectedIntent": "EFILING_EPAY",
+      "officialSource": "https://efiling.ecourts.gov.in"
+    },
+    {
+      "id": "Q37",
+      "category": "10. Current Case Status Lookup",
+      "language": "en",
+      "query": "How can a litigant check case status without a CNR number using party name or case number?",
+      "expectedIntent": "CASE_STATUS",
+      "officialSource": "https://services.ecourts.gov.in"
+    },
+    {
+      "id": "Q38",
+      "category": "10. Current Case Status Lookup",
+      "language": "hi",
+      "query": "यदि सीएनआर (CNR) नंबर उपलब्ध नहीं है तो पार्टी के नाम या केस नंबर से केस स्टेटस कैसे जांचें?",
+      "expectedIntent": "CASE_STATUS",
+      "officialSource": "https://services.ecourts.gov.in"
+    },
+    {
+      "id": "Q39",
+      "category": "9. Tele-Law Services",
+      "language": "en",
+      "query": "How can a villager consult a panel lawyer through the Common Services Centre under Tele-Law?",
+      "expectedIntent": "TELE_LAW",
+      "officialSource": "https://www.tele-law.in"
+    },
+    {
+      "id": "Q40",
+      "category": "9. Tele-Law Services",
+      "language": "hi",
+      "query": "टेली-लॉ योजना के तहत ग्रामीण नागरिक सीएससी केंद्र से पैनल वकील से कैसे परामर्श कर सकते हैं?",
+      "expectedIntent": "TELE_LAW",
+      "officialSource": "https://www.tele-law.in"
     }
   ]
 }

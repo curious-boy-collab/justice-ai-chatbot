@@ -10,6 +10,7 @@ import SuggestedCard from '../components/Dashboard/SuggestedCard'
 
 interface LandingPageProps {
   onStartChat: (query?: string) => void
+  onNavigateServices?: () => void
 }
 
 const statCards = [
@@ -104,14 +105,14 @@ const suggestedCards = [
   },
 ]
 
-export default function LandingPage({ onStartChat }: LandingPageProps) {
+export default function LandingPage({ onStartChat, onNavigateServices }: LandingPageProps) {
   const handleSuggestedQuery = (query: string) => {
     onStartChat(query)
   }
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header onLogoClick={() => {}} />
+      <Header onLogoClick={() => {}} onNavigate={(p) => { if (p === 'services' && onNavigateServices) onNavigateServices(); if (p === 'njdg' && onNavigateServices) onNavigateServices(); }} />
 
       {/* Hero section */}
       <section className="bg-[#0a1f44] text-white relative overflow-hidden">
@@ -236,6 +237,16 @@ export default function LandingPage({ onStartChat }: LandingPageProps) {
               <ArrowRight className="w-4 h-4" />
             </button>
             <p className="text-xs text-gray-400 mt-2">Ask anything · Available in English and हिंदी</p>
+            {onNavigateServices && (
+              <button
+                onClick={onNavigateServices}
+                className="mt-3 inline-flex items-center gap-2 text-sm text-[#0a1f44] hover:text-[#ff9933]
+                           font-semibold transition-colors"
+              >
+                Browse All Government Services
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            )}
           </div>
         </div>
       </section>

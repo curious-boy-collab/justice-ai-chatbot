@@ -1,0 +1,33 @@
+# Nyaya Bandhu (Pro Bono Legal Services) Initiative
+
+Category: Pro Bono Legal Services & Legal Aid
+Source Portal: Department of Justice Pro Bono Portal
+Source URL: https://doj.gov.in/nyaya-bandhu/
+Dedicated Portal: https://www.probono-doj.in
+Retrieval Date: 2026-11-12
+Verification Status: Verified Official Government Data
+Helpline: 14416 (Tele-Law / Access to Justice Desk)
+Data Freshness: Official baseline (verify on official portal)
+
+OVERVIEW:
+Nyaya Bandhu (Pro Bono Legal Services) is an initiative of the Department of Justice, Ministry of Law and Justice, Government of India. The primary objective is to encourage advocates across the nation to offer pro bono legal counsel to disadvantaged individuals and marginalized communities who cannot afford legal representation.
+
+KEY OBJECTIVES:
+1. Foster a culture of pro bono legal culture in India among practicing advocates and law students.
+2. Provide free, high-quality legal representation to marginalized litigants before High Courts and Subordinate Courts.
+3. Leverage mobile technology to connect registered pro bono advocates directly with eligible applicants through the Nyaya Bandhu Mobile App.
+
+ELIGIBILITY CRITERIA:
+Beneficiaries eligible under Section 12 of the Legal Services Authorities Act, 1987 can apply for assistance, including:
+- Women and children
+- Members of Scheduled Castes (SC) and Scheduled Tribes (ST)
+- Victims of human trafficking
+- Persons with disabilities
+- Victims of mass disasters, ethnic violence, or caste atrocities
+- Low-income citizens whose annual income falls below state-prescribed thresholds
+
+APPLICATION PROCEDURE:
+1. Litigants download the Nyaya Bandhu Mobile Application (Android/iOS) or register on https://www.probono-doj.in.
+2. Submit identity proof, income certificate or caste certificate establishing eligibility under Section 12.
+3. Provide case filing details and select the court establishment.
+4. The application is reviewed and assigned to an enrolled volunteer advocate who agrees to handle the matter pro bono.

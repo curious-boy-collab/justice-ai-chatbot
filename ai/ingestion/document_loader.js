@@ -1,54 +1,60 @@
 /**
  * JusticeAI Document Loader
  * Developer: Nitin (AI / RAG Developer)
+ * Sprint: Day 3 — RAG Implementation & Multi-Format Ingestion
  * 
- * Traverses ai/documents/ recursively, reads markdown files,
- * and extracts structured metadata (Category, Source URL, Date, Verification Status).
+ * Ingests official government documents across Markdown (.md), Plain Text (.txt),
+ * and PDF (.pdf) formats from ai/documents/ recursively.
  */
 
 const fs = require('fs');
 const path = require('path');
+const { extractMetadata, cleanText } = require('./text_extractor');
 
 const DOCUMENTS_BASE_DIR = path.join(__dirname, '..', 'documents');
 
 /**
- * Parses header block metadata from Markdown document
- * @param {string} content Raw markdown content
- * @returns {Object} Structured metadata
+ * Extracts raw text from a PDF file using pdf-parse with fallback
+ * @param {string} filePath Absolute path to PDF file
+ * @returns {Promise<string>} Extracted text string
  */
-function parseMetadata(content) {
-  const metadata = {
-    title: 'DoJ Knowledge Document',
-    category: 'General',
-    url: 'https://doj.gov.in',
-    lastChecked: '2026-11-08',
-    status: 'Verified Official Government Data',
-  };
+async function extractTextFromPDF(filePath) {
+  try {
+    const pkg = require('pdf-parse');
+    const buf = fs.readFileSync(filePath);
 
-  const titleMatch = content.match(/^#\s+(.+)$/m);
-  if (titleMatch) metadata.title = titleMatch[1].trim();
+    if (pkg.PDFParse) {
+      const parser = new pkg.PDFParse({ data: buf });
+      await parser.load();
+      const res = await parser.getText();
+      return typeof res === 'string' ? res : (res.text || '');
+    } else if (typeof pkg === 'function') {
+      const data = await pkg(buf);
+      return data.text || '';
+    }
+  } catch (err) {
+    console.warn(`[DocumentLoader] pdf-parse error for ${filePath} (${err.message}). Using text stream fallback.`);
+  }
 
-  const categoryMatch = content.match(/>\s*\*\*Category:\*\*\s*(.+)$/m);
-  if (categoryMatch) metadata.category = categoryMatch[1].trim();
+  // Regex fallback: extract ASCII text streams from PDF bytes
+  try {
+    const rawBytes = fs.readFileSync(filePath, 'latin1');
+    const matches = rawBytes.match(/\((.*?)\)\s*Tj/g) || [];
+    const extracted = matches.map(m => m.replace(/^\(/, '').replace(/\)\s*Tj$/, '')).join(' ');
+    if (extracted.trim()) return extracted;
+  } catch (fallbackErr) {
+    console.error(`[DocumentLoader] Fallback failed for ${filePath}:`, fallbackErr.message);
+  }
 
-  const urlMatch = content.match(/>\s*\*\*Source URL:\*\*\s*(https?:\/\/\S+)/im);
-  if (urlMatch) metadata.url = urlMatch[1].trim();
-
-  const dateMatch = content.match(/>\s*\*\*Retrieval Date:\*\*\s*(.+)$/m);
-  if (dateMatch) metadata.lastChecked = dateMatch[1].trim();
-
-  const statusMatch = content.match(/>\s*\*\*Verification Status:\*\*\s*(.+)$/m);
-  if (statusMatch) metadata.status = statusMatch[1].trim();
-
-  return metadata;
+  return 'Official Department of Justice Document.';
 }
 
 /**
- * Recursively retrieves all markdown files from a directory
+ * Recursively retrieves all document files (.md, .txt, .pdf) from a directory
  * @param {string} dir Directory path
  * @returns {Array<string>} List of file paths
  */
-function getAllMarkdownFiles(dir) {
+function getAllDocumentFiles(dir) {
   let results = [];
   if (!fs.existsSync(dir)) return results;
 
@@ -56,34 +62,60 @@ function getAllMarkdownFiles(dir) {
   for (const entry of entries) {
     const fullPath = path.join(dir, entry.name);
     if (entry.isDirectory()) {
-      results = results.concat(getAllMarkdownFiles(fullPath));
-    } else if (entry.isFile() && entry.name.endsWith('.md')) {
-      results.push(fullPath);
+      results = results.concat(getAllDocumentFiles(fullPath));
+    } else if (entry.isFile()) {
+      const ext = path.extname(entry.name).toLowerCase();
+      if (ext === '.md' || ext === '.txt' || ext === '.pdf') {
+        results.push(fullPath);
+      }
     }
   }
   return results;
 }
 
 /**
- * Loads all knowledge documents as structured objects
- * @returns {Array<Object>} List of documents with id, content, and metadata
+ * Ingests a single document file asynchronously
+ * @param {string} filePath Absolute path to file
+ * @returns {Promise<Object|null>} Structured document object
  */
-function loadAllDocuments() {
-  const files = getAllMarkdownFiles(DOCUMENTS_BASE_DIR);
+async function ingestFile(filePath) {
+  const ext = path.extname(filePath).toLowerCase();
+  const filename = path.basename(filePath);
+  const relativePath = path.relative(DOCUMENTS_BASE_DIR, filePath);
+
+  let rawContent = '';
+
+  if (ext === '.pdf') {
+    rawContent = await extractTextFromPDF(filePath);
+  } else {
+    rawContent = fs.readFileSync(filePath, 'utf8');
+  }
+
+  const cleaned = cleanText(rawContent);
+  const metadata = extractMetadata(cleaned, filename);
+  metadata.format = ext.replace('.', '').toUpperCase();
+
+  return {
+    id: relativePath.replace(/\\/g, '/').replace(/\.[^/.]+$/, ''),
+    format: metadata.format,
+    filePath,
+    metadata,
+    content: cleaned,
+  };
+}
+
+/**
+ * Loads all knowledge documents across Markdown, Text, and PDF formats
+ * @returns {Promise<Array<Object>>} List of ingested documents
+ */
+async function loadAllDocumentsAsync() {
+  const files = getAllDocumentFiles(DOCUMENTS_BASE_DIR);
   const documents = [];
 
   for (const file of files) {
     try {
-      const raw = fs.readFileSync(file, 'utf8');
-      const metadata = parseMetadata(raw);
-      const relativePath = path.relative(DOCUMENTS_BASE_DIR, file);
-
-      documents.push({
-        id: relativePath.replace(/\\/g, '/').replace('.md', ''),
-        filePath: file,
-        metadata,
-        content: raw,
-      });
+      const doc = await ingestFile(file);
+      if (doc) documents.push(doc);
     } catch (err) {
       console.error(`[DocumentLoader] Error reading ${file}:`, err.message);
     }
@@ -92,10 +124,64 @@ function loadAllDocuments() {
   return documents;
 }
 
-if (require.main === module) {
-  const docs = loadAllDocuments();
-  console.log(`[DocumentLoader] Loaded ${docs.length} official documents successfully.`);
-  docs.forEach((d, idx) => console.log(`  ${idx + 1}. [${d.metadata.category}] ${d.metadata.title}`));
+/**
+ * Synchronous document loader (for instant startup & backward compatibility)
+ * Handles .md and .txt synchronously, reads text streams for .pdf
+ * @returns {Array<Object>} List of documents
+ */
+function loadAllDocuments() {
+  const files = getAllDocumentFiles(DOCUMENTS_BASE_DIR);
+  const documents = [];
+
+  for (const file of files) {
+    const ext = path.extname(file).toLowerCase();
+    const filename = path.basename(file);
+    const relativePath = path.relative(DOCUMENTS_BASE_DIR, file);
+
+    let rawContent = '';
+    if (ext === '.pdf') {
+      try {
+        const rawBytes = fs.readFileSync(file, 'latin1');
+        const matches = rawBytes.match(/\((.*?)\)\s*Tj/g) || [];
+        rawContent = matches.map(m => m.replace(/^\(/, '').replace(/\)\s*Tj$/, '')).join(' ');
+        if (!rawContent.trim()) {
+          rawContent = 'Department of Justice Official Document (PDF). Source URL: https://doj.gov.in';
+        }
+      } catch {
+        rawContent = 'Department of Justice Official Document (PDF). Source URL: https://doj.gov.in';
+      }
+    } else {
+      rawContent = fs.readFileSync(file, 'utf8');
+    }
+
+    const cleaned = cleanText(rawContent);
+    const metadata = extractMetadata(cleaned, filename);
+    metadata.format = ext.replace('.', '').toUpperCase();
+
+    documents.push({
+      id: relativePath.replace(/\\/g, '/').replace(/\.[^/.]+$/, ''),
+      format: metadata.format,
+      filePath: file,
+      metadata,
+      content: cleaned,
+    });
+  }
+
+  return documents;
 }
 
-module.exports = { loadAllDocuments, parseMetadata };
+if (require.main === module) {
+  loadAllDocumentsAsync().then(docs => {
+    console.log(`[DocumentLoader] Loaded ${docs.length} official documents across formats:`);
+    docs.forEach((d, idx) => {
+      console.log(`  ${idx + 1}. [${d.format}] [${d.metadata.category}] ${d.metadata.title} (${d.content.length} chars)`);
+    });
+  }).catch(console.error);
+}
+
+module.exports = {
+  loadAllDocuments,
+  loadAllDocumentsAsync,
+  ingestFile,
+  getAllDocumentFiles,
+};

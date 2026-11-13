@@ -1,118 +1,135 @@
 # Shravani — Frontend Progress Log
-**Branch:** `feature/frontend` | **Role:** Frontend Developer | **Sprint Days:** 1 & 2
+**Branch:** `feature/frontend` | **Role:** Frontend Developer | **Sprint Days:** 1, 2, 3 & 4
 
 ---
 
-## ✅ Day 2 Completed Tasks: Conversational Interface & API Integration
+## ✅ Day 4 Completed Tasks: Government Services & Judicial Information Pages
 
-### 1. Conversational Chatbot Interface
-- [x] **Complete Chat Workspace (`ChatBox.tsx`):**
-  - Modern, accessible, Government of India design theme: Navy `#0a1f44`, White `#ffffff`, Saffron `#ff9933`, India Green `#138808`.
-  - Top status bar with live indicator, active conversation title, Department of Justice branding.
-  - Responsive layout functioning on mobile, tablet, desktop, and large screens.
+### 1. NJDG Statistics Dashboard (`pages/NJDGDashboard.tsx`)
+- [x] Court-wise pendency overview: Supreme Court, High Courts, District Courts, FTSCs
+- [x] Case age distribution with horizontal bar chart (Under 1 year through Over 20 years)
+- [x] High Court-wise summary table (top 8 HCs by pendency with filed/disposed/trend)
+- [x] Official NJDG resource links section
+- [x] All figures prominently labelled as **⚠️ Demo Data** with verification links to njdg.ecourts.gov.in
 
-### 2. Message Bubbles (`ChatMessage.tsx`)
-- [x] **Citizen (User) Message Bubble:**
-  - Styled in Navy `#0a1f44` with white text and clean tail styling.
-  - Avatar with citizen icon and Indian time-formatted timestamp.
-- [x] **JusticeAI (Assistant) Message Bubble:**
-  - Crisp card design with subtle border, soft drop shadow, Ashok/Scales of Justice avatar.
-  - **Structured Markdown Parser:** Renders headings, bold highlights, bullet points, numbered lists, inline code blocks, and clickable external links.
-  - **Copy Response Action:** Quick copy-to-clipboard button with visual checkmark feedback.
-  - **Data Status Badges:**
-    - `official_reference` — Green verified official government record.
-    - `live_api_reference` — Blue real-time judicial data.
-    - `procedural_guidance` — Indigo citizen procedure guide.
-    - `demo` — Amber demonstration/offline mode notification.
-  - **Official Citation Cards:** Clickable links to verified government portals (`doj.gov.in`, `ecourts.gov.in`, `njdg.ecourts.gov.in`, `tele-law.in`, `echallan.parivahan.gov.in`).
+### 2. Judge Strength & Vacancy Report (`pages/JudgeVacancyPage.tsx`)
+- [x] Three main cards: Supreme Court (34 sanctioned), High Courts (1,114), District Courts (25,628)
+- [x] Color-coded fill percentage bars (green >85%, orange >70%, red <70%)
+- [x] Vacancy count badges with percentage
+- [x] HC-wise vacancy detail table with fill percentage badges
+- [x] Info box about judicial appointment process
+- [x] Source links to doj.gov.in and main.sci.gov.in
+- [x] All figures clearly marked as **⚠️ Demo Data**
 
-### 3. Message Input & Send Controls (`ChatInput.tsx`)
-- [x] Auto-expanding textarea up to 140px with smooth scroll.
-- [x] Send button in Navy/Saffron with active click animation.
-- [x] Keyboard shortcuts: `Enter` to submit, `Shift + Enter` for new lines.
-- [x] Quick clear button (`X`) when text is entered.
-- [x] Disabled states while AI is processing to prevent duplicate queries.
-- [x] Dynamic bilingual placeholder text.
+### 3. Government Services Section (`pages/ServicesPage.tsx`)
+- [x] 7 service cards with bilingual titles (Hindi + English): Case Status, NJDG, Judge Vacancies, eFiling, Tele-Law, FTSC, eCourts App
+- [x] 8 official portal quick links (eCourts, NJDG, eFiling, ePay, Tele-Law, DoJ, Live Streaming, Supreme Court)
+- [x] Each card navigates to its dedicated detail page
+- [x] Chat CTA at bottom
 
-### 4. AI Response Loading State
-- [x] Three animated bouncing dots in Navy `#0a1f44`.
-- [x] Status indicator: *"Retrieving official Department of Justice records..."* / *"न्याय विभाग अभिलेखों से खोज की जा रही है..."*.
-- [x] Auto-scrolling to bottom on new incoming tokens.
+### 4. eFiling & ePay Guidance Page (`pages/EFilingPage.tsx`)
+- [x] 6-step numbered procedure with bilingual step titles
+- [x] Portal link cards for filing.ecourts.gov.in and pay.ecourts.gov.in
+- [x] Payment methods info: UPI, Net Banking, RuPay Debit Card
+- [x] Aadhaar e-Sign and DSC (Digital Signature Certificate) information
+- [x] 6 FAQ accordion items (expandable/collapsible)
+- [x] Chat CTA for filing guidance
 
-### 5. Empty & Error States (`EmptyState.tsx`)
-- [x] **Interactive Welcome Hero:**
-  - Department of Justice seal with scales of justice and verified shield.
-  - High-impact bilingual introduction.
-  - Direct links to official portals.
-  - 8-card suggested prompts grid.
-- [x] **System Error State:**
-  - Inline retry banner when API or network fails.
-  - One-click `Retry` button re-executing failed query.
+### 5. Tele-Law Information Page (`pages/TeleLawPage.tsx`)
+- [x] Key info cards: 5,00,000+ CSCs, FREE for eligible, Video + Audio consultation
+- [x] 4-step "How to Access Tele-Law" guide with numbered cards
+- [x] Eligibility table: Women, SC/ST, BPL, Disabled, Children = FREE; Others = ₹30
+- [x] Helpline numbers: 1800-200-7514 (toll-free) and 14416 (short code)
+- [x] Official links: tele-law.in and locator.csccloud.in (CSC locator)
+- [x] Demo data notice for CSC counts
 
-### 6. Suggested Prompts (`SuggestedPrompts.tsx`)
-- [x] 8 Official DoJ citizen domains supported in both English & Hindi:
-  1. **Case Status Lookup:** 16-digit CNR number search on eCourts.
-  2. **NJDG Statistics:** Case pendency across Supreme Court, High Courts, and District Courts.
-  3. **Judge Vacancies:** Sanctioned strength vs working strength of judges.
-  4. **eFiling & ePay:** Step-by-step citizen guide to eFiling 3.0 and ePay portal.
-  5. **Tele-Law:** Free pre-litigation legal aid at CSCs for eligible citizens.
-  6. **Court Livestreaming:** Supreme Court & High Court live broadcast channels.
-  7. **Traffic Challans & Virtual Courts:** Online settlement via vCourts & eChallan.
-  8. **Fast Track Special Courts (FTSC):** Expeditious trial under POCSO scheme.
-- [x] Dual presentation modes:
-  - **Grid Cards:** Embedded in empty state.
-  - **Horizontal Prompt Chips:** Persistent quick-access bar above message input.
+### 6. Fast Track Courts Information Page (`pages/FTSCPage.tsx`)
+- [x] 4 stat cards: 761 FTSCs, 414 exclusive POCSO courts, 28 states, 2,34,567+ disposed
+- [x] About FTSC section: Purpose and Key Features with check-listed items
+- [x] State-wise FTSC distribution table (top 8 states with FTSC and POCSO counts)
+- [x] POCSO Act info box
+- [x] Official link to doj.gov.in/fast-track-special-court-ftsc/
+- [x] All stats marked as **⚠️ Demo Data**
 
-### 7. Hindi-English Bilingual Language Selector
-- [x] Real-time toggle button (`English` / `हिंदी`) in chat toolbar and welcome hero.
-- [x] Persisted in `localStorage` across page reloads.
-- [x] Automatically updates UI placeholders, prompt cards, and request payload `language` parameter.
+### 7. eCourts App Guidance Section (`pages/ECourtsAppPage.tsx`)
+- [x] Download links: Google Play Store and Apple App Store
+- [x] 4 key features with bilingual labels: CNR Search, Hearing Alerts, Cause Lists, Case History
+- [x] 5 case search methods with examples (CNR, Party Name, Advocate, FIR, Case Number)
+- [x] SMS service: `ECOURTS <CNR>` to 9766899899
+- [x] IVR helpline: 1800-200-0498 (24/7 toll-free)
+- [x] eCourts Mission Mode Project info box
 
-### 8. Chat History Management (`ChatHistoryDrawer.tsx`)
-- [x] Collapsible slide-over drawer on mobile / toggleable sidebar on desktop.
-- [x] Multi-session management:
-  - Automatically saves citizen conversations in `localStorage`.
-  - Automatically titles sessions based on first question.
-  - Displays relative date and message count.
-  - Delete individual chats or clear all conversation history.
-  - Seamless switching between historical conversations.
+### 8. Case Status Search Interface (`pages/CaseStatusPage.tsx`)
+- [x] CNR number input with format validation (`[A-Z]{4}\d{2}\d{6}\d{4}`)
+- [x] "How to find your CNR" collapsible guidance with 5 tips
+- [x] Search button opens official eCourts portal in new tab
+- [x] 4 alternative search methods: Party Name, Advocate Name, FIR Number, Case Number
+- [x] CNR format info box with example
+- [x] Demo mode notice — actual lookup via ecourts.gov.in
 
-### 9. Connection to Disha's Agreed Backend API (`chatApi.ts`)
-- [x] **Standard Endpoint Integration:**
-  - Endpoint: `POST /api/chat`
-  - Request Payload:
-    ```json
-    {
-      "query": "How do I check my case status?",
-      "language": "en",
-      "sessionId": "session-1762746..."
-    }
-    ```
-  - Response Handling:
-    - Parses `answer`, `sources`, `dataStatus`, `lastChecked`, `language`.
-    - Handles backend error envelope `error: { code, message }`.
-- [x] **Vite Proxy:** Configured `/api` ➔ `http://localhost:5000` in `vite.config.ts`.
-- [x] **Grounded Local Fallback:** When the backend server is offline or unreachable during testing, seamlessly falls back to local verified Department of Justice records with clear `demo` / `official_reference` tagging.
+### 9. Updated Navigation & Routing
+- [x] `App.tsx` — expanded `Page` union type with 10 page states and `renderPage()` switch
+- [x] `Header.tsx` — accepts `onNavigate` callback; Services and Statistics nav items navigate to respective pages
+- [x] `LandingPage.tsx` — "Browse All Government Services" link below chat CTA
+
+### 10. Official Portal Links Added Throughout
+- [x] njdg.ecourts.gov.in, ecourts.gov.in, filing.ecourts.gov.in, pay.ecourts.gov.in
+- [x] tele-law.in, locator.csccloud.in, doj.gov.in, main.sci.gov.in
+- [x] liveproceedings.ecourts.gov.in, doj.gov.in/appointments-of-judges/
+- [x] Google Play & App Store links for eCourts Services app
+- [x] All external links use `target="_blank" rel="noopener noreferrer"`
 
 ---
 
-## 🛠 File Structure (Day 2 Updates)
+## ✅ Day 3 Completed Tasks: RAG Implementation, Source Citations & Knowledge Base UI
+
+### 1. Source Citations Below AI Answers (`ChatMessage.tsx`)
+- [x] Enriched Citation Cards with document titles, official URLs, division tags, relevance scores, retrieved text snippets.
+
+### 2. Display Official Source Links
+- [x] Clickable external links with secure attributes to DoJ, eCourts, NJDG, Tele-Law portals.
+
+### 3. Advanced Chatbot Message Formatting
+- [x] Markdown parser: headings, bold, italic, inline code, custom bullets, numbered steps, callout blocks, copy button.
+
+### 4. Source Information Expand/Collapse UI
+- [x] Interactive accordion with citation count, chevron toggle, compact/detailed views.
+
+### 5. Clear Indication of Retrieved Information
+- [x] RAG retrieval header with confidence rating and match score.
+
+### 6. Multi-Stage Loading & Enhanced Error States
+- [x] 3-stage RAG loading animation. Comprehensive error with retry and helpline.
+
+### 7. Dedicated No-Results State
+- [x] Search guidance checklist, quick-recovery prompts, Tele-Law helpline card.
+
+### 8. Mobile-Friendly Layout
+- [x] Dynamic viewport height (`100dvh`), compact mobile citations, touch-friendly targets.
+
+### 9. Hindi Text Rendering
+- [x] Verified complex Devanagari ligatures, dual-language switching with localStorage.
+
+---
+
+## 📁 Repository Structure (Day 4 Frontend)
 
 ```
 frontend/
 ├── src/
 │   ├── types/
-│   │   └── chat.ts               # Shared types matching AI_BACKEND_CONTRACT.md
+│   │   └── chat.ts
 │   ├── services/
-│   │   └── chatApi.ts            # API service (POST /api/chat + fallback)
+│   │   └── chatApi.ts
 │   ├── components/
 │   │   ├── Chat/
-│   │   │   ├── ChatBox.tsx       # Core conversation controller
-│   │   │   ├── ChatMessage.tsx   # User & assistant bubbles with markdown
-│   │   │   ├── ChatInput.tsx     # Textarea, send button, keyboard shortcuts
-│   │   │   ├── ChatHistoryDrawer.tsx # Saved sessions sidebar
-│   │   │   ├── EmptyState.tsx    # Welcome hero & trust badges
-│   │   │   └── SuggestedPrompts.tsx  # Grid & chips prompt components
+│   │   │   ├── ChatBox.tsx
+│   │   │   ├── ChatMessage.tsx
+│   │   │   ├── ChatInput.tsx
+│   │   │   ├── ChatHistoryDrawer.tsx
+│   │   │   ├── EmptyState.tsx
+│   │   │   ├── SuggestedPrompts.tsx
+│   │   │   └── NoResultsCard.tsx
 │   │   ├── Dashboard/
 │   │   │   ├── StatCard.tsx
 │   │   │   └── SuggestedCard.tsx
@@ -122,22 +139,32 @@ frontend/
 │   │       └── Sidebar.tsx
 │   ├── pages/
 │   │   ├── LandingPage.tsx
-│   │   └── ChatPage.tsx
-│   ├── App.tsx
+│   │   ├── ChatPage.tsx
+│   │   ├── ServicesPage.tsx          ← NEW Day 4
+│   │   ├── NJDGDashboard.tsx         ← NEW Day 4
+│   │   ├── JudgeVacancyPage.tsx      ← NEW Day 4
+│   │   ├── EFilingPage.tsx           ← NEW Day 4
+│   │   ├── TeleLawPage.tsx           ← NEW Day 4
+│   │   ├── FTSCPage.tsx              ← NEW Day 4
+│   │   ├── ECourtsAppPage.tsx        ← NEW Day 4
+│   │   └── CaseStatusPage.tsx        ← NEW Day 4
+│   ├── App.tsx                       ← UPDATED Day 4 (10 page routes)
 │   ├── index.css
 │   └── main.tsx
-├── vite.config.ts                # Vite 8 + React + Tailwind v4 + Proxy
+├── vite.config.ts
 ├── tsconfig.json
 └── package.json
 ```
 
 ---
 
-## 🧪 Build and Verification Results
-- **TypeScript Typecheck:** `npx tsc --noEmit` ➔ 0 errors.
-- **Production Build:** `npx vite build` ➔ Completed in **134ms** (`dist/index.html`, `dist/assets/index-*.js` 305kB).
-- **Responsive Testing:** Verified for mobile (<640px), tablet (768px), desktop (1024px), wide (1280px+).
+## 🧪 Verification & Build Status
+- **TypeScript Typecheck:** `npx tsc --noEmit` ➔ **0 errors**.
+- **Production Build:** `npx vite build` ➔ Completed in **161ms** (404.62 kB JS, 48.22 kB CSS).
+- **New Pages:** 8 new page/component files created, 3 existing files updated.
+- **Demo Data:** Every statistical figure prominently marked with ⚠️ Demo Data badges and verification links.
+- **Official Links:** 12+ real government portal URLs added with secure attributes.
 
 ---
 
-*Last updated: Day 2 — 2026-11-10 by Shravani*
+*Last updated: Day 4 — 2026-11-12 by Shravani*

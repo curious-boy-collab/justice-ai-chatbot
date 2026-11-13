@@ -1,41 +1,71 @@
-# eCourts Services Mobile Application and Citizen Digital Portal
+# eCourts Services Mobile Application: Citizen Features, Installation, and Navigation
 
 > **Category:** Digital Citizen Services & Case Tracking  
+> **Source Portal:** eCommittee Supreme Court of India & NIC  
 > **Source URL:** https://ecourts.gov.in  
 > **Secondary Portal:** https://services.ecourts.gov.in  
-> **Retrieval Date:** 2026-11-08  
-> **Verification Status:** Verified Official Government Data
+> **Retrieval Date:** 2026-11-12  
+> **Verification Status:** Verified Official Government Data  
+> **Official Helpline / Nodal Desk:** eCourts Mobile Support / mobileapp-ecourts@gov.in  
+> **Data Freshness:** Official baseline (available 24x7 on official app stores; verify on official portal)
 
 ---
 
-## 1. What is the eCourts Services Project?
-The eCourts Mission Mode Project is a Pan-India project conceptualized under the National e-Governance Plan (NeGP) and monitored by the eCommittee of the Supreme Court of India in collaboration with the Department of Justice, Ministry of Law & Justice, and the National Informatics Centre (NIC).
+## 1. Overview of the eCourts Services Mobile Application
+The **eCourts Services Mobile App** is the official citizen-centric mobile application developed by the National Informatics Centre (NIC) under the direction of the eCommittee, Supreme Court of India, and the Department of Justice, Ministry of Law & Justice.
 
-The project empowers litigants, advocates, law enforcement agencies, and the public with 24x7 online access to judicial services without requiring physical visits to court premises.
-
----
-
-## 2. Features of the eCourts Services Mobile Application
-The **eCourts Services Mobile App** is the official citizen-facing mobile application available on Google Play Store and Apple App Store.
-
-Key Features:
-1. **CNR Number Search:** Search any case anywhere in India using the unique 16-character alphanumeric Case Number Record (CNR).
-2. **Multi-Parameter Search:**
-   - Case Type and Case Number
-   - Filing Number
-   - Party Name (Petitioner / Respondent)
-   - Advocate Name / Bar Registration Number
-   - FIR Number (Police Station, Year, and FIR No.)
-   - Act & Section
-3. **QR Code Scanning:** Every certified copy and court order generated via CIS (Case Information System) carries an encrypted QR code that can be scanned using the in-app scanner to fetch instant verified case history.
-4. **Cause List Generation:** Advocates and litigants can view daily, weekly, and custom court cause lists for any court hall.
-5. **My Cases Portfolio:** Save tracked cases to an automated personal diary with push notifications for next hearing dates, interim orders, and final disposal judgments.
-6. **Bilingual & Multi-Language Support:** Available in English, Hindi, and various regional languages.
+It provides litigants, lawyers, police departments, law students, and citizens instant, transparent, and mobile access to judicial information across all District Courts and High Courts in India.
 
 ---
 
-## 3. Alternative Citizen Channels
-- **eCourts Services Web Portal:** [https://services.ecourts.gov.in](https://services.ecourts.gov.in)
-- **SMS Push/Pull Services:** Send SMS `ECORTR <CNR Number>` to 9766899899 to receive instant status updates.
-- **eCourts Suvidha Kiosks:** Touch-screen digital kiosks installed in judicial court complexes across India.
-- **eSewa Kendras:** Helpdesks established in court premises for bridging the digital divide, assisting non-tech-savvy citizens.
+## 2. Platform Availability and Download Channels
+- **Android:** Available for free on the **Google Play Store** (Package: `in.gov.ecourts.eCourtsServices`).
+- **iOS:** Available for free on the **Apple App Store** (Title: *eCourts Services*).
+- **Official Portal Download Link:** [https://ecourts.gov.in/ecourts_home/static/mobile_app.php](https://ecourts.gov.in/ecourts_home/static/mobile_app.php).
+- **Security Caution:** Citizens should always download the official app published by "National Informatics Centre" or "Supreme Court of India" and avoid unofficial third-party APKs.
+
+---
+
+## 3. Core Functional Capabilities
+
+### A. 16-Digit CNR Number Lookup (Fastest Search)
+- Entering the 16-character unique Case Number Record (CNR) instantly pulls the complete case history, first hearing date, next hearing date, current stage, presiding judge, and all daily interim orders.
+
+### B. Multi-Parameter Search Options
+When the CNR number is not readily available, users can search cases using:
+1. **Case Number:** Select State > District > Court Complex > Case Type > Case Number > Year.
+2. **Party Name:** Search by Complainant / Petitioner or Accused / Respondent name.
+3. **Filing Number:** Search by initial court filing token and year.
+4. **Advocate Name / Bar Registration:** Search all active matters handled by a particular advocate.
+5. **FIR Number:** Search criminal cases by Police Station name, FIR number, and Year.
+6. **Act and Section:** Search matters listed under specific enactments (e.g., NI Act 138, Motor Vehicles Act).
+
+### C. QR Code Scanner for Instant Orders and Certified Copies
+- Every court order, judgment, or cause notice generated by the Case Information System (CIS) carries an encrypted QR code.
+- Using the built-in scanner within the mobile app, citizens can scan the paper or screen QR code to load the digital record immediately.
+
+### D. "My Cases" Digital Diary & Push Notifications
+- Litigants and advocates can bookmark multiple ongoing cases in their personal **"My Cases"** tab.
+- The app automatically syncs with court databases and sends automated mobile notifications whenever a next hearing date is fixed or an order is signed.
+
+### E. Daily Cause Lists
+- View court cause lists for any bench or magistrate courtroom to see today's hearing schedule and token sequence.
+
+### F. Accessibility & Regional Language Support
+- Supports English, Hindi, and major Indian languages.
+- Features screen-reader accessibility for visually impaired citizens.
+
+---
+
+## 4. Alternative Assistance: eSewa Kendras and Suvidha Kiosks
+For citizens without smartphones or internet access:
+- **eSewa Kendras:** Established at entrance lobbies of District Court complexes and High Courts to offer free scanning, case inquiries, and video conferencing links.
+- **Suvidha Kiosks:** Touchscreen self-service terminals installed in court complexes.
+- **SMS Status:** SMS `ECOURTS <16-digit CNR>` to **9766899899** for instant reply.
+
+---
+
+## 5. Official Verification Links
+- **eCourts Portal:** [https://ecourts.gov.in](https://ecourts.gov.in)
+- **eCourts Services Web:** [https://services.ecourts.gov.in](https://services.ecourts.gov.in)
+- **Department of Justice:** [https://doj.gov.in](https://doj.gov.in)

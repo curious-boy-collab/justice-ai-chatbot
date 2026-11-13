@@ -116,7 +116,7 @@ export default function ChatMessage({ message, onSuggestedClick }: ChatMessagePr
             return (
               <code
                 key={i}
-                className="bg-slate-100 text-[#0a1f44] px-1.5 py-0.5 rounded text-xs font-mono font-medium border border-slate-200"
+                className="bg-slate-100 text-[#0a1f44] px-1.5 py-0.5 rounded text-xs font-mono font-medium border border-slate-200 break-all"
               >
                 {part.slice(1, -1)}
               </code>
@@ -130,10 +130,10 @@ export default function ChatMessage({ message, onSuggestedClick }: ChatMessagePr
                 href={linkMatch[2]}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-0.5 text-[#2855a0] hover:text-[#0a1f44] underline font-medium"
+                className="inline-flex items-center gap-0.5 text-[#2855a0] hover:text-[#0a1f44] underline font-medium break-all"
               >
                 <span>{linkMatch[1]}</span>
-                <ExternalLink className="w-3 h-3" />
+                <ExternalLink className="w-3 h-3 flex-shrink-0" />
               </a>
             )
           }
@@ -298,11 +298,11 @@ export default function ChatMessage({ message, onSuggestedClick }: ChatMessagePr
 
           {/* Formatted Text Content */}
           {isUser ? (
-            <p className="text-sm font-normal text-white leading-relaxed whitespace-pre-wrap">
+            <p className="text-sm font-normal text-white leading-relaxed whitespace-pre-wrap break-words">
               {message.content}
             </p>
           ) : (
-            <div className="space-y-0.5 leading-relaxed font-sans">
+            <div className="space-y-0.5 leading-relaxed font-sans break-words overflow-hidden">
               {renderFormattedContent(message.content)}
             </div>
           )}
@@ -351,6 +351,7 @@ export default function ChatMessage({ message, onSuggestedClick }: ChatMessagePr
                 onClick={handleCopy}
                 className="flex items-center gap-1 text-[11px] font-medium text-slate-500 hover:text-[#0a1f44] transition-colors py-0.5 px-2 rounded hover:bg-slate-100"
                 title="Copy response text"
+                aria-label="Copy response text"
               >
                 {copied ? (
                   <>
@@ -372,8 +373,19 @@ export default function ChatMessage({ message, onSuggestedClick }: ChatMessagePr
         {!isUser && hasSources && message.sources && (
           <div className="w-full mt-1.5 px-1">
             {/* Header / Toggle Button */}
-            <div className="flex items-center justify-between bg-slate-100/90 hover:bg-slate-200/80 rounded-xl px-3 py-2 transition-all cursor-pointer border border-slate-200"
+            <div
+              role="button"
+              tabIndex={0}
+              aria-expanded={sourcesExpanded}
+              aria-label={sourcesExpanded ? 'Hide citations details' : 'Show citations details'}
+              className="flex items-center justify-between bg-slate-100/90 hover:bg-slate-200/80 rounded-xl px-3 py-2 transition-all cursor-pointer border border-slate-200"
               onClick={() => setSourcesExpanded(!sourcesExpanded)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  setSourcesExpanded(!sourcesExpanded)
+                }
+              }}
             >
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-emerald-600" />

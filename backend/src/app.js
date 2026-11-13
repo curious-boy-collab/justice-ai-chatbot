@@ -1,5 +1,7 @@
 import express from 'express';
 import { config } from './config/env.js';
+import { securityHeaders } from './middleware/securityHeaders.js';
+import { globalRateLimiter } from './middleware/rateLimiter.js';
 import { corsMiddleware } from './middleware/corsConfig.js';
 import { requestLogger } from './middleware/requestLogger.js';
 import { createTimeoutMiddleware } from './middleware/timeoutHandler.js';
@@ -15,8 +17,12 @@ import servicesRoutes from './routes/services.routes.js';
 
 const app = express();
 
-// Security, Parsing & Timeout Middleware
+// Security & Protection Middleware
+app.use(securityHeaders);
+app.use(globalRateLimiter);
 app.use(corsMiddleware);
+
+// Body Parsing & Logging Middleware
 app.use(express.json({ limit: '2mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(requestLogger);

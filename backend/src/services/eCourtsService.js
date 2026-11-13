@@ -155,7 +155,7 @@ export const eCourtsService = {
         notice: 'DEMO SAMPLE DATA — For live verification of real-time orders, visit the official eCourts portal.',
         ...DEMO_CASE_RECORDS[cleanCnr],
         dataFreshness: {
-          lastVerified: '2026-11-12',
+          lastVerified: '2026-11-13',
           sourceStatus: 'demo_curated_record',
           officialPortalUrl: 'https://services.ecourts.gov.in/ecourtindia_v6/?p=casestatus'
         }
@@ -180,7 +180,7 @@ export const eCourtsService = {
       officialPortalUrl: 'https://services.ecourts.gov.in/ecourtindia_v6/?p=casestatus',
       smsService: 'Send SMS: "ECOURTS <16 Digit CNR>" to 9766899899',
       dataFreshness: {
-        lastVerified: '2026-11-12',
+        lastVerified: '2026-11-13',
         sourceStatus: 'official_portal_guidance',
         officialPortalUrl: 'https://services.ecourts.gov.in/ecourtindia_v6/?p=casestatus'
       }

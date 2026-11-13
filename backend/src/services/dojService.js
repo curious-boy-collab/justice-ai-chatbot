@@ -37,7 +37,7 @@ export const dojService = {
         virtualCourtsPortal: 'https://vcourts.gov.in'
       },
       dataFreshness: {
-        lastUpdated: '2026-11-12',
+        lastUpdated: '2026-11-13',
         asOfDate: '2026-03-01',
         sourceStatus: 'verified_official',
         sourceAuthority: 'Department of Justice, Ministry of Law and Justice, Government of India',
@@ -164,7 +164,7 @@ export const dojService = {
       count: divisions.length,
       divisions,
       dataFreshness: {
-        lastUpdated: '2026-11-12',
+        lastUpdated: '2026-11-13',
         asOfDate: '2026-03-01',
         sourceStatus: 'verified_official',
         sourceAuthority: 'Department of Justice Annual Report',
@@ -261,7 +261,7 @@ export const dojService = {
       count: schemes.length,
       schemes,
       dataFreshness: {
-        lastUpdated: '2026-11-12',
+        lastUpdated: '2026-11-13',
         asOfDate: '2026-03-01',
         sourceStatus: 'verified_official',
         sourceAuthority: 'Ministry of Law and Justice, Government of India',

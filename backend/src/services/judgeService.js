@@ -42,7 +42,7 @@ export const judgeService = {
   async getSummary() {
     return {
       asOfDate: '2026-03-01',
-      lastUpdated: '2026-11-12',
+      lastUpdated: '2026-11-13',
       source: 'Department of Justice, Ministry of Law & Justice, Government of India',
       sourceUrl: 'https://doj.gov.in/appointments-of-judges/',
       isOfficialReport: true,
@@ -94,7 +94,7 @@ export const judgeService = {
     return {
       success: true,
       asOfDate: '2026-03-01',
-      lastUpdated: '2026-11-12',
+      lastUpdated: '2026-11-13',
       count: HIGH_COURTS_DATA.length,
       highCourts: HIGH_COURTS_DATA,
       officialPortalUrl: 'https://doj.gov.in/appointments-of-judges/'

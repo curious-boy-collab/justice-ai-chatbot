@@ -14,7 +14,7 @@ export const njdgService = {
   async getOverview() {
     return {
       asOfDate: '2026-03-01',
-      lastUpdated: '2026-11-12',
+      lastUpdated: '2026-11-13',
       source: 'National Judicial Data Grid (NJDG)',
       sourceUrl: 'https://njdg.ecourts.gov.in',
       isOfficialReport: true,
@@ -172,7 +172,7 @@ export const njdgService = {
     return {
       success: true,
       asOfDate: '2026-03-01',
-      lastUpdated: '2026-11-12',
+      lastUpdated: '2026-11-13',
       source: 'National Judicial Data Grid (NJDG)',
       isOfficialReport: true,
       isLive: false,

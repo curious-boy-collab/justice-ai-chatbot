@@ -381,3 +381,172 @@ Executed via `npm --prefix backend test`:
    - Explicit `dataStatus` flags (`official_snapshot`, `demo_sandbox`, `live_lookup_requires_captcha`) allow the UI to clearly present demo badges vs official records.
 2. **For Nitin (AI / RAG Developer)**:
    - Backend services and endpoints cleanly share the same underlying verified snapshots and official links curated in Nitin's knowledge documents.
+
+
+---
+
+# 🛡️ Day 5 & Day 6 — Integration, Hardening, Final Verification & Delivery
+
+**Sprint**: Day 5 & Day 6 (Combined Final Delivery)  
+**Role**: Disha (Backend Developer)  
+**Branch**: `feature/backend`  
+**Status**: 100% Completed, Tested & Verified  
+**Pull Request**: Updated on PR [#13](https://github.com/curious-boy-collab/justice-ai-chatbot/pull/13)  
+
+---
+
+## 🎯 Day 5 Objectives & Achievements: Integration, Testing & Bug Fixing
+
+- [x] **Test All REST Endpoints**:
+  - Full HTTP integration testing covering all 7 route groups: `/api/health`, `/api/chat`, `/api/stats`, `/api/cases`, `/api/documents`, `/api/doj`, and `/api/services`.
+  - Verified edge cases, query parameters, language selection (`en`/`hi`), and HTTP method validation.
+
+- [x] **Test Gemini and RAG Communication**:
+  - Validated server-side bridge in [`backend/src/services/aiBridgeService.js`](../backend/src/services/aiBridgeService.js) with Nitin's RAG retriever and vector store.
+  - Verified graceful fallback behavior when `GEMINI_API_KEY` is not present, ensuring grounded factual responses from the indexed DoJ knowledge base.
+
+- [x] **Validate API Response Formats**:
+  - Enforced consistent JSON schema across all endpoints:
+    - Root `success: true/false`
+    - Standardized error schema: `{ code, message, details? }`
+    - ISO 8601 timestamps
+    - Data freshness metadata (`dataFreshness`, `isLive: false`, `dataStatus`)
+  - Full compatibility with Shravani's frontend components (`answer`, `sources`, `dataStatus`, `retrieval`, `dataCard`, `citations`).
+
+- [x] **Fix Integration Bugs & Improve Error Handling**:
+  - Upgraded [`backend/src/middleware/errorHandler.js`](../backend/src/middleware/errorHandler.js):
+    - Added dedicated handling for `SyntaxError` from `express.json()` body parser, returning HTTP 400 with `INVALID_JSON_BODY` instead of an unhandled 500 error.
+    - Added graceful handling for CORS policy rejections (HTTP 403 `CORS_FORBIDDEN`).
+    - Standardized 404 handler for unknown routes with `ROUTE_NOT_FOUND`.
+    - Suppressed internal stack traces in test and production environments to prevent sensitive internal code disclosure.
+
+- [x] **Add Input Validation and In-Memory Rate Limiting**:
+  - Implemented [`backend/src/middleware/rateLimiter.js`](../backend/src/middleware/rateLimiter.js):
+    - In-memory sliding window rate limiter tracking client IP requests.
+    - Default limit: 120 requests/minute for general API routes; 45 requests/minute for conversational `/api/chat`.
+    - Standard HTTP headers: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`, and `Retry-After`.
+    - Returns standardized HTTP 429 (`TOO_MANY_REQUESTS`) upon limit breach.
+    - Memory leak protection with automated periodic garbage collection.
+
+- [x] **Check API Security & Header Protection**:
+  - Implemented [`backend/src/middleware/securityHeaders.js`](../backend/src/middleware/securityHeaders.js):
+    - `X-Content-Type-Options: nosniff` (prevents MIME-type sniffing).
+    - `X-Frame-Options: DENY` (prevents clickjacking attacks).
+    - `X-XSS-Protection: 1; mode=block` (activates browser XSS filtering).
+    - `Referrer-Policy: strict-origin-when-cross-origin`.
+    - `Permissions-Policy: camera=(), microphone=(), geolocation=()` (disables unnecessary hardware access).
+    - `Strict-Transport-Security: max-age=31536000; includeSubDomains` (enforces HTTPS).
+    - Stripped `X-Powered-By: Express` fingerprint header.
+
+- [x] **Ensure Secrets are Isolated and Safe**:
+  - `GEMINI_API_KEY` is loaded strictly server-side through `dotenv` and backend config.
+  - Diagnostic health endpoint (`/api/health`) reports `geminiConfigured: true/false` without ever exposing the key string.
+  - Verified git tracking: `.env` is ignored by `.gitignore`, and repository has 0 committed keys.
+
+- [x] **Verify Frontend-Backend Communication**:
+  - Permissive local development CORS allowing `localhost` and `127.0.0.1` ports for Vite development.
+  - Tested OPTIONS preflight handling with 204 No Content.
+
+---
+
+## 🎯 Day 6 Objectives & Achievements: Final Delivery, Documentation & Submission
+
+- [x] **Perform Final Comprehensive API Testing**:
+  - Expanded test suite to **106 tests across 3 suites**, achieving a **100% pass rate in ~195ms**.
+  - Verified security headers, rate limiting breach behavior, malformed JSON body handling, 404 routes, and health diagnostics.
+
+- [x] **Verify Backend Configuration & Production Readiness**:
+  - Graceful shutdown listeners for `SIGINT` and `SIGTERM` in [`backend/src/server.js`](../backend/src/server.js).
+  - Production-ready environment detection (`isProduction`, `isTest`) in [`backend/src/config/env.js`](../backend/src/config/env.js).
+  - Configurable timeouts (`AI_TIMEOUT_MS`, `REQUEST_TIMEOUT_MS`).
+
+- [x] **Complete Environment Variable Documentation**:
+  - Documented all variables in [`backend/.env.example`](../backend/.env.example) with clear production defaults and security guidance.
+
+- [x] **Verify All Service Endpoints**:
+  - Root index endpoint (`GET /`) provides documentation references and complete routing dictionary for developers.
+
+- [x] **Remove Debugging Code**:
+  - Cleaned up console debugging statements across all controllers, services, and middlewares.
+
+- [x] **Complete Documentation & Push Final Tested Changes**:
+  - Documented complete architecture, endpoint catalog, testing metrics, and integration notes.
+  - Pushed tested commits to `origin/feature/backend`.
+  - Updated Pull Request [#13](https://github.com/curious-boy-collab/justice-ai-chatbot/pull/13) targeting `develop`.
+
+---
+
+## 📋 Comprehensive Endpoint Catalog
+
+| Method | Endpoint | Description | Auth / Limit |
+|---|---|---|---|
+| `GET` | `/` | API service index & endpoints dictionary | Public |
+| `GET` | `/api/health` | System health, uptime, and active module status | 120/min |
+| `POST` | `/api/chat` | Main bilingual RAG conversational endpoint | 45/min |
+| `GET` | `/api/doj/overview` | DoJ mandate, headquarters, constitutional framework | 120/min |
+| `GET` | `/api/doj/divisions` | 7 administrative divisions and responsibilities | 120/min |
+| `GET` | `/api/doj/schemes` | Centrally sponsored schemes (Tele-Law, FTSC, etc.) | 120/min |
+| `GET` | `/api/stats/judges` | National judge sanctioned, working, and vacancy summary | 120/min |
+| `GET` | `/api/stats/judges/high-courts` | Complete directory of all 25 High Courts | 120/min |
+| `GET` | `/api/stats/judges/high-courts/:code` | Specific High Court details (e.g. `delhi`, `bombay`) | 120/min |
+| `GET` | `/api/stats/judges/appointment-procedure` | Collegium system (MoP) & constitutional articles | 120/min |
+| `GET` | `/api/stats/njdg` | High-level NJDG pendency figures | 120/min |
+| `GET` | `/api/stats/njdg/court-breakdown` | Hierarchy pendency (SC, High Courts, District, FTSCs) | 120/min |
+| `GET` | `/api/stats/njdg/age-wise` | 5 standardized aging distribution brackets | 120/min |
+| `GET` | `/api/stats/njdg/state-wise` | State-level pendency across 12 high-volume states | 120/min |
+| `GET` | `/api/services` | Citizen services master directory | 120/min |
+| `GET` | `/api/services/virtual-courts` | Virtual Courts directory and traffic fine payment guide | 120/min |
+| `GET` | `/api/services/efiling` | Step-by-step guide for eFiling 3.0 & ePay | 120/min |
+| `GET` | `/api/services/tele-law` | Tele-Law pre-litigation legal aid details & 14416 helpline | 120/min |
+| `GET` | `/api/services/ftsc` | Fast Track Special Courts (POCSO Act) information | 120/min |
+| `GET` | `/api/services/mobile-app` | eCourts Services mobile app download links | 120/min |
+| `GET` | `/api/services/live-streaming` | Court proceedings live streaming channels & guidelines | 120/min |
+| `GET` | `/api/cases/lookup?cnr={cnr}` | 16-character CNR lookup (sandbox cases + portal guidance) | 120/min |
+| `GET` | `/api/cases/guidance` | Citizen guide to finding CNR & alternative searches | 120/min |
+| `GET` | `/api/cases/demo-samples` | Available sandbox demo cases for UI testing | 120/min |
+| `GET` | `/api/documents` | Lists all 10 indexed official knowledge documents | 120/min |
+| `GET` | `/api/documents/stats` | Knowledge base vector and chunk statistics | 120/min |
+| `GET/POST`| `/api/documents/search` | Standalone semantic search over indexed vectors | 120/min |
+| `GET` | `/api/documents/:id(*)` | Full document content and chunk breakdown | 120/min |
+
+---
+
+## 🧪 Automated Testing Verification (Days 1–6)
+
+Executed via `npm --prefix backend test`:
+
+```
+ℹ tests 106
+ℹ suites 3
+ℹ pass 106
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 195.303083
+```
+
+- **Suite 1 (`backend/test/api.test.js`)**: 50 tests passed.
+  - HTTP integration tests for every route group.
+  - Security headers verification (`nosniff`, `DENY`, `HSTS`, `XSS`).
+  - Request validation and rate limit breach handling.
+  - Malformed JSON body handling (HTTP 400 `INVALID_JSON_BODY`).
+  - 404 route handling (`ROUTE_NOT_FOUND`).
+  - Secret isolation (verifying no API keys or tokens are leaked).
+- **Suite 2 (`backend/test/sample_questions_e2e.test.js`)**: 40 tests passed.
+  - 40 official bilingual queries (Hindi, English, Hinglish) validated against RAG retrieval and legal guardrails.
+- **Suite 3 (`backend/test/services.test.js`)**: 16 tests passed.
+  - Unit tests for `judgeService`, `njdgService`, `eCourtsService`, `dojService`, `documentService`, and `rateLimiter`.
+
+---
+
+## 🤝 Final Team Delivery & Coordination
+
+1. **For Nitin (AI / RAG Developer)**:
+   - Backend communication with the AI / RAG module is verified with robust 15s timeout protection, sanitized inputs, and rich source citations.
+   - Grounded responses, data freshness, and guardrails for non-legal advice are fully enforced.
+2. **For Shravani (Frontend Developer)**:
+   - All backend REST endpoints are live, documented, CORS-configured, and verified.
+   - Clean data structures with explicit `isLive: false` and `dataStatus: "official_snapshot" | "demo_sandbox"` to power all UI badges and dashboards.
+3. **For Integration Lead**:
+   - Pull Request [#13](https://github.com/curious-boy-collab/justice-ai-chatbot/pull/13) contains the complete, tested Day 4, 5, and 6 backend implementation ready for merge into `develop`.

@@ -191,7 +191,7 @@ export const documentService = {
       vectorStoreType: 'In-Memory / Hybrid Cosine + Keyword Embedding',
       status: 'active',
       dataFreshness: {
-        lastUpdated: '2026-11-10',
+        lastUpdated: '2026-11-13',
         sourceStatus: 'verified_official',
         asOfDate: '2026-03-01',
         disclaimer: 'Official information sourced from Ministry of Law & Justice and eCourts Project.'

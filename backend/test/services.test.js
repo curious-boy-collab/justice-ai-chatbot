@@ -6,6 +6,7 @@ import { eCourtsService } from '../src/services/eCourtsService.js';
 import { dojService } from '../src/services/dojService.js';
 import { queryJusticeAI, OFFICIAL_DATA_FRESHNESS } from '../src/services/aiBridgeService.js';
 import { documentService } from '../src/services/documentService.js';
+import { createRateLimiter } from '../src/middleware/rateLimiter.js';
 
 describe('JusticeAI Service Modules Unit Tests', () => {
   it('judgeService - returns official Supreme Court and High Court counts', async () => {
@@ -186,5 +187,48 @@ describe('JusticeAI Service Modules Unit Tests', () => {
 
     const vcDirectory = eCourtsService.getVirtualCourtsDirectory();
     assert.ok(vcDirectory.statesCount >= 8);
+  });
+
+  it('rateLimiter - enforces sliding window request limits and returns 429 upon breach', () => {
+    const limiter = createRateLimiter({
+      windowMs: 1000,
+      maxRequests: 2,
+      skipInTest: false
+    });
+
+    const headers = {};
+    const mockRes = {
+      setHeader(k, v) { headers[k] = v; },
+      status(code) {
+        this.statusCode = code;
+        return this;
+      },
+      json(payload) {
+        this.body = payload;
+        return this;
+      }
+    };
+
+    let nextCalls = 0;
+    const mockNext = () => { nextCalls++; };
+    const mockReq = { headers: {}, socket: { remoteAddress: '192.168.1.100' } };
+
+    // Request 1: allowed
+    limiter(mockReq, mockRes, mockNext);
+    assert.strictEqual(nextCalls, 1);
+    assert.strictEqual(headers['X-RateLimit-Limit'], 2);
+    assert.strictEqual(headers['X-RateLimit-Remaining'], 1);
+
+    // Request 2: allowed
+    limiter(mockReq, mockRes, mockNext);
+    assert.strictEqual(nextCalls, 2);
+    assert.strictEqual(headers['X-RateLimit-Remaining'], 0);
+
+    // Request 3: blocked with 429
+    limiter(mockReq, mockRes, mockNext);
+    assert.strictEqual(nextCalls, 2, 'Request 3 must be blocked');
+    assert.strictEqual(mockRes.statusCode, 429);
+    assert.strictEqual(mockRes.body.error.code, 'TOO_MANY_REQUESTS');
+    assert.ok(headers['Retry-After']);
   });
 });

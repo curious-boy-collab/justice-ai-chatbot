@@ -594,4 +594,91 @@ describe('JusticeAI Backend API Tests (Day 3 — RAG Integration, Sources & Know
     assert.ok(body.samples.length >= 3);
     assert.ok(body.samples.find((s) => s.cnr === 'DLHC010012342023'));
   });
+
+  // ==========================================
+  // DAY 5 & DAY 6 — SECURITY, RATE LIMITING & PRODUCTION TESTS
+  // ==========================================
+
+  it('SECURITY - verifies essential HTTP security headers on all responses', async () => {
+    const res = await fetch(`${BASE_URL}/health`);
+    assert.strictEqual(res.status, 200);
+
+    // Verify security headers set by securityHeaders middleware
+    assert.strictEqual(res.headers.get('x-content-type-options'), 'nosniff');
+    assert.strictEqual(res.headers.get('x-frame-options'), 'DENY');
+    assert.strictEqual(res.headers.get('x-xss-protection'), '1; mode=block');
+    assert.strictEqual(res.headers.get('referrer-policy'), 'strict-origin-when-cross-origin');
+    assert.ok(res.headers.get('strict-transport-security'));
+    assert.strictEqual(res.headers.get('x-powered-by'), null);
+  });
+
+  it('ERROR HANDLING - rejects malformed JSON payload with 400 INVALID_JSON_BODY', async () => {
+    const res = await fetch(`${BASE_URL}/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{"invalidJsonSyntax: true,'
+    });
+    assert.strictEqual(res.status, 400);
+
+    const body = await res.json();
+    assert.strictEqual(body.success, false);
+    assert.strictEqual(body.error.code, 'INVALID_JSON_BODY');
+    assert.ok(body.timestamp);
+  });
+
+  it('ROUTING - returns standardized 404 for undefined API endpoints', async () => {
+    const res = await fetch(`${BASE_URL}/undefined_service_endpoint`);
+    assert.strictEqual(res.status, 404);
+
+    const body = await res.json();
+    assert.strictEqual(body.success, false);
+    assert.strictEqual(body.error.code, 'ROUTE_NOT_FOUND');
+    assert.ok(body.error.message.includes('/undefined_service_endpoint'));
+  });
+
+  it('ROOT INDEX - returns service documentation and registered endpoints dictionary', async () => {
+    const res = await fetch(`http://localhost:${TEST_PORT}/`);
+    assert.strictEqual(res.status, 200);
+
+    const body = await res.json();
+    assert.strictEqual(body.service, 'JusticeAI Backend API');
+    assert.ok(body.endpoints.health);
+    assert.ok(body.endpoints.chat);
+    assert.ok(body.endpoints.stats);
+    assert.ok(body.endpoints.cases);
+    assert.ok(body.endpoints.documents);
+    assert.ok(body.endpoints.doj);
+    assert.ok(body.endpoints.services);
+  });
+
+  it('HEALTH DIAGNOSTICS - reports comprehensive module status and gemini configuration safely', async () => {
+    const res = await fetch(`${BASE_URL}/health`);
+    assert.strictEqual(res.status, 200);
+
+    const body = await res.json();
+    assert.strictEqual(body.status, 'healthy');
+    assert.strictEqual(body.service, 'justiceai-backend');
+    assert.ok(typeof body.uptimeSeconds === 'number');
+    assert.ok(typeof body.geminiConfigured === 'boolean');
+
+    // Verify all 9 sub-modules are reported active
+    assert.strictEqual(body.modules.chat, 'active');
+    assert.strictEqual(body.modules.njdgService, 'active');
+    assert.strictEqual(body.modules.judgeService, 'active');
+    assert.strictEqual(body.modules.eCourtsService, 'active');
+    assert.strictEqual(body.modules.dojService, 'active');
+    assert.strictEqual(body.modules.documentService, 'active');
+    assert.strictEqual(body.modules.ragRetriever, 'active');
+    assert.strictEqual(body.modules.rateLimiter, 'active');
+    assert.strictEqual(body.modules.securityHeaders, 'active');
+  });
+
+  it('SECRET ISOLATION - ensures no API secrets or sensitive tokens are exposed in responses', async () => {
+    const res = await fetch(`${BASE_URL}/health`);
+    const text = await res.text();
+
+    // Verify no secret patterns exist in response
+    assert.ok(!text.includes('AIzaSy'), 'No Google API keys should ever be exposed in health responses');
+    assert.ok(!text.includes('GEMINI_API_KEY'), 'Raw environment variable names should not be leaked');
+  });
 });

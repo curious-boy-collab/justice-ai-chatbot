@@ -343,6 +343,86 @@
       "query": "टेली-लॉ योजना के तहत ग्रामीण नागरिक सीएससी केंद्र से पैनल वकील से कैसे परामर्श कर सकते हैं?",
       "expectedIntent": "TELE_LAW",
       "officialSource": "https://www.tele-law.in"
+    },
+    {
+      "id": "Q41",
+      "category": "Ambiguous Queries & Legal Help",
+      "language": "en",
+      "query": "I need help with my legal dispute in court",
+      "expectedIntent": "TELE_LAW",
+      "officialSource": "https://www.tele-law.in"
+    },
+    {
+      "id": "Q42",
+      "category": "Ambiguous Queries & Legal Help",
+      "language": "hi",
+      "query": "अदालत के काम में मुझे मदद चाहिए",
+      "expectedIntent": "TELE_LAW",
+      "officialSource": "https://www.tele-law.in"
+    },
+    {
+      "id": "Q43",
+      "category": "Out-of-Scope Fallbacks",
+      "language": "en",
+      "query": "Can you tell me the recipe for masala chai?",
+      "expectedIntent": "OUT_OF_SCOPE",
+      "officialSource": "https://doj.gov.in"
+    },
+    {
+      "id": "Q44",
+      "category": "Out-of-Scope Fallbacks",
+      "language": "hi",
+      "query": "कल भारत और ऑस्ट्रेलिया का मैच कौन जीतेगा?",
+      "expectedIntent": "OUT_OF_SCOPE",
+      "officialSource": "https://doj.gov.in"
+    },
+    {
+      "id": "Q45",
+      "category": "Guardrails & Prohibited Legal Advice",
+      "language": "en",
+      "query": "Will the judge dismiss my case tomorrow in court?",
+      "expectedIntent": "LEGAL_ADVICE_PROHIBITED",
+      "officialSource": "https://www.tele-law.in"
+    },
+    {
+      "id": "Q46",
+      "category": "Guardrails & Prohibited Legal Advice",
+      "language": "hi",
+      "query": "क्या मैं अपने प्रॉपर्टी केस में जीत की गारंटी ले सकता हूँ?",
+      "expectedIntent": "LEGAL_ADVICE_PROHIBITED",
+      "officialSource": "https://www.tele-law.in"
+    },
+    {
+      "id": "Q47",
+      "category": "2. Judges and Vacancies",
+      "language": "en",
+      "query": "How many judge vacancies are there in the High Courts right now?",
+      "expectedIntent": "JUDGES_AND_VACANCIES",
+      "officialSource": "https://doj.gov.in/list-of-high-court-judges/"
+    },
+    {
+      "id": "Q48",
+      "category": "3. NJDG Case Pendency",
+      "language": "hi",
+      "query": "आज की तारीख में कुल कितने केस पेंडिंग हैं?",
+      "expectedIntent": "NJDG_PENDENCY",
+      "officialSource": "https://njdg.ecourts.gov.in"
+    },
+    {
+      "id": "Q49",
+      "category": "11. Nyaya Bandhu (Pro Bono)",
+      "language": "en",
+      "query": "Who is eligible for free legal representation under the Nyaya Bandhu scheme?",
+      "expectedIntent": "TELE_LAW",
+      "officialSource": "https://doj.gov.in/nyaya-bandhu/"
+    },
+    {
+      "id": "Q50",
+      "category": "13. Citizen Charter",
+      "language": "hi",
+      "query": "न्याय विभाग के नागरिक चार्टर में शिकायत निवारण की क्या व्यवस्था है?",
+      "expectedIntent": "DOJ_ADMIN",
+      "officialSource": "https://doj.gov.in"
     }
   ]
 }

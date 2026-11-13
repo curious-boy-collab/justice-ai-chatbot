@@ -29,7 +29,7 @@ const INTENTS = {
 const INTENT_PATTERNS = [
   {
     intent: INTENTS.LEGAL_ADVICE_PROHIBITED,
-    regex: /(will i win|who will win|guarantee.*win|secret verdict|can you defeat|legal advice on my.*case|पक्का जीतूंगा|फैसला किसके पक्ष|जीतने की गारंटी|गोपनीय फैसला|गोपनीय फैसले|कौन जीतेगा|किसकी जीत)/i,
+    regex: /(will i win|who will win|guarantee.*win|secret verdict|can you defeat|legal advice on my.*case|dismiss my.*case|पक्का जीतूंगा|फैसला किसके पक्ष|जीतने की गारंटी|गोपनीय फैसला|गोपनीय फैसले|कौन जीतेगा|किसकी जीत|जीत की गारंटी)/i,
   },
   {
     intent: INTENTS.GREETING,
@@ -69,7 +69,7 @@ const INTENT_PATTERNS = [
   },
   {
     intent: INTENTS.TELE_LAW,
-    regex: /(tele-law|telelaw|free legal|legal aid|csc|panel lawyer|marginalized|disha scheme|nyaya bandhu|pro bono|section 12|muft vakil|muft kanuni salah|टेली-लॉ|टेली लॉ|निःशुल्क कानूनी|विधिक सहायता|पैनल वकील|सीएससी|दिशा योजना|न्याय बंधु)/i,
+    regex: /(tele-law|telelaw|free legal|legal aid|legal help|legal dispute|csc|panel lawyer|marginalized|disha scheme|nyaya bandhu|pro bono|section 12|muft vakil|muft kanuni salah|कानूनी मदद|कानूनी सलाह|विवाद में मदद|अदालत के काम में.*मदद|टेली-लॉ|टेली लॉ|निःशुल्क कानूनी|विधिक सहायता|पैनल वकील|सीएससी|दिशा योजना|न्याय बंधु)/i,
   },
   {
     intent: INTENTS.DOJ_ADMIN,
@@ -79,7 +79,7 @@ const INTENT_PATTERNS = [
 
 // Keywords clearly outside DoJ boundary
 const OUT_OF_SCOPE_PATTERNS = [
-  /(weather|forecast|temperature|recipe|cricket score|movie|bollywood|restaurant|hotel booking|flight ticket|crypto|bitcoin|joke|biryani|मौसम|क्रिकेट|मूवी|खाना बनाने की विधि|रेसिपी|बिरयानी|गाना)/i,
+  /\b(weather|forecast|temperature|recipe|cricket score|cricket match|match.*win|football|sports|movie|bollywood|restaurant|hotel booking|flight ticket|crypto|bitcoin|joke|biryani|chai|tea)\b|(मौसम|क्रिकेट|मूवी|खाना बनाने की विधि|रेसिपी|बिरयानी|गाना|चाय|मैच)/i,
 ];
 
 /**

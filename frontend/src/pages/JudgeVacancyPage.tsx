@@ -5,6 +5,7 @@ import {
 } from 'lucide-react'
 import { fetchJudgeStats } from '../services/apiClient'
 import type { JudgeStatsResponse } from '../types/api'
+import Footer from '../components/Layout/Footer'
 
 interface JudgeVacancyPageProps {
   onBack: () => void
@@ -363,6 +364,7 @@ export default function JudgeVacancyPage({ onBack, onStartChat }: JudgeVacancyPa
           </button>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

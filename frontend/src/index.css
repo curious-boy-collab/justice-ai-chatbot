@@ -16,7 +16,7 @@
 
   --color-india-green: #138808;
 
-  --font-sans: "Inter", "Noto Sans Devanagari", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", "Noto Sans Devanagari", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
 * {
@@ -30,18 +30,34 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: 1.6;
+  text-rendering: optimizeLegibility;
 }
 
-/* Scrollbar styling */
+/* Accessible focus ring indicators for keyboard navigation */
+:focus-visible {
+  outline: 2px solid #ff9933;
+  outline-offset: 2px;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #ff9933;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(255, 153, 51, 0.25);
+}
+
+/* Custom Scrollbar styling */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: #f1f5f9;
 }
 ::-webkit-scrollbar-thumb {
-  background: #c5cfe8;
+  background: #cbd5e1;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
@@ -64,12 +80,12 @@ html {
 
 /* Chat message animations */
 @keyframes slideInUp {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 .anim-slide-up {
-  animation: slideInUp 0.22s ease-out forwards;
+  animation: slideInUp 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Typing dots */
@@ -89,7 +105,7 @@ html {
 .typing-dot:nth-child(2) { animation-delay: -0.16s; }
 .typing-dot:nth-child(3) { animation-delay: 0s; }
 
-/* Gradient header bar */
+/* Tricolour National Header Bar */
 .gov-header-bar {
   background: linear-gradient(90deg, #ff9933 33.3%, #ffffff 33.3% 66.6%, #138808 66.6%);
   height: 4px;
@@ -97,6 +113,14 @@ html {
 
 /* Hindi typography enhancements */
 :lang(hi), [lang="hi"] {
-  line-height: 1.75;
-  letter-spacing: 0.01em;
+  line-height: 1.8;
+  letter-spacing: 0.015em;
+}
+
+/* Interactive Card Transitions */
+.gov-card {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.gov-card:hover {
+  transform: translateY(-2px);
 }

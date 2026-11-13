@@ -66,7 +66,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-[#1a3f7c] mt-8 pt-5 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-blue-300">
-          <span>© 2025 Department of Justice, Government of India. All rights reserved.</span>
+          <span>© 2026 Department of Justice, Government of India. All rights reserved.</span>
           <span>Content is indicative · Verify at official sources</span>
         </div>
       </div>

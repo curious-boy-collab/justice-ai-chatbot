@@ -116,6 +116,7 @@ export default function LandingPage({ onStartChat, onNavigateServices, onNavigat
   return (
     <div className="min-h-screen flex flex-col">
       <Header
+        currentPage="home"
         onLogoClick={() => onNavigatePage?.('landing')}
         onNavigate={(p) => {
           if (p === 'services') onNavigatePage ? onNavigatePage('services') : onNavigateServices?.()

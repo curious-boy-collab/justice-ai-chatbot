@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import { fetchKnowledgeStats } from '../services/apiClient'
 import type { KnowledgeStatsResponse } from '../types/api'
+import Footer from '../components/Layout/Footer'
 
 export type ServicePageTarget =
   | 'njdg' | 'judge-vacancy' | 'efiling' | 'telelaw'
@@ -240,6 +241,7 @@ export default function ServicesPage({ onBack, onNavigate, onStartChat }: Servic
           </button>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

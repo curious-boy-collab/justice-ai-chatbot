@@ -3,6 +3,7 @@ import {
   Search, FileText, Download, MessageSquare,
   Phone, CheckCircle, Info
 } from 'lucide-react'
+import Footer from '../components/Layout/Footer'
 
 interface ECourtsAppPageProps {
   onBack: () => void
@@ -222,6 +223,7 @@ export default function ECourtsAppPage({ onBack, onStartChat }: ECourtsAppPagePr
           </button>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

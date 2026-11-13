@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import { fetchNjdgStats } from '../services/apiClient'
 import type { NjdgStatsResponse } from '../types/api'
+import Footer from '../components/Layout/Footer'
 
 interface NJDGDashboardProps {
   onBack: () => void
@@ -414,6 +415,7 @@ export default function NJDGDashboard({ onBack, onStartChat }: NJDGDashboardProp
           </button>
         </div>
       </div>
+      <Footer />
     </div>
   )
 }

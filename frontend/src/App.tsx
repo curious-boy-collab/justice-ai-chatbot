@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import LandingPage from './pages/LandingPage'
 import ChatPage from './pages/ChatPage'
 import ServicesPage from './pages/ServicesPage'
@@ -23,9 +23,48 @@ export type Page =
   | 'ecourts-app'
   | 'case-status'
 
+const VALID_PAGES: Page[] = [
+  'landing',
+  'chat',
+  'services',
+  'njdg',
+  'judge-vacancy',
+  'efiling',
+  'telelaw',
+  'ftsc',
+  'ecourts-app',
+  'case-status',
+]
+
+function getInitialPage(): Page {
+  if (typeof window === 'undefined') return 'landing'
+  const hash = window.location.hash.replace(/^#\/?/, '').trim() as Page
+  return VALID_PAGES.includes(hash) ? hash : 'landing'
+}
+
 function App() {
-  const [page, setPage] = useState<Page>('landing')
+  const [page, setPageState] = useState<Page>(getInitialPage)
   const [initialQuery, setInitialQuery] = useState<string | undefined>()
+
+  const setPage = (nextPage: Page) => {
+    setPageState(nextPage)
+    if (typeof window !== 'undefined') {
+      window.location.hash = nextPage === 'landing' ? '' : nextPage
+    }
+  }
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace(/^#\/?/, '').trim() as Page
+      if (VALID_PAGES.includes(hash)) {
+        setPageState(hash)
+      } else if (!hash) {
+        setPageState('landing')
+      }
+    }
+    window.addEventListener('hashchange', handleHashChange)
+    return () => window.removeEventListener('hashchange', handleHashChange)
+  }, [])
 
   const handleStartChat = (query?: string) => {
     setInitialQuery(query)

@@ -138,8 +138,9 @@ export default function ChatHistoryDrawer({
                       e.stopPropagation()
                       onDeleteSession(session.id)
                     }}
-                    className="opacity-0 group-hover:opacity-100 p-1.5 text-slate-400 hover:text-rose-600 rounded-md hover:bg-white transition-opacity"
+                    className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1.5 text-slate-400 hover:text-rose-600 rounded-md hover:bg-white transition-opacity focus-visible:opacity-100"
                     title={isHi ? 'संवाद हटाएं' : 'Delete chat'}
+                    aria-label={isHi ? `संवाद हटाएं: ${session.title}` : `Delete chat: ${session.title}`}
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>

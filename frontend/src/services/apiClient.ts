@@ -65,6 +65,10 @@ export async function apiRequest<T>(
       throw new ApiError(errorMessage, response.status, errorCode)
     }
 
+    if (!isJson) {
+      throw new ApiError('Unexpected non-JSON response from server', response.status)
+    }
+
     return payload as T
   } catch (error: unknown) {
     clearTimeout(timeoutId)

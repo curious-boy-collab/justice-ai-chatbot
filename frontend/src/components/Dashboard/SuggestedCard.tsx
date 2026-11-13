@@ -14,10 +14,11 @@ export default function SuggestedCard({
 }: SuggestedCardProps) {
   return (
     <button
+      type="button"
       onClick={() => onClick(query)}
-      className="bg-white border border-gray-100 rounded-2xl p-4 text-left shadow-sm
-                 hover:shadow-md hover:border-[#c5cfe8] hover:-translate-y-0.5
-                 transition-all duration-200 group w-full"
+      className="bg-white border border-gray-100 rounded-2xl p-4 sm:p-5 text-left shadow-xs
+                 hover:shadow-md hover:border-[#c5cfe8]
+                 transition-all duration-200 group w-full gov-card focus-visible:ring-2 focus-visible:ring-[#ff9933]"
     >
       <div className="flex items-start gap-3">
         <div

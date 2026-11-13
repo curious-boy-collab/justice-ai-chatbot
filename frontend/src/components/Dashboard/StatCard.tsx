@@ -37,7 +37,7 @@ export default function StatCard({
   const TrendIcon = trend ? trendIcons[trend] : null
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow p-5 flex flex-col gap-3">
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow p-4 sm:p-5 flex flex-col gap-3 gov-card">
       <div className="flex items-start justify-between">
         <div className="bg-[#e8edf7] rounded-xl p-2.5">
           <Icon className="w-5 h-5 text-[#0a1f44]" />

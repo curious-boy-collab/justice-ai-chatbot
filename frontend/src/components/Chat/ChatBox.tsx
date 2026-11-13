@@ -77,8 +77,9 @@ export default function ChatBox({
   // 5. Drawer UI State
   const [historyOpen, setHistoryOpen] = useState(false)
 
-  // Scroll ref
+  // Scroll ref & initial query guard
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const initialQueryHandledRef = useRef<string | null>(null)
 
   // Rotate loading stages during active RAG processing
   useEffect(() => {
@@ -215,7 +216,12 @@ export default function ChatBox({
 
       const answerText = response.answer || response.reply || ''
       const hasSources = Boolean(response.sources && response.sources.length > 0)
-      const isNoResults = !hasSources && answerText.includes('No Verified') || answerText.includes('कोई प्रासंगिक')
+      const isNoResults = !hasSources && (
+        answerText.includes('No Verified') ||
+        answerText.includes('No verified') ||
+        answerText.includes('कोई प्रासंगिक') ||
+        answerText.includes('out-of-scope')
+      )
 
       // 3. Add Assistant Message with rich RAG metadata
       const assistantMessage: Message = {
@@ -282,9 +288,10 @@ export default function ChatBox({
     }
   }
 
-  // Handle Initial Query from landing page
+  // Handle Initial Query from landing page safely without duplicate triggering
   useEffect(() => {
-    if (initialQuery && initialQuery.trim()) {
+    if (initialQuery && initialQuery.trim() && initialQueryHandledRef.current !== initialQuery) {
+      initialQueryHandledRef.current = initialQuery
       handleSendMessage(initialQuery)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

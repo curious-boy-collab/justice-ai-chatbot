@@ -8,55 +8,58 @@ import Footer from '../components/Layout/Footer'
 import StatCard from '../components/Dashboard/StatCard'
 import SuggestedCard from '../components/Dashboard/SuggestedCard'
 
+import type { Page } from '../App'
+
 interface LandingPageProps {
   onStartChat: (query?: string) => void
   onNavigateServices?: () => void
+  onNavigatePage?: (page: Page) => void
 }
 
 const statCards = [
   {
     title: 'Supreme Court Judges',
-    value: '32',
-    subtitle: 'Sanctioned: 34',
+    value: '33',
+    subtitle: 'Sanctioned: 34 (Art. 124)',
     icon: Scale,
-    badge: 'Live',
+    badge: 'Live DoJ',
     badgeColor: 'green' as const,
     isLive: true,
     trend: 'neutral' as const,
-    trendValue: 'Last updated: today',
+    trendValue: '1 vacancy remaining',
   },
   {
     title: 'High Court Vacancies',
-    value: '356',
+    value: '336',
     subtitle: 'Across 25 High Courts',
     icon: Users,
-    badge: 'NJDG',
+    badge: 'DoJ Roster',
     badgeColor: 'orange' as const,
     isLive: false,
     trend: 'down' as const,
-    trendValue: 'Down 12 from last month',
+    trendValue: 'Sanctioned: 1,114 posts',
   },
   {
-    title: 'Pending Cases (All Courts)',
-    value: '4.4 Cr+',
-    subtitle: 'District & Subordinate Courts',
+    title: 'Pending Cases (National)',
+    value: '5.12 Cr',
+    subtitle: 'Supreme, High & District Courts',
     icon: BarChart3,
-    badge: 'NJDG',
+    badge: 'NJDG Official',
     badgeColor: 'blue' as const,
     isLive: false,
     trend: 'up' as const,
-    trendValue: 'Updated nightly from NJDG',
+    trendValue: '78.1% Criminal / 21.9% Civil',
   },
   {
     title: 'Fast Track Courts',
     value: '761',
-    subtitle: 'Operational across India',
+    subtitle: 'Operational across 28 states',
     icon: Gavel,
-    badge: 'Active',
+    badge: 'FTSC Active',
     badgeColor: 'green' as const,
     isLive: false,
     trend: 'up' as const,
-    trendValue: '+18 operational this quarter',
+    trendValue: '414 Exclusive POCSO Courts',
   },
 ]
 
@@ -105,14 +108,26 @@ const suggestedCards = [
   },
 ]
 
-export default function LandingPage({ onStartChat, onNavigateServices }: LandingPageProps) {
+export default function LandingPage({ onStartChat, onNavigateServices, onNavigatePage }: LandingPageProps) {
   const handleSuggestedQuery = (query: string) => {
     onStartChat(query)
   }
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header onLogoClick={() => {}} onNavigate={(p) => { if (p === 'services' && onNavigateServices) onNavigateServices(); if (p === 'njdg' && onNavigateServices) onNavigateServices(); }} />
+      <Header
+        onLogoClick={() => onNavigatePage?.('landing')}
+        onNavigate={(p) => {
+          if (p === 'services') onNavigatePage ? onNavigatePage('services') : onNavigateServices?.()
+          else if (p === 'njdg') onNavigatePage ? onNavigatePage('njdg') : onNavigateServices?.()
+          else if (p === 'home') onNavigatePage ? onNavigatePage('landing') : undefined
+          else if (p === 'contact') {
+            document.querySelector('footer')?.scrollIntoView({ behavior: 'smooth' })
+          } else if (p === 'about') {
+            onStartChat('What are the main functions and administrative divisions of the Department of Justice?')
+          }
+        }}
+      />
 
       {/* Hero section */}
       <section className="bg-[#0a1f44] text-white relative overflow-hidden">

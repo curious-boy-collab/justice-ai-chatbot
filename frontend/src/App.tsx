@@ -48,6 +48,7 @@ function App() {
           <LandingPage
             onStartChat={handleStartChat}
             onNavigateServices={() => setPage('services')}
+            onNavigatePage={(p) => setPage(p)}
           />
         )
       case 'chat':

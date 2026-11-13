@@ -235,3 +235,318 @@ Executed using Node.js built-in test runner (`npm --prefix backend test`):
 2. **For Shravani (Frontend Developer)**:
    - Sources now contain `category`, `snippet`, and `relevanceScore` directly powering Shravani's Day 3 expandable citation UI.
    - New document exploration endpoints (`/api/documents`, `/api/documents/search`) available for rich frontend knowledge browsing.
+
+
+---
+
+# 🏛️ Day 4 — Government Services & Judicial Information
+
+**Sprint**: Day 4  
+**Role**: Disha (Backend Developer)  
+**Branch**: `feature/backend`  
+**Status**: Completed & Verified  
+
+---
+
+## 🎯 Day 4 Objectives & Achievements
+
+- [x] **Implement DoJ Information Endpoints**:
+  - Created [`backend/src/services/dojService.js`](../backend/src/services/dojService.js), [`backend/src/controllers/dojController.js`](../backend/src/controllers/dojController.js), and [`backend/src/routes/doj.routes.js`](../backend/src/routes/doj.routes.js):
+    - `GET /api/doj/overview`: Official mandate, headquarters, constitutional basis, portals list, and data freshness snapshot.
+    - `GET /api/doj/divisions`: Comprehensive breakdown of all 7 administrative divisions (Appointments, Access to Justice, eCourts Project, Judicial Infrastructure, FTSC, Judicial Reforms, NALSA).
+    - `GET /api/doj/schemes`: Detailed roster of Centrally Sponsored Schemes (Tele-Law, FTSC, CSS Infrastructure, Nyaya Bandhu, Nyaya Mitra, eCourts Phase III, Gram Nyayalayas).
+
+- [x] **Create NJDG Data Service & Endpoints**:
+  - Expanded [`backend/src/services/njdgService.js`](../backend/src/services/njdgService.js) and [`backend/src/controllers/statsController.js`](../backend/src/controllers/statsController.js):
+    - `GET /api/stats/njdg`: Aggregate pendency (5.12+ crore), civil vs criminal splits, monthly disposal rates, age brackets.
+    - `GET /api/stats/njdg/court-breakdown`: Hierarchical breakdown covering Supreme Court (82.5k), 25 High Courts (61.5L), District & Subordinate Courts (4.50 Cr), and Fast Track Special Courts (2.34L).
+    - `GET /api/stats/njdg/age-wise`: 5 standardized age brackets (0-1 yr, 1-3 yr, 3-5 yr, 5-10 yr, >10 yr) for dashboard chart rendering.
+    - `GET /api/stats/njdg/state-wise`: Caseload distributions across 12 high-pendency states (UP, Maharashtra, Bihar, WB, Rajasthan, MP, Gujarat, TN, Karnataka, Kerala, Delhi, Punjab).
+
+- [x] **Create Judge Statistics Service & Endpoints**:
+  - Expanded [`backend/src/services/judgeService.js`](../backend/src/services/judgeService.js) and [`backend/src/controllers/statsController.js`](../backend/src/controllers/statsController.js):
+    - `GET /api/stats/judges`: National summary across Supreme Court (34 sanctioned, 33 working, 1 vacancy), 25 High Courts (1,114 sanctioned, 778 working, 336 vacancies), and Subordinate Judiciary (~25,000 sanctioned, ~5,000 vacancies).
+    - `GET /api/stats/judges/high-courts`: Full directory of all 25 High Courts with sanctioned strength, working strength, vacancies, principal seats, benches, and territorial jurisdictions.
+    - `GET /api/stats/judges/high-courts/:code`: Direct lookup by court slug (e.g. `delhi`, `bombay`, `allahabad`). Returns 404 with `HIGH_COURT_NOT_FOUND` if unknown.
+    - `GET /api/stats/judges/appointment-procedure`: Explains Articles 124, 217, 222, 224, 233, Supreme Court & High Court Collegium structures, and the 5-step Memorandum of Procedure (MoP).
+
+- [x] **Create eCourts Citizen Services Integration Layer**:
+  - Expanded [`backend/src/services/eCourtsService.js`](../backend/src/services/eCourtsService.js), created [`backend/src/controllers/servicesController.js`](../backend/src/controllers/servicesController.js) and [`backend/src/routes/services.routes.js`](../backend/src/routes/services.routes.js):
+    - `GET /api/services`: Directory of all 7 citizen services with direct official government URLs.
+    - `GET /api/services/virtual-courts`: State-wise directory of active Virtual Courts (`vcourts.gov.in`) and procedural guide for traffic challan electronic adjudication.
+    - `GET /api/services/efiling`: Comprehensive step-by-step guidance for eFiling 3.0, OCR PDF requirements, digital signatures (eSign/DSC), and ePay court fees.
+    - `GET /api/services/tele-law`: Details on free legal advice under Section 12 of LSA Act, 14416 helpline, CSC locations, and Tele-Law mobile application.
+    - `GET /api/services/ftsc`: Fast Track Special Courts mandate (2-month POCSO trial target, Nirbhaya fund allocations, 750+ courts).
+    - `GET /api/services/mobile-app`: Features and direct Google Play & Apple App Store download URLs for eCourts Services app.
+    - `GET /api/services/live-streaming`: Official channels for Supreme Court and High Courts (Gujarat, Karnataka, Orissa, MP, Patna) with court broadcasting rules disclaimer.
+
+- [x] **Create Case Status Guidance & Sandbox Lookup Endpoints**:
+  - Expanded [`backend/src/controllers/caseController.js`](../backend/src/controllers/caseController.js) and [`backend/src/routes/case.routes.js`](../backend/src/routes/case.routes.js):
+    - `GET /api/cases/lookup?cnr={cnr}`: 
+      - If matching curated sandbox demo cases (e.g., `DLHC010012342023`, `MHMB010056782022`, `UPAL010098762021`): returns rich docket details (case type, petitioner, respondent, next hearing date, court hall, stage) with explicit `isLive: false` and `dataStatus: "demo_sandbox"`.
+      - If any other valid 16-character CNR: returns parsed structure + explicit `dataStatus: "live_lookup_requires_captcha"`, `isLive: false`, step-by-step guidance, SMS inquiry number (`9766899899`), and official eCourts portal link.
+      - If invalid CNR or missing query: returns HTTP 400 (`MISSING_CNR` or `INVALID_CNR_FORMAT`).
+    - `GET /api/cases/guidance`: Bilingual procedural instructions on locating CNR numbers and alternative search modes (party name, advocate, FIR number, case number).
+    - `GET /api/cases/demo-samples`: Returns available sandbox demo CNR codes for frontend testing.
+
+- [x] **Data Integrity, Source Attribution & Anti-Hallucination**:
+  - All responses include verified source metadata (`dataFreshness`, `officialPortalUrl`, `isLive: false`, `dataStatus: "official_snapshot"`).
+  - Explicit notices when live data requires security CAPTCHAs on government servers.
+  - No manufactured case numbers or speculative numbers.
+
+---
+
+## 📡 API Reference & Sample Payloads
+
+### 1. `GET /api/doj/overview`
+```json
+{
+  "success": true,
+  "department": "Department of Justice",
+  "ministry": "Ministry of Law and Justice",
+  "government": "Government of India",
+  "headquarters": "Jaisalmer House, 26, Man Singh Road, New Delhi - 110011",
+  "mandate": "Administration of justice, appointment of Judges to the Supreme Court and High Courts, conditions of service of Judges, judicial infrastructure, eCourts Mission Mode Project, legal aid to the poor, and Fast Track Special Courts.",
+  "officialPortals": {
+    "departmentPortal": "https://doj.gov.in",
+    "teleLawPortal": "https://www.tele-law.in",
+    "ecourtsPortal": "https://ecourts.gov.in",
+    "njdgPortal": "https://njdg.ecourts.gov.in",
+    "virtualCourtsPortal": "https://vcourts.gov.in"
+  },
+  "dataFreshness": {
+    "lastUpdated": "2026-11-12",
+    "sourceStatus": "verified_official",
+    "isLive": false
+  }
+}
+```
+
+### 2. `GET /api/stats/judges/high-courts/delhi`
+```json
+{
+  "success": true,
+  "highCourt": {
+    "code": "delhi",
+    "name": "Delhi High Court",
+    "sanctioned": 60,
+    "permanent": 45,
+    "additional": 15,
+    "working": 44,
+    "vacancies": 16,
+    "principalSeat": "New Delhi",
+    "bench": "None",
+    "jurisdiction": "National Capital Territory of Delhi"
+  },
+  "asOfDate": "2026-03-01",
+  "officialPortalUrl": "https://doj.gov.in/list-of-high-court-judges/"
+}
+```
+
+### 3. `GET /api/cases/lookup?cnr=DLHC010012342023`
+```json
+{
+  "success": true,
+  "isValidCnrFormat": true,
+  "cnr": "DLHC010012342023",
+  "isLive": false,
+  "dataStatus": "demo_sandbox",
+  "caseTitle": "Aarav Sharma vs. State of NCT of Delhi & Anr.",
+  "caseType": "Writ Petition (Civil) - W.P.(C)",
+  "courtName": "High Court of Delhi at New Delhi",
+  "bench": "Division Bench (Hon'ble Mr. Justice R.K. Verma & Hon'ble Ms. Justice P. Gupta)",
+  "courtHall": "Court Room No. 4",
+  "caseStage": "Final Hearing / Arguments",
+  "nextHearingDate": "2026-11-28",
+  "officialPortalUrl": "https://services.ecourts.gov.in/ecourtindia_v6/?p=casestatus"
+}
+```
+
+---
+
+## 🧪 Automated Testing Verification (Day 4)
+
+Executed via `npm --prefix backend test`:
+- **Suite 1: Integration Tests (`test/api.test.js`)**: 44 tests passed (22 existing + 22 Day 4 endpoints).
+- **Suite 2: E2E Chat Validation (`test/sample_questions_e2e.test.js`)**: 40 tests passed.
+- **Suite 3: Services Unit Tests (`test/services.test.js`)**: 15 tests passed (11 existing + 4 Day 4 service tests).
+- **Total**: **99 passed, 0 failed (100% pass rate in ~198ms)**.
+
+---
+
+## 🤝 Team Coordination Summary
+
+1. **For Shravani (Frontend Developer)**:
+   - All frontend pages (`NJDGDashboard`, `JudgeVacancyPage`, `ServicesPage`, `CaseStatusPage`, `EFilingPage`, `TeleLawPage`, `FTSCPage`, `ECourtsAppPage`) can now query live backend endpoints under `/api/doj/*`, `/api/stats/*`, `/api/services/*`, and `/api/cases/*`.
+   - Explicit `dataStatus` flags (`official_snapshot`, `demo_sandbox`, `live_lookup_requires_captcha`) allow the UI to clearly present demo badges vs official records.
+2. **For Nitin (AI / RAG Developer)**:
+   - Backend services and endpoints cleanly share the same underlying verified snapshots and official links curated in Nitin's knowledge documents.
+
+
+---
+
+# 🛡️ Day 5 & Day 6 — Integration, Hardening, Final Verification & Delivery
+
+**Sprint**: Day 5 & Day 6 (Combined Final Delivery)  
+**Role**: Disha (Backend Developer)  
+**Branch**: `feature/backend`  
+**Status**: 100% Completed, Tested & Verified  
+**Pull Request**: Updated on PR [#13](https://github.com/curious-boy-collab/justice-ai-chatbot/pull/13)  
+
+---
+
+## 🎯 Day 5 Objectives & Achievements: Integration, Testing & Bug Fixing
+
+- [x] **Test All REST Endpoints**:
+  - Full HTTP integration testing covering all 7 route groups: `/api/health`, `/api/chat`, `/api/stats`, `/api/cases`, `/api/documents`, `/api/doj`, and `/api/services`.
+  - Verified edge cases, query parameters, language selection (`en`/`hi`), and HTTP method validation.
+
+- [x] **Test Gemini and RAG Communication**:
+  - Validated server-side bridge in [`backend/src/services/aiBridgeService.js`](../backend/src/services/aiBridgeService.js) with Nitin's RAG retriever and vector store.
+  - Verified graceful fallback behavior when `GEMINI_API_KEY` is not present, ensuring grounded factual responses from the indexed DoJ knowledge base.
+
+- [x] **Validate API Response Formats**:
+  - Enforced consistent JSON schema across all endpoints:
+    - Root `success: true/false`
+    - Standardized error schema: `{ code, message, details? }`
+    - ISO 8601 timestamps
+    - Data freshness metadata (`dataFreshness`, `isLive: false`, `dataStatus`)
+  - Full compatibility with Shravani's frontend components (`answer`, `sources`, `dataStatus`, `retrieval`, `dataCard`, `citations`).
+
+- [x] **Fix Integration Bugs & Improve Error Handling**:
+  - Upgraded [`backend/src/middleware/errorHandler.js`](../backend/src/middleware/errorHandler.js):
+    - Added dedicated handling for `SyntaxError` from `express.json()` body parser, returning HTTP 400 with `INVALID_JSON_BODY` instead of an unhandled 500 error.
+    - Added graceful handling for CORS policy rejections (HTTP 403 `CORS_FORBIDDEN`).
+    - Standardized 404 handler for unknown routes with `ROUTE_NOT_FOUND`.
+    - Suppressed internal stack traces in test and production environments to prevent sensitive internal code disclosure.
+
+- [x] **Add Input Validation and In-Memory Rate Limiting**:
+  - Implemented [`backend/src/middleware/rateLimiter.js`](../backend/src/middleware/rateLimiter.js):
+    - In-memory sliding window rate limiter tracking client IP requests.
+    - Default limit: 120 requests/minute for general API routes; 45 requests/minute for conversational `/api/chat`.
+    - Standard HTTP headers: `X-RateLimit-Limit`, `X-RateLimit-Remaining`, `X-RateLimit-Reset`, and `Retry-After`.
+    - Returns standardized HTTP 429 (`TOO_MANY_REQUESTS`) upon limit breach.
+    - Memory leak protection with automated periodic garbage collection.
+
+- [x] **Check API Security & Header Protection**:
+  - Implemented [`backend/src/middleware/securityHeaders.js`](../backend/src/middleware/securityHeaders.js):
+    - `X-Content-Type-Options: nosniff` (prevents MIME-type sniffing).
+    - `X-Frame-Options: DENY` (prevents clickjacking attacks).
+    - `X-XSS-Protection: 1; mode=block` (activates browser XSS filtering).
+    - `Referrer-Policy: strict-origin-when-cross-origin`.
+    - `Permissions-Policy: camera=(), microphone=(), geolocation=()` (disables unnecessary hardware access).
+    - `Strict-Transport-Security: max-age=31536000; includeSubDomains` (enforces HTTPS).
+    - Stripped `X-Powered-By: Express` fingerprint header.
+
+- [x] **Ensure Secrets are Isolated and Safe**:
+  - `GEMINI_API_KEY` is loaded strictly server-side through `dotenv` and backend config.
+  - Diagnostic health endpoint (`/api/health`) reports `geminiConfigured: true/false` without ever exposing the key string.
+  - Verified git tracking: `.env` is ignored by `.gitignore`, and repository has 0 committed keys.
+
+- [x] **Verify Frontend-Backend Communication**:
+  - Permissive local development CORS allowing `localhost` and `127.0.0.1` ports for Vite development.
+  - Tested OPTIONS preflight handling with 204 No Content.
+
+---
+
+## 🎯 Day 6 Objectives & Achievements: Final Delivery, Documentation & Submission
+
+- [x] **Perform Final Comprehensive API Testing**:
+  - Expanded test suite to **106 tests across 3 suites**, achieving a **100% pass rate in ~195ms**.
+  - Verified security headers, rate limiting breach behavior, malformed JSON body handling, 404 routes, and health diagnostics.
+
+- [x] **Verify Backend Configuration & Production Readiness**:
+  - Graceful shutdown listeners for `SIGINT` and `SIGTERM` in [`backend/src/server.js`](../backend/src/server.js).
+  - Production-ready environment detection (`isProduction`, `isTest`) in [`backend/src/config/env.js`](../backend/src/config/env.js).
+  - Configurable timeouts (`AI_TIMEOUT_MS`, `REQUEST_TIMEOUT_MS`).
+
+- [x] **Complete Environment Variable Documentation**:
+  - Documented all variables in [`backend/.env.example`](../backend/.env.example) with clear production defaults and security guidance.
+
+- [x] **Verify All Service Endpoints**:
+  - Root index endpoint (`GET /`) provides documentation references and complete routing dictionary for developers.
+
+- [x] **Remove Debugging Code**:
+  - Cleaned up console debugging statements across all controllers, services, and middlewares.
+
+- [x] **Complete Documentation & Push Final Tested Changes**:
+  - Documented complete architecture, endpoint catalog, testing metrics, and integration notes.
+  - Pushed tested commits to `origin/feature/backend`.
+  - Updated Pull Request [#13](https://github.com/curious-boy-collab/justice-ai-chatbot/pull/13) targeting `develop`.
+
+---
+
+## 📋 Comprehensive Endpoint Catalog
+
+| Method | Endpoint | Description | Auth / Limit |
+|---|---|---|---|
+| `GET` | `/` | API service index & endpoints dictionary | Public |
+| `GET` | `/api/health` | System health, uptime, and active module status | 120/min |
+| `POST` | `/api/chat` | Main bilingual RAG conversational endpoint | 45/min |
+| `GET` | `/api/doj/overview` | DoJ mandate, headquarters, constitutional framework | 120/min |
+| `GET` | `/api/doj/divisions` | 7 administrative divisions and responsibilities | 120/min |
+| `GET` | `/api/doj/schemes` | Centrally sponsored schemes (Tele-Law, FTSC, etc.) | 120/min |
+| `GET` | `/api/stats/judges` | National judge sanctioned, working, and vacancy summary | 120/min |
+| `GET` | `/api/stats/judges/high-courts` | Complete directory of all 25 High Courts | 120/min |
+| `GET` | `/api/stats/judges/high-courts/:code` | Specific High Court details (e.g. `delhi`, `bombay`) | 120/min |
+| `GET` | `/api/stats/judges/appointment-procedure` | Collegium system (MoP) & constitutional articles | 120/min |
+| `GET` | `/api/stats/njdg` | High-level NJDG pendency figures | 120/min |
+| `GET` | `/api/stats/njdg/court-breakdown` | Hierarchy pendency (SC, High Courts, District, FTSCs) | 120/min |
+| `GET` | `/api/stats/njdg/age-wise` | 5 standardized aging distribution brackets | 120/min |
+| `GET` | `/api/stats/njdg/state-wise` | State-level pendency across 12 high-volume states | 120/min |
+| `GET` | `/api/services` | Citizen services master directory | 120/min |
+| `GET` | `/api/services/virtual-courts` | Virtual Courts directory and traffic fine payment guide | 120/min |
+| `GET` | `/api/services/efiling` | Step-by-step guide for eFiling 3.0 & ePay | 120/min |
+| `GET` | `/api/services/tele-law` | Tele-Law pre-litigation legal aid details & 14416 helpline | 120/min |
+| `GET` | `/api/services/ftsc` | Fast Track Special Courts (POCSO Act) information | 120/min |
+| `GET` | `/api/services/mobile-app` | eCourts Services mobile app download links | 120/min |
+| `GET` | `/api/services/live-streaming` | Court proceedings live streaming channels & guidelines | 120/min |
+| `GET` | `/api/cases/lookup?cnr={cnr}` | 16-character CNR lookup (sandbox cases + portal guidance) | 120/min |
+| `GET` | `/api/cases/guidance` | Citizen guide to finding CNR & alternative searches | 120/min |
+| `GET` | `/api/cases/demo-samples` | Available sandbox demo cases for UI testing | 120/min |
+| `GET` | `/api/documents` | Lists all 10 indexed official knowledge documents | 120/min |
+| `GET` | `/api/documents/stats` | Knowledge base vector and chunk statistics | 120/min |
+| `GET/POST`| `/api/documents/search` | Standalone semantic search over indexed vectors | 120/min |
+| `GET` | `/api/documents/:id(*)` | Full document content and chunk breakdown | 120/min |
+
+---
+
+## 🧪 Automated Testing Verification (Days 1–6)
+
+Executed via `npm --prefix backend test`:
+
+```
+ℹ tests 106
+ℹ suites 3
+ℹ pass 106
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 195.303083
+```
+
+- **Suite 1 (`backend/test/api.test.js`)**: 50 tests passed.
+  - HTTP integration tests for every route group.
+  - Security headers verification (`nosniff`, `DENY`, `HSTS`, `XSS`).
+  - Request validation and rate limit breach handling.
+  - Malformed JSON body handling (HTTP 400 `INVALID_JSON_BODY`).
+  - 404 route handling (`ROUTE_NOT_FOUND`).
+  - Secret isolation (verifying no API keys or tokens are leaked).
+- **Suite 2 (`backend/test/sample_questions_e2e.test.js`)**: 40 tests passed.
+  - 40 official bilingual queries (Hindi, English, Hinglish) validated against RAG retrieval and legal guardrails.
+- **Suite 3 (`backend/test/services.test.js`)**: 16 tests passed.
+  - Unit tests for `judgeService`, `njdgService`, `eCourtsService`, `dojService`, `documentService`, and `rateLimiter`.
+
+---
+
+## 🤝 Final Team Delivery & Coordination
+
+1. **For Nitin (AI / RAG Developer)**:
+   - Backend communication with the AI / RAG module is verified with robust 15s timeout protection, sanitized inputs, and rich source citations.
+   - Grounded responses, data freshness, and guardrails for non-legal advice are fully enforced.
+2. **For Shravani (Frontend Developer)**:
+   - All backend REST endpoints are live, documented, CORS-configured, and verified.
+   - Clean data structures with explicit `isLive: false` and `dataStatus: "official_snapshot" | "demo_sandbox"` to power all UI badges and dashboards.
+3. **For Integration Lead**:
+   - Pull Request [#13](https://github.com/curious-boy-collab/justice-ai-chatbot/pull/13) contains the complete, tested Day 4, 5, and 6 backend implementation ready for merge into `develop`.

@@ -33,7 +33,7 @@ try {
  * Standard Data Freshness Metadata definition for DoJ records
  */
 export const OFFICIAL_DATA_FRESHNESS = {
-  lastUpdated: '2026-11-10',
+  lastUpdated: '2026-11-13',
   sourceStatus: 'verified_official',
   asOfDate: '2026-03-01',
   cacheStatus: 'live',

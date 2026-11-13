@@ -3,8 +3,10 @@ import assert from 'node:assert';
 import { judgeService } from '../src/services/judgeService.js';
 import { njdgService } from '../src/services/njdgService.js';
 import { eCourtsService } from '../src/services/eCourtsService.js';
+import { dojService } from '../src/services/dojService.js';
 import { queryJusticeAI, OFFICIAL_DATA_FRESHNESS } from '../src/services/aiBridgeService.js';
 import { documentService } from '../src/services/documentService.js';
+import { createRateLimiter } from '../src/middleware/rateLimiter.js';
 
 describe('JusticeAI Service Modules Unit Tests', () => {
   it('judgeService - returns official Supreme Court and High Court counts', async () => {
@@ -117,5 +119,116 @@ describe('JusticeAI Service Modules Unit Tests', () => {
     assert.ok(stats.categoriesCount > 0);
     assert.strictEqual(stats.status, 'active');
     assert.strictEqual(stats.dataFreshness.sourceStatus, 'verified_official');
+  });
+
+  // DAY 4 SERVICES UNIT TESTS
+  it('dojService - returns overview, 7 divisions, and key schemes', () => {
+    const overview = dojService.getOverview();
+    assert.strictEqual(overview.department, 'Department of Justice');
+    assert.strictEqual(overview.dataFreshness.sourceStatus, 'verified_official');
+
+    const divisions = dojService.getDivisions();
+    assert.strictEqual(divisions.count, 7);
+    assert.ok(divisions.divisions.find((d) => d.id === 'appointments-admin'));
+    assert.ok(divisions.divisions.find((d) => d.id === 'access-to-justice'));
+
+    const schemes = dojService.getSchemes();
+    assert.ok(schemes.count >= 6);
+    assert.ok(schemes.schemes.find((s) => s.id === 'tele-law'));
+  });
+
+  it('judgeService - returns high courts directory and appointment procedure', () => {
+    const allCourts = judgeService.getAllHighCourts();
+    assert.strictEqual(allCourts.count, 25);
+    assert.strictEqual(allCourts.highCourts.length, 25);
+
+    const delhi = judgeService.getHighCourtByCode('delhi');
+    assert.strictEqual(delhi.highCourt.sanctioned, 60);
+
+    const procedure = judgeService.getAppointmentProcedure();
+    assert.ok(procedure.collegiumStructure.supremeCourtCollegium);
+    assert.ok(procedure.workflowSteps.length >= 4);
+
+    assert.throws(
+      () => judgeService.getHighCourtByCode('unknown_court'),
+      (err) => err.statusCode === 404 && err.code === 'HIGH_COURT_NOT_FOUND'
+    );
+  });
+
+  it('njdgService - returns court hierarchy breakdown and state statistics', async () => {
+    const breakdown = await njdgService.getCourtBreakdown();
+    assert.strictEqual(breakdown.isOfficialReport, true);
+    assert.strictEqual(breakdown.courtLevels.length, 4);
+
+    const ageWise = await njdgService.getAgeWisePendency();
+    assert.strictEqual(ageWise.brackets.length, 5);
+
+    const stateWise = await njdgService.getStateWisePendency();
+    assert.ok(stateWise.count >= 10);
+    assert.ok(stateWise.states.find((s) => s.state === 'Uttar Pradesh'));
+  });
+
+  it('eCourtsService - provides demo cases, live captcha notices, and guides', () => {
+    const demo = eCourtsService.lookupCaseStatus('DLHC010012342023');
+    assert.strictEqual(demo.isValid, true);
+    assert.strictEqual(demo.dataStatus, 'demo_sandbox');
+    assert.strictEqual(demo.caseTitle, 'Aarav Sharma vs. State of NCT of Delhi & Anr.');
+
+    const liveNotice = eCourtsService.lookupCaseStatus('MHMB010099992024');
+    assert.strictEqual(liveNotice.isValid, true);
+    assert.strictEqual(liveNotice.dataStatus, 'live_lookup_requires_captcha');
+    assert.ok(liveNotice.guidance.step1);
+
+    const samples = eCourtsService.getDemoSamples();
+    assert.ok(samples.samples.length >= 3);
+
+    const guidance = eCourtsService.getCaseGuidance('en');
+    assert.ok(guidance.whereToFindCNR.length >= 3);
+
+    const vcDirectory = eCourtsService.getVirtualCourtsDirectory();
+    assert.ok(vcDirectory.statesCount >= 8);
+  });
+
+  it('rateLimiter - enforces sliding window request limits and returns 429 upon breach', () => {
+    const limiter = createRateLimiter({
+      windowMs: 1000,
+      maxRequests: 2,
+      skipInTest: false
+    });
+
+    const headers = {};
+    const mockRes = {
+      setHeader(k, v) { headers[k] = v; },
+      status(code) {
+        this.statusCode = code;
+        return this;
+      },
+      json(payload) {
+        this.body = payload;
+        return this;
+      }
+    };
+
+    let nextCalls = 0;
+    const mockNext = () => { nextCalls++; };
+    const mockReq = { headers: {}, socket: { remoteAddress: '192.168.1.100' } };
+
+    // Request 1: allowed
+    limiter(mockReq, mockRes, mockNext);
+    assert.strictEqual(nextCalls, 1);
+    assert.strictEqual(headers['X-RateLimit-Limit'], 2);
+    assert.strictEqual(headers['X-RateLimit-Remaining'], 1);
+
+    // Request 2: allowed
+    limiter(mockReq, mockRes, mockNext);
+    assert.strictEqual(nextCalls, 2);
+    assert.strictEqual(headers['X-RateLimit-Remaining'], 0);
+
+    // Request 3: blocked with 429
+    limiter(mockReq, mockRes, mockNext);
+    assert.strictEqual(nextCalls, 2, 'Request 3 must be blocked');
+    assert.strictEqual(mockRes.statusCode, 429);
+    assert.strictEqual(mockRes.body.error.code, 'TOO_MANY_REQUESTS');
+    assert.ok(headers['Retry-After']);
   });
 });

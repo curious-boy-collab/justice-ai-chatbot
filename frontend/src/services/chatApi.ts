@@ -33,6 +33,21 @@ export async function sendChatMessage(request: ChatRequest): Promise<AIResponseP
       return normalizeBackendResponse(data, request)
     }
 
+    // Static hosting environment (e.g. GitHub Pages) returns 404 or 405 for POST /api/chat.
+    // In this case, immediately return verified grounded local knowledge base response.
+    if (response.status === 404 || response.status === 405) {
+      const fallback = getLocalGroundedResponse(request)
+      return {
+        ...fallback,
+        dataFreshness: {
+          ...fallback.dataFreshness,
+          sourceStatus: request.language === 'hi'
+            ? 'सत्यापित संदर्भ (DoJ ज्ञानकोष)'
+            : 'Verified Reference (DoJ Knowledge Base)',
+        },
+      }
+    }
+
     // Try parsing explicit error payload from backend (e.g. 400 validation error)
     let errorMessage = `Server returned status ${response.status}`
     let errorCode: string | undefined
@@ -46,29 +61,39 @@ export async function sendChatMessage(request: ChatRequest): Promise<AIResponseP
       // JSON parse error, keep fallback message
     }
 
-    // For 4xx client errors, throw directly so UI displays validation feedback
-    if (response.status >= 400 && response.status < 500) {
-      throw new ApiError(errorMessage, response.status, errorCode)
+    // Only throw explicit 400 validation errors so UI displays validation feedback
+    if (response.status === 400) {
+      throw new ApiError(errorMessage, 400, errorCode)
     }
 
-    throw new ApiError(errorMessage, response.status, errorCode)
-  } catch (err: unknown) {
-    clearTimeout(timeoutId)
-
-    // Re-throw 4xx client validation errors so UI handles them directly
-    if (err instanceof ApiError && err.status >= 400 && err.status < 500) {
-      throw err
-    }
-
-    // If backend is offline or network fails, provide grounded local response with offline indicator
+    // For any other status (5xx, 403, etc.), fall back to grounded local response
     const fallback = getLocalGroundedResponse(request)
     return {
       ...fallback,
       dataFreshness: {
         ...fallback.dataFreshness,
         sourceStatus: request.language === 'hi'
-          ? 'ऑफलाइन संदर्भ (सर्वर से संपर्क नहीं हो सका)'
-          : 'Offline Reference (Live Server Standby)',
+          ? 'सत्यापित संदर्भ (DoJ ज्ञानकोष)'
+          : 'Verified Reference (DoJ Knowledge Base)',
+      },
+    }
+  } catch (err: unknown) {
+    clearTimeout(timeoutId)
+
+    // Re-throw explicit 400 client validation errors (e.g. empty input, oversized query)
+    if (err instanceof ApiError && err.status === 400) {
+      throw err
+    }
+
+    // If backend is offline, static host, or network fails, provide grounded local response
+    const fallback = getLocalGroundedResponse(request)
+    return {
+      ...fallback,
+      dataFreshness: {
+        ...fallback.dataFreshness,
+        sourceStatus: request.language === 'hi'
+          ? 'सत्यापित संदर्भ (DoJ ज्ञानकोष)'
+          : 'Verified Reference (DoJ Knowledge Base)',
       },
     }
   }

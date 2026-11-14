@@ -112,7 +112,30 @@ export async function fetchJudgeStats(): Promise<JudgeStatsResponse> {
  */
 export async function lookupCaseByCNR(cnr: string): Promise<CaseLookupResponse> {
   const cleanCnr = encodeURIComponent(cnr.trim().toUpperCase())
-  return apiRequest<CaseLookupResponse>(`/cases/lookup?cnr=${cleanCnr}`)
+  try {
+    return await apiRequest<CaseLookupResponse>(`/cases/lookup?cnr=${cleanCnr}`)
+  } catch (err: unknown) {
+    const raw = cnr.trim().toUpperCase()
+    // When backend is unavailable (e.g. static GitHub Pages), provide client-side CNR verification
+    if (raw.length === 16 && /^[A-Z]{4}\d{12}$/.test(raw)) {
+      return {
+        success: true,
+        cnr: raw,
+        isValidCnrFormat: true,
+        parsed: {
+          stateCode: raw.slice(0, 2),
+          courtCode: raw.slice(2, 4),
+          caseNumber: raw.slice(4, 12),
+          filingYear: raw.slice(12, 16),
+        },
+        isLive: false,
+        disclaimer: 'CNR format verified. Live case records require CAPTCHA verification on the official eCourts Services portal.',
+        officialPortalUrl: `https://services.ecourts.gov.in/ecourtindia_v6/?p=casestatus/cnr_search&cnr=${encodeURIComponent(raw)}`,
+        timestamp: new Date().toISOString(),
+      }
+    }
+    throw err
+  }
 }
 
 /**
